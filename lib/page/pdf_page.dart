@@ -1,3 +1,4 @@
+import 'package:bts_technologie/api/pdf_invoice_api.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,52 +12,57 @@ class PdfPage extends StatefulWidget {
 }
 
 class _PdfPageState extends State<PdfPage> {
-  Future<void> createAndOpenPdf() async {
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) => pw.Center(
-          child: pw.Column(
-            children: [
-              buildHeader(),
-              pw.SizedBox(height: 2),
-              // Small container in the middle
-              buildFactureNumber(),
-              buildRens(),
-              buildTable(),
-              buildFooter(),
-              pw.Container(
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      'Arreter la presente facture a la somme de:',
-                      style: pw.TextStyle(
-                          fontSize: 18, fontWeight: pw.FontWeight.bold),
-                    ),
-                    pw.Text(
-                      'quarante six middle trois sent cisnquate Dinars',
-                      style: pw.TextStyle(fontSize: 18),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  final pdfApi = PdfInvoiceApi();
 
-    final output = await getTemporaryDirectory();
-    final pdfPath = "${output.path}/example.pdf";
-    final file = File(pdfPath);
-    final result = await file.writeAsBytes(await pdf.save());
-    if (file.path != null) {
-      print("printing opening PDF file");
-      await OpenFile.open(result.path);
-    } else {
-      print("null PDF file");
-    }
+  Future<void> createAndOpenPdf() async {
+    final File? pdfFile =
+        await pdfApi.generate(/* pass your Invoice object here */);
+
+    // final pdf = pw.Document();
+    // pdf.addPage(
+    //   pw.Page(
+    //     build: (pw.Context context) => pw.Center(
+    //       child: pw.Column(
+    //         children: [
+    //           buildHeader(),
+    //           pw.SizedBox(height: 2),
+    //           // Small container in the middle
+    //           buildFactureNumber(),
+    //           buildRens(),
+    //           buildTable(),
+    //           buildFooter(),
+    //           pw.Container(
+    //             child: pw.Column(
+    //               crossAxisAlignment: pw.CrossAxisAlignment.start,
+    //               children: [
+    //                 pw.Text(
+    //                   'Arreter la presente facture a la somme de:',
+    //                   style: pw.TextStyle(
+    //                       fontSize: 18, fontWeight: pw.FontWeight.bold),
+    //                 ),
+    //                 pw.Text(
+    //                   'quarante six middle trois sent cisnquate Dinars',
+    //                   style: pw.TextStyle(fontSize: 18),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
+
+    // final output = await getTemporaryDirectory();
+    // final pdfPath = "${output.path}/example.pdf";
+    // final file = File(pdfPath);
+    // final result = await file.writeAsBytes(await pdf.save());
+    // if (file.path != null) {
+    //   print("printing opening PDF file");
+    //   await OpenFile.open(result.path);
+    // } else {
+    //   print("null PDF file");
+    // }
   }
 
   pw.Widget buildHeader() {
@@ -288,6 +294,7 @@ class _PdfPageState extends State<PdfPage> {
       ),
       body: Center(
         child: ElevatedButton(
+          // onPressed: () => PdfInvoiceApi.generate(),
           onPressed: createAndOpenPdf,
           child: Text('Open PDF'),
         ),
