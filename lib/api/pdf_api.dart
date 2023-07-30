@@ -1,9 +1,6 @@
 import 'dart:io';
-
-import 'package:flutter/services.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
 class PdfApi {
@@ -11,14 +8,10 @@ class PdfApi {
     required String name,
     required Document pdf,
   }) async {
-    print("saving document");
     final bytes = await pdf.save();
 
     final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/$name');
-    print(file);
-    print("file");
-
     await file.writeAsBytes(bytes);
 
     return file;
