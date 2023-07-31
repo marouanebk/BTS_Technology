@@ -55,13 +55,16 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       // Small divider to scroll the container up
                       Container(
-                          height: 3,
-                          width: 75,
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: const BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(22)))),
+                        height: 3,
+                        width: 75,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: const BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(22),
+                          ),
+                        ),
+                      ),
                       // Title "Connectez vous à votre compte"
                       const Text(
                         "Connectez vous à votre compte",
@@ -97,9 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      // Space between password field and login button
                       const Spacer(),
-                      // Login button with black background and height 50
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
