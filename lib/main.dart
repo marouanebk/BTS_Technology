@@ -2,6 +2,8 @@ import 'package:bts_technologie/facture/page/pdf_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'authentification/presentation/screen/login_page.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([
@@ -23,7 +25,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       theme: ThemeData(primarySwatch: Colors.deepOrange),
-      home: const PdfPage(),
+      // home: const PdfPage(),
+      home: const LoginPage()
     );
   }
 }
