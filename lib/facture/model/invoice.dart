@@ -1,5 +1,6 @@
-import 'package:bts_technologie/model/customer.dart';
-import 'package:bts_technologie/model/supplier.dart';
+import 'package:bts_technologie/facture/model/customer.dart';
+import 'package:bts_technologie/facture/model/supplier.dart';
+
 
 class Invoice {
   final InvoiceInfo info;

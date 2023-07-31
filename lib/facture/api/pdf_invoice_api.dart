@@ -4,6 +4,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:developer';
+
 
 class PdfInvoiceApi {
   Future<File?> generate() async {
@@ -51,12 +53,14 @@ class PdfInvoiceApi {
     final pdfPath = "${output.path}/example.pdf";
     final file = File(pdfPath);
     final result = await file.writeAsBytes(await pdf.save());
+    // ignore: unnecessary_null_comparison
     if (file.path != null) {
-      print("printing opening PDF file");
+      log("printing opening PDF file");
       await OpenFile.open(result.path);
     } else {
-      print("null PDF file");
+      log("null PDF file");
     }
+    return null;
     // // return PdfApi.saveDocument(name: 'my_invoice.pdf', pdf: pdf);
   }
 

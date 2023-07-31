@@ -1,4 +1,4 @@
-import 'package:bts_technologie/page/pdf_page.dart';
+import 'package:bts_technologie/facture/page/pdf_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,11 +8,13 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  static final String title = 'Invoice';
+  static const String title = 'Invoice';
+
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       theme: ThemeData(primarySwatch: Colors.deepOrange),
-      home: PdfPage(),
+      home: const PdfPage(),
     );
   }
 }
