@@ -1,5 +1,7 @@
 import 'package:bts_technologie/admin/presentation/screen/commandes.dart';
+import 'package:bts_technologie/admin/presentation/screen/logistiques.dart';
 import 'package:bts_technologie/admin/presentation/screen/main_page.dart';
+import 'package:bts_technologie/admin/presentation/screen/notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +20,8 @@ class _BaseScreenState extends State<BaseScreen> {
     return [
       const MainPage(),
       const OrdersPage(),
-      Container(),
-      Container(),
+      const Notifications(),
+      const Logistiques(),
     ];
   }
 

@@ -1,17 +1,17 @@
 import 'package:bts_technologie/admin/presentation/screen/new_factor.dart';
 import 'package:flutter/material.dart';
 
-class AddOrderPage extends StatefulWidget {
+class NewArticle extends StatefulWidget {
   @override
-  _AddOrderPageState createState() => _AddOrderPageState();
+  _NewArticleState createState() => _NewArticleState();
 }
 
-class _AddOrderPageState extends State<AddOrderPage> {
-  String? address = '';
-  String? phoneNumber = '';
-  String? sum = '';
-  String? selectedPage = '';
-  String? selectedArticle = '';
+class _NewArticleState extends State<NewArticle> {
+  String? nomArticle = '';
+  String? unite = '';
+  String? prixAchat = '';
+  String? prixGros = '';
+  String? quanAlert = '';
   String? selectedType = '';
   String? selectedColor = '';
   String? selectedSize = '';
@@ -25,7 +25,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
         centerTitle: true, // Align the title to the center
 
         title: const Text(
-          "Ajouter une Commande",
+          "Ajouter un article",
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black),
         ),
@@ -46,55 +46,67 @@ class _AddOrderPageState extends State<AddOrderPage> {
               children: [
                 const SizedBox(height: 20),
                 _buildInputField(
-                  label: "Adresse",
-                  hintText: "Entrez une adresse",
-                  errorText: "Vous devez entrer une adresse",
-                  value: address,
+                  label: "Nom de l'article",
+                  hintText: "Entrez le nom de l'article",
+                  errorText: "Vous devez entrer une nom",
+                  value: nomArticle,
                   onChanged: (value) {
                     setState(() {
-                      address = value;
+                      nomArticle = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
                 _buildInputField(
-                  label: "Numéro de téléphone",
-                  hintText: "Entrez un numéro de téléphone",
-                  errorText: "Vous devez entrer un numéro de téléphone",
-                  value: phoneNumber,
+                  label: "Unité",
+                  hintText: "Entrez l'unité",
+                  errorText: "Vous devez entrer une Unité",
+                  value: unite,
                   onChanged: (value) {
                     setState(() {
-                      phoneNumber = value;
+                      unite = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
                 _buildInputField(
-                  label: "Somme versée",
-                  hintText: "Entrez une somme versée",
-                  errorText: "Vous devez entrer une somme versée",
-                  value: sum,
+                  label: "Prix d'achat",
+                  hintText: "Entrez le prix d'achat",
+                  errorText: "Vous devez entrer le prix d'achat",
+                  value: prixAchat,
                   onChanged: (value) {
                     setState(() {
-                      sum = value;
+                      prixAchat = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
-                _buildSelectField(
-                  label: "Sélectionner une page",
-                  hintText: "- Sélectionnez une page -",
-                  errorText: "Vous devez entrer une page",
-                  value: selectedPage,
+                _buildInputField(
+                  label: "Prix de ventre en gros",
+                  hintText: "Entrez le prix de vente en gros",
+                  errorText: "Vous devez entrer le prix de vente en gros",
+                  value: prixGros,
                   onChanged: (value) {
                     setState(() {
-                      selectedPage = value;
+                      prixGros = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                _buildInputField(
+                  label: "Quantité d'alerte",
+                  hintText: "Entrez la quantité d'alerte",
+                  errorText: "Vous devez entrer la quantité d'alerte",
+                  value: quanAlert,
+                  onChanged: (value) {
+                    setState(() {
+                      quanAlert = value;
                     });
                   },
                 ),
                 const SizedBox(height: 20),
                 const Text(
-                  "Liste d'articles",
+                  "Variants",
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -102,69 +114,24 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 ),
                 const SizedBox(height: 10),
                 Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.white, // Use white as the background color
+                    borderRadius:
+                        BorderRadius.circular(5), // Apply border-radius of 5px
                     boxShadow: const [
                       BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.25),
-                        offset: Offset(0, 0),
-                        blurRadius: 8,
+                        color: Color.fromRGBO(
+                            0, 0, 0, 0.15), // Apply the specified box-shadow
+                        blurRadius: 12,
                         spreadRadius: 0,
                       ),
                     ],
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(9),
                   ),
                   padding: const EdgeInsets.all(16),
-                  child: Column(
+                  child: const Column(
                     children: [
-                      _buildSelectField(
-                        label: "Article",
-                        hintText: "- Sélectionnez un article -",
-                        errorText: "Vous devez entrer un article",
-                        value: selectedArticle,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedArticle = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      _buildSelectField(
-                        label: "Type",
-                        hintText: "- Sélectionnez un type -",
-                        errorText: "Vous devez entrer un type",
-                        value: selectedType,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedType = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      _buildSelectField(
-                        label: "Couleur",
-                        hintText: "- Sélectionnez une couleur -",
-                        errorText: "Vous devez entrer une couleur",
-                        value: selectedColor,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedColor = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      _buildSelectField(
-                        label: "Taille",
-                        hintText: "- Sélectionnez une taille -",
-                        errorText: "Vous devez entrer une taille",
-                        value: selectedSize,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedSize = value;
-                          });
-                        },
-                      ),
+                      SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -193,7 +160,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     backgroundColor: MaterialStateProperty.all(Colors.black),
                   ),
                   child: const Text(
-                    "Enregistrer la commande",
+                    "Ajouter l'article",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
