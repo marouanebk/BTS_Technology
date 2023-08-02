@@ -1,9 +1,11 @@
 import 'package:bts_technologie/admin/presentation/screen/commandes.dart';
+import 'package:bts_technologie/admin/presentation/screen/finances.dart';
 import 'package:bts_technologie/admin/presentation/screen/logistiques.dart';
 import 'package:bts_technologie/admin/presentation/screen/main_page.dart';
 import 'package:bts_technologie/admin/presentation/screen/notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
@@ -22,21 +24,34 @@ class _BaseScreenState extends State<BaseScreen> {
       const OrdersPage(),
       const Notifications(),
       const Logistiques(),
+      const FinancesPage()
     ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
+        icon: SvgPicture.asset(
+          'assets/images/navbar/home.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
+        ),
+        title: 'home',
+        activeColorPrimary: Colors.black,
+        activeColorSecondary:
+            Colors.black, // Set the background color when activated
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
         icon: const Icon(
-          CupertinoIcons.home,
+          CupertinoIcons.search,
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(
-          CupertinoIcons.search,
+          CupertinoIcons.heart,
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,

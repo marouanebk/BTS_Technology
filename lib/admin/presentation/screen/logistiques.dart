@@ -1,5 +1,7 @@
-import 'package:bts_technologie/admin/presentation/screen/add_article.dart';
+import 'package:bts_technologie/admin/presentation/screen/new/add_article.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Logistiques extends StatefulWidget {
   const Logistiques({super.key});
@@ -11,6 +13,10 @@ class Logistiques extends StatefulWidget {
 class _LogistiquesState extends State<Logistiques> {
   @override
   Widget build(BuildContext context) {
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
+    //   statusBarColor: Colors.white,
+    // ));
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -21,18 +27,19 @@ class _LogistiquesState extends State<Logistiques> {
                 height: 40,
               ),
               RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   children: [
                     WidgetSpan(
                       child: Padding(
-                        padding: EdgeInsets.only(right: 8),
-                        child: Icon(
-                          Icons.location_on,
-                          size: 21,
+                        padding: const EdgeInsets.only(right: 8),
+                        child: SvgPicture.asset(
+                          'assets/images/navbar/logis_black.svg', // Replace with the actual path to your SVG image
+                          width: 21,
+                          height: 21,
                         ),
                       ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: 'Logistiques',
                       style: TextStyle(
                           fontSize: 20,

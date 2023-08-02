@@ -1,4 +1,7 @@
-import 'package:bts_technologie/admin/presentation/screen/new_order.dart';
+import 'package:bts_technologie/admin/presentation/components/factor_command_container.dart';
+import 'package:bts_technologie/admin/presentation/components/factor_container.dart';
+import 'package:bts_technologie/admin/presentation/components/screen_header.dart';
+import 'package:bts_technologie/admin/presentation/screen/new/new_order.dart';
 import 'package:flutter/material.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -11,6 +14,7 @@ class OrdersPage extends StatefulWidget {
 class _OrdersPageState extends State<OrdersPage> {
   final controller = PageController(initialPage: 0);
   int pageindex = 0;
+  List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
 
   @override
   void dispose() {
@@ -24,7 +28,8 @@ class _OrdersPageState extends State<OrdersPage> {
       child: Scaffold(
         body: Column(
           children: [
-            const Text("Commandes"),
+            screenHeader(
+                "Commandes", 'assets/images/navbar/commandes_black.svg'),
             const SizedBox(
               height: 28,
             ),
@@ -77,7 +82,7 @@ class _OrdersPageState extends State<OrdersPage> {
                         shrinkWrap: true,
                         itemCount: 15,
                         itemBuilder: (context, index) {
-                          return commandeCard(18796, "Numéro érroné");
+                          return commandeCard(18796, "Numéro érroné" , index);
                         },
                       ),
                     ],
@@ -116,44 +121,56 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  Widget commandeCard(int number, String status) {
-    return Container(
-      height: 61,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.15),
-            offset: Offset(0, 0),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Com N° $number",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+  Widget commandeCard(int number, String status, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isDropDownVisibleList[index] = !isDropDownVisibleList[index];
+        });
+      },
+      child: Column(
+        children: [
+          Container(
+            height: 61,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  offset: Offset(0, 0),
+                  blurRadius: 12,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Com N° $number",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    status,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.red,
+                    ),
+                  )
+                ],
               ),
             ),
-            Text(
-              status,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: Colors.red,
-              ),
-            )
-          ],
-        ),
+          ),
+          if (isDropDownVisibleList[index]) FactorCommandContainer(),
+        ],
       ),
     );
   }
