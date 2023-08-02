@@ -72,8 +72,9 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 30,),
                   SizedBox(
-                    height: 300,
+                    height: 330,
                     child: PageView(
                       controller: controller,
                       onPageChanged: (index) {
@@ -311,24 +312,23 @@ class _MainPageState extends State<MainPage> {
 
   Widget _commandsStats() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal : 2.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0 , vertical: 5),
       child: Align(
         alignment: Alignment.center,
         child: Container(
-          height: 323,
+          // height: 323,
           width: double.infinity,
           padding: const EdgeInsets.all(15),
           decoration: const BoxDecoration(
-            
             color: Colors.white,
             boxShadow: [
-        BoxShadow(
-          color: Color.fromRGBO(0, 0, 0, 0.15), // Set the shadow color
-          offset: Offset(0, 0), // Set the shadow offset
-          blurRadius: 12, // Set the shadow blur radius
-          spreadRadius: 0, // Set the shadow spread radius
-        ),
-      ],
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.15), // Set the shadow color
+                offset: Offset(0, 0), // Set the shadow offset
+                blurRadius: 12, // Set the shadow blur radius
+                spreadRadius: 0, // Set the shadow spread radius
+              ),
+            ],
             borderRadius: BorderRadius.all(
               Radius.circular(5),
             ),
@@ -336,13 +336,30 @@ class _MainPageState extends State<MainPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "342 Commandes",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
-                textAlign: TextAlign.right,
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "342 Commandes",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.right,
+                  ),
+                  Text(
+                    "voir les clients",
+                    style: TextStyle(
+                        color: Color(0xFF9F9F9F),
+                        fontSize: 14,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
               ),
               _progressItem("Téléphone éteint", 15),
               _progressItem("Ne répond pas", 15),
@@ -362,31 +379,73 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _progressItem(String label, int progress) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Expanded(
-          // Use Expanded for the text to make it start from the left
-          child: Text(
-            label,
-            textAlign: TextAlign.right,
+    return
+        //  Table(
+        //   columnWidths: { 0: FixedColumnWidth(200.0),// fixed to 100 width
+        //         1: FlexColumnWidth(),
+        //         2: FlexColumnWidth(),//fixed to 100 width
+        //         },
+        //   children: [
+        //     TableRow(children: [
+        //      Text(
+        //           label,
+        //           textAlign: TextAlign.left,
+        //         ),
+
+        //       LinearPercentIndicator(
+        //         width: 100.0,
+        //         lineHeight: 8.0,
+        //         percent: progress / 100,
+        //         progressColor: Colors.blue,
+        //       ),
+        //       Text(
+        //         '$progress%',
+        //         style: const TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 14,
+        //         ),
+        //       ),
+        //     ]),
+        //   ],
+        // );
+
+        Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+            // Use Expanded for the text to make it start from the left
+            child: Text(
+              label,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: const Color(
+                    0xFF9F9F9F), // Use var(--text-grey, #9F9F9F) here
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
+                height: 1.0,
+              ),
+            ),
           ),
-        ),
-        LinearPercentIndicator(
-          width: 100.0,
-          lineHeight: 8.0,
-          percent: progress / 100,
-          progressColor: Colors.blue,
-        ),
-        const SizedBox(width: 8), // Add some space between indicator and text
-        Text(
-          '$progress%',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
+          LinearPercentIndicator(
+            width: 100.0,
+            lineHeight: 8.0,
+            percent: progress / 100,
+            progressColor: Colors.blue,
           ),
-        ),
-      ],
+          const SizedBox(width: 8), // Add some space between indicator and text
+          Text(
+            '$progress%',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -395,7 +454,6 @@ class _MainPageState extends State<MainPage> {
       height: 201,
       width: double.infinity,
       decoration: const BoxDecoration(
-        
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,

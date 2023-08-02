@@ -105,7 +105,7 @@ class _FinancesPageState extends State<FinancesPage> {
           },
         ),
         const SizedBox(
-          height: 10,
+          height: 50,
         ),
       ],
     );
