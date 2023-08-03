@@ -1,3 +1,4 @@
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -105,19 +106,29 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                         ),
-                        child: Container(
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              "Se connecter",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                builder: (_) => const BaseScreen(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 50,
+                            decoration: const BoxDecoration(
+                              color: Colors.black,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "Se connecter",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white),
+                              ),
                             ),
                           ),
                         ),

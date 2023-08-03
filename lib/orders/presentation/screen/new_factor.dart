@@ -1,4 +1,4 @@
-import 'package:bts_technologie/admin/presentation/components/factor_container.dart';
+import 'package:bts_technologie/orders/presentation/components/factor_container.dart';
 import 'package:flutter/material.dart';
 
 class NewFactorPage extends StatefulWidget {
@@ -112,7 +112,7 @@ class _NewFactorPageState extends State<NewFactorPage> {
                     backgroundColor: MaterialStateProperty.all(Colors.black),
                   ),
                   child: const Text(
-                    "Enregistrer la commande",
+                    "Telecharger la facture",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,

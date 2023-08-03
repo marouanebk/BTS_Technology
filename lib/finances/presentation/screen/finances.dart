@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:bts_technologie/admin/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:flutter/material.dart';
 
 class FinancesPage extends StatefulWidget {
@@ -21,9 +21,10 @@ class _FinancesPageState extends State<FinancesPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               children: [
+                const SizedBox(height: 20,),
                 Center(
                     child: screenHeader(
-                        "Finances", 'assets/images/navbar/finances_black.svg')),
+                        "Finances", 'assets/images/navbar/finances_activated.svg')),
                 const SizedBox(
                   height: 30,
                 ),

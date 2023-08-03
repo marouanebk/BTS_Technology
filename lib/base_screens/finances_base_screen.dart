@@ -14,7 +14,7 @@ class BaseScreen extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseScreen> {
-  var _controller = PersistentTabController(initialIndex: 0);
+  final _controller = PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
     return [

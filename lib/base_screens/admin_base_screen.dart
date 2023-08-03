@@ -14,7 +14,7 @@ class AdminPageBaseScreen extends StatefulWidget {
 }
 
 class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
-  var _controller = PersistentTabController(initialIndex: 0);
+  final _controller = PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
     return [

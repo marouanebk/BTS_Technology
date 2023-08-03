@@ -1,6 +1,5 @@
-import 'package:bts_technologie/admin/presentation/components/factor_command_container.dart';
-import 'package:bts_technologie/admin/presentation/components/factor_container.dart';
-import 'package:bts_technologie/admin/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_order.dart';
 import 'package:flutter/material.dart';
 
@@ -26,71 +25,70 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            screenHeader(
-                "Commandes", 'assets/images/navbar/commandes_activated.svg'),
-            const SizedBox(
-              height: 28,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Row(
-                  children: [
-                    dateFilter(0, "Tous"),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    dateFilter(1, "Telephone eteint"),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    dateFilter(2, "Pas confirme"),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    dateFilter(3, "Annule"),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                  ],
-                ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 20,),
+              screenHeader(
+                  "Commandes", 'assets/images/navbar/commandes_activated.svg'),
+              const SizedBox(
+                height: 28,
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Expanded(
-              child: SingleChildScrollView(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Row(
                     children: [
-                      const Text("Aujourd'hui"),
+                      dateFilter(0, "Tous"),
                       const SizedBox(
-                        height: 12,
+                        width: 10,
                       ),
-                      ListView.separated(
-                        scrollDirection: Axis.vertical,
-                        separatorBuilder: (context, index) => const SizedBox(
-                          height: 14,
-                        ),
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: 15,
-                        itemBuilder: (context, index) {
-                          return commandeCard(18796, "Numéro érroné" , index);
-                        },
+                      dateFilter(1, "Telephone eteint"),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      dateFilter(2, "Pas confirme"),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      dateFilter(3, "Annule"),
+                      const SizedBox(
+                        width: 10,
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Aujourd'hui"),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    ListView.separated(
+                      scrollDirection: Axis.vertical,
+                      separatorBuilder: (context, index) => const SizedBox(
+                        height: 14,
+                      ),
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: 15,
+                      itemBuilder: (context, index) {
+                        return commandeCard(18796, "Numéro érroné", index);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         floatingActionButton: Align(
           alignment: Alignment.bottomRight,
@@ -169,7 +167,7 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ),
           ),
-          if (isDropDownVisibleList[index]) FactorCommandContainer(),
+          if (isDropDownVisibleList[index]) const FactorCommandContainer(),
         ],
       ),
     );

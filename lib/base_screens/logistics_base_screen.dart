@@ -1,6 +1,5 @@
 import 'package:bts_technologie/logistiques/presentation/screen/logistiques.dart';
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
-import 'package:bts_technologie/finances/presentation/screen/finances.dart';
 import 'package:bts_technologie/notifications/presentation/screen/notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ class BaseScreen extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseScreen> {
-  var _controller = PersistentTabController(initialIndex: 0);
+  final _controller = PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
     return [

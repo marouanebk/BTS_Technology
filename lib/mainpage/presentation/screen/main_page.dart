@@ -1,6 +1,8 @@
 import 'dart:developer';
 
-import 'package:bts_technologie/admin/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -72,7 +74,9 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30,),
+                  const SizedBox(
+                    height: 30,
+                  ),
                   SizedBox(
                     height: 330,
                     child: PageView(
@@ -195,7 +199,27 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           const SizedBox(width: 7),
-          screenHeader("82", 'assets/images/navbar/commandes_activated.svg'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Text(
+                "15,000DA",
+                style: TextStyle(
+                  color: Color(0xFF111111),
+                  fontFamily: "Inter",
+                  fontSize: 20,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              smallRichText(
+                  "82", 'assets/images/navbar/commandes_activated.svg'),
+            ],
+          ),
         ],
       ),
     );
@@ -303,8 +327,27 @@ class _MainPageState extends State<MainPage> {
               ),
             ],
           ),
-          const SizedBox(width: 7),
-          screenHeader("82", 'assets/images/navbar/commandes_activated.svg'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Text(
+                "15,000DA",
+                style: TextStyle(
+                  color: Color(0xFF111111),
+                  fontFamily: "Inter",
+                  fontSize: 20,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              smallRichText(
+                  "82", 'assets/images/navbar/commandes_activated.svg'),
+            ],
+          ),
         ],
       ),
     );
@@ -312,7 +355,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _commandsStats() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0 , vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
       child: Align(
         alignment: Alignment.center,
         child: Container(
@@ -323,10 +366,10 @@ class _MainPageState extends State<MainPage> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.15), // Set the shadow color
-                offset: Offset(0, 0), // Set the shadow offset
-                blurRadius: 12, // Set the shadow blur radius
-                spreadRadius: 0, // Set the shadow spread radius
+                color: Color.fromRGBO(0, 0, 0, 0.15),
+                offset: Offset(0, 0),
+                blurRadius: 12,
+                spreadRadius: 0,
               ),
             ],
             borderRadius: BorderRadius.all(
@@ -336,10 +379,10 @@ class _MainPageState extends State<MainPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "342 Commandes",
                     style: TextStyle(
                         color: Colors.black,
@@ -347,14 +390,24 @@ class _MainPageState extends State<MainPage> {
                         fontWeight: FontWeight.w500),
                     textAlign: TextAlign.right,
                   ),
-                  Text(
-                    "voir les clients",
-                    style: TextStyle(
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ClientsPage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "voir les clients",
+                      style: TextStyle(
                         color: Color(0xFF9F9F9F),
                         fontSize: 14,
                         decoration: TextDecoration.underline,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.right,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ],
               ),
@@ -379,49 +432,17 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _progressItem(String label, int progress) {
-    return
-        //  Table(
-        //   columnWidths: { 0: FixedColumnWidth(200.0),// fixed to 100 width
-        //         1: FlexColumnWidth(),
-        //         2: FlexColumnWidth(),//fixed to 100 width
-        //         },
-        //   children: [
-        //     TableRow(children: [
-        //      Text(
-        //           label,
-        //           textAlign: TextAlign.left,
-        //         ),
-
-        //       LinearPercentIndicator(
-        //         width: 100.0,
-        //         lineHeight: 8.0,
-        //         percent: progress / 100,
-        //         progressColor: Colors.blue,
-        //       ),
-        //       Text(
-        //         '$progress%',
-        //         style: const TextStyle(
-        //           fontWeight: FontWeight.bold,
-        //           fontSize: 14,
-        //         ),
-        //       ),
-        //     ]),
-        //   ],
-        // );
-
-        Padding(
+    return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Expanded(
-            // Use Expanded for the text to make it start from the left
             child: Text(
               label,
               textAlign: TextAlign.left,
-              style: TextStyle(
-                color: const Color(
-                    0xFF9F9F9F), // Use var(--text-grey, #9F9F9F) here
+              style: const TextStyle(
+                color: Color(0xFF9F9F9F),
                 fontFamily: 'Inter',
                 fontSize: 16,
                 fontStyle: FontStyle.normal,
@@ -434,9 +455,9 @@ class _MainPageState extends State<MainPage> {
             width: 100.0,
             lineHeight: 8.0,
             percent: progress / 100,
-            progressColor: Colors.blue,
+            progressColor: Colors.black,
           ),
-          const SizedBox(width: 8), // Add some space between indicator and text
+          const SizedBox(width: 8),
           Text(
             '$progress%',
             style: const TextStyle(
@@ -451,7 +472,6 @@ class _MainPageState extends State<MainPage> {
 
   Widget _topContainer() {
     return Container(
-      height: 201,
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -466,40 +486,59 @@ class _MainPageState extends State<MainPage> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(
-                    Icons.help_outline,
-                    size: 33,
-                    color: Colors.white,
+                  icon: SvgPicture.asset(
+                    'assets/images/logout_admin.svg',
+                    width: 20,
+                    height: 30,
                   ),
                   onPressed: () {},
                 ),
                 IconButton(
-                  icon: const Icon(
-                    Icons.help_outline,
-                    size: 33,
-                    color: Colors.white,
+                  icon: SvgPicture.asset(
+                    'assets/images/setting_admin.svg',
+                    width: 20,
+                    height: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                        builder: (_) => const AdminParams(),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
           ),
           const Text(
             "bienvenue",
-            style: TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(
+              color: Color(0xFFFFFFFF), // White color (#FFF)
+              fontFamily: 'Inter', // Font family
+              fontSize: 16, // Font size
+              fontStyle: FontStyle.normal, // Font style
+              fontWeight: FontWeight.w400, // Font weight
+              height: 1.2, // Line height
+            ),
           ),
           const Text(
             "Aziz Berrazouane",
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFFFFF), // White color (#FFF)
+              fontFamily: 'Inter', // Font family
+              fontSize: 28, // Font size
+              fontStyle: FontStyle.normal, // Font style
+              fontWeight: FontWeight.w600, // Font weight
+              height: 1.2, // Line height
             ),
+          ),
+          const SizedBox(
+            height: 6,
           ),
           Container(
             height: 20,
@@ -510,7 +549,13 @@ class _MainPageState extends State<MainPage> {
               ),
               color: Colors.white,
             ),
-          )
+            child: const Center(
+              child: Text(" @aziz"),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );

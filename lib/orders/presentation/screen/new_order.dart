@@ -33,8 +33,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        // backgroundColor:
-        //     Colors.blue.withOpacity(0.3), //You can make this transparent
+
         elevation: 0.0,
       ),
       body: Stack(
@@ -236,7 +235,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 fontWeight: FontWeight.w400,
                 color: Color(0xFF9F9F9F)),
             contentPadding:
-                EdgeInsets.symmetric(vertical: 8), // Smaller padding here
+                const EdgeInsets.symmetric(vertical: 8), // Smaller padding here
             border: const UnderlineInputBorder(),
           ),
         ),
@@ -287,7 +286,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: Colors.black),
-              items: [],
+              items: const [],
               // Add your DropdownMenuItem items here
             ),
           ),

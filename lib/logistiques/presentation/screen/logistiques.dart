@@ -1,6 +1,6 @@
 import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
+import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Logistiques extends StatefulWidget {
@@ -28,29 +28,8 @@ class _LogistiquesState extends State<Logistiques> {
               const SizedBox(
                 height: 40,
               ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    WidgetSpan(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: SvgPicture.asset(
-                          'assets/images/navbar/logis_activated.svg', // Replace with the actual path to your SVG image
-                          width: 21,
-                          height: 21,
-                        ),
-                      ),
-                    ),
-                    const TextSpan(
-                      text: 'Logistiques',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ),
+              screenHeader(
+                  "Logistiques", 'assets/images/navbar/logis_activated.svg'),
               const SizedBox(
                 height: 30,
               ),
@@ -160,87 +139,90 @@ class _LogistiquesState extends State<Logistiques> {
               ],
             ),
           ),
-          if (isDropDownVisibleList[index])
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(left: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.white,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.15),
-                    blurRadius: 12,
-                    spreadRadius: 0,
-                    offset: Offset(-5, 0), // Add left shadow
-                  ),
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.15),
-                    blurRadius: 12,
-                    spreadRadius: 0,
-                    offset: Offset(5, 0), // Add right shadow
-                  ),
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.15),
-                    blurRadius: 12,
-                    spreadRadius: 0,
-                    offset: Offset(0, 5), // Add bottom shadow
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: double.infinity, // To take full width
-                    child: Divider(
-                      height: 1, // The thickness of the line (1px)
-                      thickness: 1, // The thickness of the line (1px)
-                      color: Color(
-                          0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
-                    ),
-                  ),
-                  logExpandedText("Prix d'achat: ", "800 DA"),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  logExpandedText("Prix de vente en gros: ", "800 DA"),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  logExpandedText("Quantité d'alerte: ", "800 DA"),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const SizedBox(
-                    width: double.infinity, // To take full width
-                    child: Divider(
-                      height: 1, // The thickness of the line (1px)
-                      thickness: 1, // The thickness of the line (1px)
-                      color: Color(
-                          0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
-                    ),
-                  ),
-                  logExpandedVariant("Noir", "S", 12),
-                  logExpandedVariant("Noir", "S", 12),
-                  logExpandedVariant("Noir", "S", 12),
-                  logExpandedVariant("Noir", "S", 12),
-                  logExpandedVariant("Noir", "S", 12),
-                  logExpandedVariant("Noir", "S", 3),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  modifyButton(),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  deleteButton(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
+          if (isDropDownVisibleList[index]) articleDropDown(),
+        ],
+      ),
+    );
+  }
+
+  Widget articleDropDown() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+        boxShadow: const [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(-5, 0), // Add left shadow
+          ),
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(5, 0), // Add right shadow
+          ),
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(0, 5), // Add bottom shadow
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: double.infinity, // To take full width
+            child: Divider(
+              height: 1, // The thickness of the line (1px)
+              thickness: 1, // The thickness of the line (1px)
+              color: Color(
+                  0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
             ),
+          ),
+          logExpandedText("Prix d'achat: ", "800 DA"),
+          const SizedBox(
+            height: 15,
+          ),
+          logExpandedText("Prix de vente en gros: ", "800 DA"),
+          const SizedBox(
+            height: 15,
+          ),
+          logExpandedText("Quantité d'alerte: ", "800 DA"),
+          const SizedBox(
+            height: 15,
+          ),
+          const SizedBox(
+            width: double.infinity, // To take full width
+            child: Divider(
+              height: 1, // The thickness of the line (1px)
+              thickness: 1, // The thickness of the line (1px)
+              color: Color(
+                  0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
+            ),
+          ),
+          logExpandedVariant("Noir", "S","regular", 12),
+          logExpandedVariant("Noir", "S","regular", 12),
+          logExpandedVariant("Noir", "S","regular", 12),
+          logExpandedVariant("Noir", "S","regular", 12),
+          logExpandedVariant("Noir", "S","regular", 12),
+          logExpandedVariant("Noir", "S","regular", 3),
+          const SizedBox(
+            height: 15,
+          ),
+          modifyButton(),
+          const SizedBox(
+            height: 5,
+          ),
+          deleteButton(),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );
@@ -254,12 +236,6 @@ class _LogistiquesState extends State<Logistiques> {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          // border: Border.all(
-          //   color: const Color(
-          //       0xFF111111),
-          //   width: 1,
-          // ),
-          // color: Colors.red,
         ),
         child: ElevatedButton(
           onPressed: () {},
@@ -311,7 +287,7 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget logExpandedVariant(String color, String size, int numberOfArticles) {
+  Widget logExpandedVariant(String color, String size,String type, int numberOfArticles) {
     Color articlesColor = numberOfArticles < 5 ? Colors.red : Colors.black;
 
     return Padding(
@@ -340,7 +316,7 @@ class _LogistiquesState extends State<Logistiques> {
               ),
             ),
             TextSpan(
-              text: " | $size ----- ",
+              text: " | $size | $type ----- ",
               style: const TextStyle(
                 color: Color(0xFF9F9F9F),
                 fontFamily: 'Inter',

@@ -294,6 +294,20 @@ class _NewArticleState extends State<NewArticle> {
               });
             },
           ),
+          const SizedBox(
+            height: 18,
+          ),
+          _buildSelectField(
+            label: "Famille",
+            hintText: "- selectioner ume famille d'articles",
+            errorText: "Vous devez entrer une page",
+            value: selectedColor,
+            onChanged: (value) {
+              setState(() {
+                selectedColor = value;
+              });
+            },
+          )
         ],
       ),
     );
