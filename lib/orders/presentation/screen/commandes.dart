@@ -1,4 +1,5 @@
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_order.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,20 @@ class _OrdersPageState extends State<OrdersPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               screenHeader(
                   "Commandes", 'assets/images/navbar/commandes_activated.svg'),
               const SizedBox(
                 height: 28,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal : 20.0),
+                child: searchContainer("Chercher une commande"),
+              ),
+                 const SizedBox(
+                height: 15,
               ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

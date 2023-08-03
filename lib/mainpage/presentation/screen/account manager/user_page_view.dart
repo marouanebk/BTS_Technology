@@ -49,6 +49,9 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                 return userContainerView(index);
               },
             ),
+             const SizedBox(
+              height: 12,
+            ),
             const Text(
               "Admins des pages ",
               style: TextStyle(
@@ -76,6 +79,9 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
               itemBuilder: (context, index) {
                 return userContainerView(index);
               },
+            ),
+             const SizedBox(
+              height: 12,
             ),
             const Text(
               "Responsable Logistics ",

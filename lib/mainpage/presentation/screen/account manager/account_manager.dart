@@ -2,7 +2,6 @@ import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/l
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/pages_view.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/user_page_view.dart';
 import 'package:flutter/material.dart';
-
 class AccountManager extends StatefulWidget {
   const AccountManager({super.key});
 
@@ -13,7 +12,6 @@ class AccountManager extends StatefulWidget {
 class _AccountManagerState extends State<AccountManager> {
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPageIndex = 0;
-  List<bool> isUserDropDownVisibleList = List.generate(15, (index) => false);
 
   @override
   Widget build(BuildContext context) {
@@ -69,30 +67,11 @@ class _AccountManagerState extends State<AccountManager> {
           ),
         ],
       ),
-      floatingActionButton: Align(
-        alignment: Alignment.bottomRight,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 20, bottom: 20),
-          child: Container(
-            height: 76,
-            width: 76,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: Colors.black),
-            child: IconButton(
-                onPressed: () {
-                  // Navigator.of(context, rootNavigator: true).push(
-                  //   MaterialPageRoute(
-                  //     builder: (_) => NewArticle(),
-                  //   ),
-                  // );
-                },
-                icon: const Icon(
-                  Icons.add,
-                  size: 35,
-                ),
-                color: Colors.white),
-          ),
-        ),
+      floatingActionButton: CustomPopupMenuButton(
+        onItemSelected: (value) {
+          // Handle the selected item here.
+          // Here, value will be 'item1', 'item2', or 'item3'.
+        },
       ),
     );
   }
@@ -137,6 +116,34 @@ class _AccountManagerState extends State<AccountManager> {
             ),
         ],
       ),
+    );
+  }
+}
+
+class CustomPopupMenuButton extends StatelessWidget {
+  final Function(String) onItemSelected;
+
+  const CustomPopupMenuButton({required this.onItemSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.add, size: 35),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'item1',
+          child: const Text('Item 1'),
+        ),
+        PopupMenuItem(
+          value: 'item2',
+          child: const Text('Item 2'),
+        ),
+        PopupMenuItem(
+          value: 'item3',
+          child: const Text('Item 3'),
+        ),
+      ],
+      onSelected: onItemSelected,
     );
   }
 }
