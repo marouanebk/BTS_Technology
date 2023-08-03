@@ -1,4 +1,4 @@
-import 'package:bts_technologie/admin/presentation/screen/new/new_factor.dart';
+import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -326,7 +326,7 @@ class _NewArticleState extends State<NewArticle> {
                 fontWeight: FontWeight.w400,
                 color: Color(0xFF9F9F9F)),
             contentPadding:
-                EdgeInsets.symmetric(vertical: 8), // Smaller padding here
+                const EdgeInsets.symmetric(vertical: 8), // Smaller padding here
             border: const UnderlineInputBorder(),
           ),
         ),
@@ -377,7 +377,7 @@ class _NewArticleState extends State<NewArticle> {
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: Colors.black),
-              items: [],
+              items: const [],
               // Add your DropdownMenuItem items here
             ),
           ),

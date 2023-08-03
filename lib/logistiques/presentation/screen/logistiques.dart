@@ -1,4 +1,4 @@
-import 'package:bts_technologie/admin/presentation/screen/new/add_article.dart';
+import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,7 +35,7 @@ class _LogistiquesState extends State<Logistiques> {
                       child: Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: SvgPicture.asset(
-                          'assets/images/navbar/logis_black.svg', // Replace with the actual path to your SVG image
+                          'assets/images/navbar/logis_activated.svg', // Replace with the actual path to your SVG image
                           width: 21,
                           height: 21,
                         ),

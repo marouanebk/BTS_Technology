@@ -195,7 +195,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           const SizedBox(width: 7),
-          screenHeader("82", 'assets/images/navbar/commandes_black.svg'),
+          screenHeader("82", 'assets/images/navbar/commandes_activated.svg'),
         ],
       ),
     );
@@ -304,7 +304,7 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           const SizedBox(width: 7),
-          screenHeader("82", 'assets/images/navbar/commandes_black.svg'),
+          screenHeader("82", 'assets/images/navbar/commandes_activated.svg'),
         ],
       ),
     );

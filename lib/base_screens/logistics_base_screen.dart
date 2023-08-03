@@ -1,8 +1,7 @@
-import 'package:bts_technologie/admin/presentation/screen/commandes.dart';
-import 'package:bts_technologie/admin/presentation/screen/finances.dart';
-import 'package:bts_technologie/admin/presentation/screen/logistiques.dart';
-import 'package:bts_technologie/admin/presentation/screen/main_page.dart';
-import 'package:bts_technologie/admin/presentation/screen/notifications.dart';
+import 'package:bts_technologie/logistiques/presentation/screen/logistiques.dart';
+import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
+import 'package:bts_technologie/finances/presentation/screen/finances.dart';
+import 'package:bts_technologie/notifications/presentation/screen/notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,11 +19,10 @@ class _BaseScreenState extends State<BaseScreen> {
 
   List<Widget> _buildScreens() {
     return [
-      const MainPage(),
       const OrdersPage(),
       const Notifications(),
       const Logistiques(),
-      const FinancesPage()
+      Container()
     ];
   }
 
@@ -32,40 +30,56 @@ class _BaseScreenState extends State<BaseScreen> {
     return [
       PersistentBottomNavBarItem(
         icon: SvgPicture.asset(
-          'assets/images/navbar/home.svg', // Replace with the actual path to your SVG image
+          'assets/images/navbar/commandes_activated.svg', // Replace with the actual path to your SVG image
           width: 20,
           height: 30,
         ),
-        title: 'home',
-        activeColorPrimary: Colors.black,
-        activeColorSecondary:
-            Colors.black, // Set the background color when activated
-        inactiveColorPrimary: CupertinoColors.systemGrey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(
-          CupertinoIcons.search,
+        inactiveIcon: SvgPicture.asset(
+          'assets/images/navbar/commandes_desactivated.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(
-          CupertinoIcons.heart,
+        icon: SvgPicture.asset(
+          'assets/images/navbar/notifications_activated.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
+        ),
+        inactiveIcon: SvgPicture.asset(
+          'assets/images/navbar/notifications_desactivated.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(
-          CupertinoIcons.heart,
+        icon: SvgPicture.asset(
+          'assets/images/navbar/logis_activated.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
+        ),
+        inactiveIcon: SvgPicture.asset(
+          'assets/images/navbar/logistics_desactivated.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(
-          CupertinoIcons.profile_circled,
+        icon: SvgPicture.asset(
+          'assets/images/navbar/logout.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
+        ),
+        inactiveIcon: SvgPicture.asset(
+          'assets/images/navbar/logout.svg', // Replace with the actual path to your SVG image
+          width: 20,
+          height: 30,
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,

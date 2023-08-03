@@ -1,4 +1,5 @@
-import 'package:bts_technologie/admin/presentation/screen/base_screen.dart';
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
+import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/facture/page/pdf_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
       // home: const PdfPage(),
       // home: const LoginPage()
             home: const BaseScreen()
+            // home: const AdminPageBaseScreen(),
 
     );
   }

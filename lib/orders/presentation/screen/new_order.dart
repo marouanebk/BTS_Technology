@@ -1,4 +1,4 @@
-import 'package:bts_technologie/admin/presentation/screen/new/new_factor.dart';
+import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:flutter/material.dart';
 
 class AddOrderPage extends StatefulWidget {

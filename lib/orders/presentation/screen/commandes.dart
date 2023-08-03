@@ -1,7 +1,7 @@
 import 'package:bts_technologie/admin/presentation/components/factor_command_container.dart';
 import 'package:bts_technologie/admin/presentation/components/factor_container.dart';
 import 'package:bts_technologie/admin/presentation/components/screen_header.dart';
-import 'package:bts_technologie/admin/presentation/screen/new/new_order.dart';
+import 'package:bts_technologie/orders/presentation/screen/new_order.dart';
 import 'package:flutter/material.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -29,7 +29,7 @@ class _OrdersPageState extends State<OrdersPage> {
         body: Column(
           children: [
             screenHeader(
-                "Commandes", 'assets/images/navbar/commandes_black.svg'),
+                "Commandes", 'assets/images/navbar/commandes_activated.svg'),
             const SizedBox(
               height: 28,
             ),
