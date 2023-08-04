@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/error/exceptions.dart';
@@ -34,7 +33,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     );
 
     if (response.statusCode == 200) {
-      final prefs = await SharedPreferences.getInstance();
+      // final prefs = await SharedPreferences.getInstance();
       // await prefs.setString('fullname', userModel.fullname!);
       // await prefs.setString('email', userModel.email);
       // await prefs.setString('userid', userModel.userid!);
@@ -71,7 +70,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     log(response.statusCode.toString());
 
     if (response.statusCode == 200) {
-      final prefs = await SharedPreferences.getInstance();
+      // final prefs = await SharedPreferences.getInstance();
       // await prefs.setInt('is logged in', 1);
       // await prefs.setString(
       //     'fullname', response.data["data"]['fullname'].toString());

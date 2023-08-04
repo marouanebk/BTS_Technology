@@ -21,10 +21,12 @@ class _FinancesPageState extends State<FinancesPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               children: [
-                const SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
                 Center(
-                    child: screenHeader(
-                        "Finances", 'assets/images/navbar/finances_activated.svg')),
+                    child: screenHeader("Finances",
+                        'assets/images/navbar/finances_activated.svg')),
                 const SizedBox(
                   height: 30,
                 ),
@@ -72,7 +74,6 @@ class _FinancesPageState extends State<FinancesPage> {
 
   Widget revenueList() {
     final random = Random();
-    final isRed = random.nextBool();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,8 +113,7 @@ class _FinancesPageState extends State<FinancesPage> {
   }
 
   Widget revenueItem(bool isRed) {
-    final backgroundColor =
-        isRed ? Colors.red : Colors.green;
+    final backgroundColor = isRed ? Colors.red : Colors.green;
 
     return Container(
       width: double.infinity,
@@ -178,9 +178,11 @@ class _FinancesPageState extends State<FinancesPage> {
             width: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
-              color: isRed ? const Color.fromRGBO(255, 68, 68, 0.1) :const Color.fromRGBO(7, 176, 24, 0.1) ,
+              color: isRed
+                  ? const Color.fromRGBO(255, 68, 68, 0.1)
+                  : const Color.fromRGBO(7, 176, 24, 0.1),
             ),
-            child:  Center(
+            child: Center(
               child: Icon(
                 Icons.keyboard_arrow_up,
                 size: 35,

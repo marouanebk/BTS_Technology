@@ -1,7 +1,6 @@
 import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Logistiques extends StatefulWidget {
   const Logistiques({super.key});

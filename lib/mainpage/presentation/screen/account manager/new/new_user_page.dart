@@ -12,7 +12,6 @@ class NewUserPage extends StatefulWidget {
 
 class _NewUserPageState extends State<NewUserPage> {
   String? address = '';
-  int _value = 1;
   List<int> _selectedValues = []; // Initialize the list here
 
   int? _selectedValue;
@@ -83,7 +82,7 @@ class _NewUserPageState extends State<NewUserPage> {
                         groupValue: _selectedValues.contains(i) ? i : null,
                         toggleable: true,
                         onChanged: (int? value) {
-                          print('Radio $value clicked');
+                          log('Radio $value clicked');
                           log(value.toString());
                           log(_selectedValues.toString());
 

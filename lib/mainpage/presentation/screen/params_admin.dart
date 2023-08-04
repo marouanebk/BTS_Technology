@@ -1,5 +1,4 @@
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/company_informations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

@@ -3,7 +3,6 @@
 import 'package:bts_technologie/authentication/data/datasource/user_datasource.dart';
 import 'package:bts_technologie/authentication/data/repository/user_repository_implem.dart';
 import 'package:bts_technologie/authentication/domaine/usecases/login_usecase.dart';
-import 'package:bts_technologie/authentication/domaine/usecases/logout_usecase.dart';
 import 'package:bts_technologie/authentication/domaine/usecases/signup_usecase.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:get_it/get_it.dart';

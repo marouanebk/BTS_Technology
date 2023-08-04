@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
@@ -53,32 +51,13 @@ class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
         return PageAdminLoginState();
       } else if (r.role == "financier") {
         return FinancesLoginState();
-      } else
-
+      } else {
         // (r.role == "logistics")
 
         //  {
         return LogistiquesLoginState();
+      }
     });
   }
 }
 
-String _mapFailureToMessage(Failure failure) {
-  switch (failure.message) {
-    case "user-not-found":
-      return "Invalid Creds";
-    case "wrong-passord":
-      return "Wrong Password";
-    case "invalid-email":
-      return "Invalid Email Adress";
-    case "user-disabled":
-      return "User Disables";
-    case "email-already-in-use":
-      return "Email Already In Use";
-    case "operation-not-allowed":
-      return "Error";
-    case "weak-password":
-      return "Weak Password";
-  }
-  return "Uknown Error ";
-}

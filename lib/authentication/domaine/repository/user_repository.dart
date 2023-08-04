@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 

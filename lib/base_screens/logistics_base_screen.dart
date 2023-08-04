@@ -25,7 +25,7 @@ class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
       const OrdersPage(),
       const Notifications(),
       const Logistiques(),
-      LogoutButton()
+      const LogoutButton()
     ];
   }
 
@@ -93,8 +93,6 @@ class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
             log("context null");
           }
         },
-        // onSelectedTabPressWhenNoScreensPushed: performLogout
-        
       ),
     ];
   }

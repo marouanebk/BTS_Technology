@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_event.dart';
