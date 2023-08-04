@@ -1,6 +1,9 @@
 class ApiConstance {
-  static const String baseUrl = "http://10.0.2.2:4000";
+  static const String baseUrl = "http://10.0.2.2:5000";
   static const String apiKey = "c3435cfe40aeb079689227d82bf921d3";
+  static const String authApi = "/api/auth";
+  static const String signup = "$baseUrl$authApi/signup";
+  static const String login = "$baseUrl$authApi/signup";
 
   static const String messageRoutes = "/api/message";
   static const String conversationRoutes = "/api/conversation";

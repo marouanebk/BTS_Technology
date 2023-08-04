@@ -6,7 +6,7 @@ import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 
-class UserRepository implements BaseUserRepository {
+class UserRepository extends BaseUserRepository {
   final BaseUserRemoteDateSource baseUserRemoteDateSource;
 
   UserRepository(this.baseUserRemoteDateSource);
@@ -16,7 +16,7 @@ class UserRepository implements BaseUserRepository {
     final UserModel userModel = UserModel(
       id: user.id,
       fullname: user.fullname,
-      email: user.email,
+      username: user.username,
       password: user.password,
     );
 
@@ -33,7 +33,7 @@ class UserRepository implements BaseUserRepository {
     final UserModel userModel = UserModel(
       id: user.id,
       fullname: user.fullname,
-      email: user.email,
+      username: user.username,
       password: user.password,
     );
 

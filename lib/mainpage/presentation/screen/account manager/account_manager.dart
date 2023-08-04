@@ -1,7 +1,11 @@
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/livreurs_page_view.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_livreur_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_user_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/pages_view.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/user_page_view.dart';
 import 'package:flutter/material.dart';
+
 class AccountManager extends StatefulWidget {
   const AccountManager({super.key});
 
@@ -12,6 +16,7 @@ class AccountManager extends StatefulWidget {
 class _AccountManagerState extends State<AccountManager> {
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPageIndex = 0;
+  bool _isMenuOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +74,32 @@ class _AccountManagerState extends State<AccountManager> {
       ),
       floatingActionButton: CustomPopupMenuButton(
         onItemSelected: (value) {
-          // Handle the selected item here.
-          // Here, value will be 'item1', 'item2', or 'item3'.
+          if (value == 'Ajouter une page') {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const NewUserPage(),
+              ),
+            );
+          } else if (value == 'Ajouter un utilisateur') {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const NewPageAccount(),
+              ),
+            );
+          } else if (value == 'Ajouter un livreur') {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const NewLivreurAccount(),
+              ),
+            );
+
+          }
+
+          setState(() {
+            _isMenuOpen = false;
+          });
         },
+        isMenuOpen: _isMenuOpen,
       ),
     );
   }
@@ -121,29 +149,79 @@ class _AccountManagerState extends State<AccountManager> {
 }
 
 class CustomPopupMenuButton extends StatelessWidget {
+  final bool isMenuOpen;
+
   final Function(String) onItemSelected;
 
-  const CustomPopupMenuButton({required this.onItemSelected});
+  const CustomPopupMenuButton(
+      {required this.isMenuOpen, required this.onItemSelected});
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.add, size: 35),
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 'item1',
-          child: const Text('Item 1'),
+    return Container(
+      height: 75,
+      width: 75,
+      decoration:
+          const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+      child: PopupMenuButton<String>(
+        offset: const Offset(-50, -150), // Move the button 50 pixels up
+        color: Colors.black,
+        onSelected: (value) {
+          onItemSelected(value);
+        },
+
+        icon: Icon(
+          isMenuOpen
+              ? Icons.close
+              : Icons.add, // Change the icon based on the menu state
+          size: 35,
+          color: Colors.white,
         ),
-        PopupMenuItem(
-          value: 'item2',
-          child: const Text('Item 2'),
-        ),
-        PopupMenuItem(
-          value: 'item3',
-          child: const Text('Item 3'),
-        ),
-      ],
-      onSelected: onItemSelected,
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: 'Ajouter une page',
+            child: Text(
+              "Ajouter une page",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Inter",
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
+                height: 1.0,
+              ),
+            ),
+          ),
+          const PopupMenuItem(
+            value: 'Ajouter un utilisateur',
+            child: Text(
+              "Ajouter un utilisateur",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Inter",
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
+                height: 1.0,
+              ),
+            ),
+          ),
+          const PopupMenuItem(
+            value: 'Ajouter un livreur',
+            child: Text(
+              "Ajouter un livreur",
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: "Inter",
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
+                height: 1.0,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

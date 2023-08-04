@@ -1,5 +1,6 @@
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/company_informations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -44,12 +45,12 @@ class _AdminParamsState extends State<AdminParams> {
               height: 10,
             ),
             adminParamsContainer("Téléchargeement Excel",
-                "assets/images/excel.svg", const ClientsPage()),
+                "assets/images/excel.svg", const CompanyInformations()),
             const SizedBox(
               height: 10,
             ),
             adminParamsContainer("Informations de l'entreprise",
-                "assets/images/entreprise.svg", const ClientsPage()),
+                "assets/images/entreprise.svg", const CompanyInformations()),
           ],
         ),
       ),
