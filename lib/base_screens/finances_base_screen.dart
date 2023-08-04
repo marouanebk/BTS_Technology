@@ -7,13 +7,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-class BaseScreen extends StatefulWidget {
-  const BaseScreen({Key? key}) : super(key: key);
+class FinancesBaseScreen extends StatefulWidget {
+  const FinancesBaseScreen({Key? key}) : super(key: key);
   @override
-  State<BaseScreen> createState() => _BaseScreenState();
+  State<FinancesBaseScreen> createState() => _FinancesBaseScreenState();
 }
 
-class _BaseScreenState extends State<BaseScreen> {
+class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
   final _controller = PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {

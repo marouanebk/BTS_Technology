@@ -1,7 +1,7 @@
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 
 import 'package:bts_technologie/notifications/presentation/screen/notifications.dart';
-import 'package:bts_technologie/authentification/presentation/screen/login_page.dart';
+import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

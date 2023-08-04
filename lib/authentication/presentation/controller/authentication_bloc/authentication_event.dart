@@ -1,14 +1,14 @@
-import 'package:bts_technologie/authentification/domaine/Entities/user.dart';
 import 'package:equatable/equatable.dart';
+import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 
-abstract class AuthEvent extends Equatable {
-  const AuthEvent();
+abstract class UserBlocEvent extends Equatable {
+  const UserBlocEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class CreateUserEvent extends AuthEvent {
+class CreateUserEvent extends UserBlocEvent {
   final User user;
 
   const CreateUserEvent({required this.user});
@@ -17,14 +17,14 @@ class CreateUserEvent extends AuthEvent {
   List<Object> get props => [user];
 }
 
-class LogOutUserEvent extends AuthEvent {
+class LogOutUserEvent extends UserBlocEvent {
   const LogOutUserEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class ChooseTypeEvent extends AuthEvent {
+class ChooseTypeEvent extends UserBlocEvent {
   final int number;
   const ChooseTypeEvent({required this.number});
 
@@ -32,7 +32,7 @@ class ChooseTypeEvent extends AuthEvent {
   List<Object> get props => [number];
 }
 
-class LoginuserEvent extends AuthEvent {
+class LoginuserEvent extends UserBlocEvent {
   final User user;
 
   const LoginuserEvent({required this.user});
@@ -41,18 +41,19 @@ class LoginuserEvent extends AuthEvent {
   List<Object> get props => [user];
 }
 
-class SetBiographyEvent extends AuthEvent {
+class SetBiographyEvent extends UserBlocEvent {
   final String bio;
   const SetBiographyEvent({required this.bio});
 
   @override
   List<Object> get props => [bio];
 }
-
-class GetUserDetailsEvent extends AuthEvent {
+class GetUserDetailsEvent extends UserBlocEvent {
   final String id;
   const GetUserDetailsEvent({required this.id});
 
   @override
   List<Object> get props => [id];
 }
+
+

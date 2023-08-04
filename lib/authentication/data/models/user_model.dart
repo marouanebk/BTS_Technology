@@ -1,4 +1,4 @@
-import 'package:bts_technologie/authentification/domaine/Entities/user.dart';
+import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 
 class UserModel extends User {
   const UserModel({
@@ -16,7 +16,7 @@ class UserModel extends User {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-        id: json["id"],
+        id: json["_id"],
         fullname: json["fullname"],
         username: json["username"],
         password: json["password"],

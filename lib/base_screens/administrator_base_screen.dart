@@ -9,13 +9,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-class BaseScreen extends StatefulWidget {
-  const BaseScreen({Key? key}) : super(key: key);
+class PageAdminBaseScreen extends StatefulWidget {
+  const PageAdminBaseScreen({Key? key}) : super(key: key);
   @override
-  State<BaseScreen> createState() => _BaseScreenState();
+  State<PageAdminBaseScreen> createState() => _PageAdminBaseScreenState();
 }
 
-class _BaseScreenState extends State<BaseScreen> {
+class _PageAdminBaseScreenState extends State<PageAdminBaseScreen> {
   final _controller = PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {

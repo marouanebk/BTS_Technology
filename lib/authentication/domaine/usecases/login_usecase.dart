@@ -1,7 +1,6 @@
-import 'package:bts_technologie/authentification/domaine/Entities/user.dart';
-import 'package:bts_technologie/authentification/domaine/Repository/user_repository.dart';
-
-import '../../../../core/error/failure.dart';
+import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
+import 'package:bts_technologie/authentication/domaine/repository/user_repository.dart';
+import 'package:bts_technologie/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 
 class LoginUseCase {

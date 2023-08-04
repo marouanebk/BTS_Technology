@@ -1,21 +1,22 @@
 import 'dart:developer';
 
-import 'package:bts_technologie/authentification/data/Models/user_model.dart';
-import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
-import 'package:bts_technologie/core/network/error_message_model.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:bts_technologie/authentication/data/models/user_model.dart';
+import 'package:bts_technologie/core/error/exceptions.dart';
+import 'package:bts_technologie/core/network/error_message_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class BaseUserRemoteDateSource {
-  Future<UserModel> signupUser(UserModel userModel);
+  Future<UserModel> createUser(UserModel userModel);
   Future<UserModel> loginUser(UserModel userModel);
-  // Future<bool> logOutUser();
+  Future<bool> logOutUser();
 }
 
 class UserRemoteDataSource extends BaseUserRemoteDateSource {
   @override
-  Future<UserModel> signupUser(UserModel userModel) async {
+  Future<UserModel> createUser(UserModel userModel) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
@@ -35,10 +36,11 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     if (response.statusCode == 200) {
       final prefs = await SharedPreferences.getInstance();
       // await prefs.setString('fullname', userModel.fullname!);
-      // // await prefs.setString('userid', userModel.userid!);
+      // await prefs.setString('email', userModel.email);
+      // await prefs.setString('userid', userModel.userid!);
       // await prefs.setInt('is logged in', 1);
 
-      return response.data;
+      return UserModel.fromJson(response.data['userid']);
     } else {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
@@ -54,6 +56,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     };
 
     log("in user remooote deatasource login");
+
     final response = await Dio().post(
       ApiConstance.login,
       data: userModel.toJson(),
@@ -65,7 +68,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
         headers: requestHeaders,
       ),
     );
-    log(response.data['message'].toString());
+    log(response.statusCode.toString());
 
     if (response.statusCode == 200) {
       final prefs = await SharedPreferences.getInstance();
@@ -76,7 +79,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
 
       // await prefs.setString(
       //     "userid", response.data["data"]['userid'].toString());
-      return response.data;
+      return UserModel.fromJson(response.data['user']);
     } else {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
@@ -85,15 +88,15 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     }
   }
 
-  // @override
-  // Future<bool> logOutUser() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setInt('is logged in', 0);
-  //   await prefs.remove("fullanme");
-  //   await prefs.remove('email');
-  //   await prefs.remove("userid");
-  //   await prefs.remove('type');
+  @override
+  Future<bool> logOutUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('is logged in', 0);
+    await prefs.remove("fullanme");
+    await prefs.remove('email');
+    await prefs.remove("userid");
+    await prefs.remove('type');
 
-  //   return true;
-  // }
+    return true;
+  }
 }

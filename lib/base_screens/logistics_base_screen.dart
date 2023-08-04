@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
+import 'package:bts_technologie/base_screens/logout_button.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/logistiques.dart';
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/notifications/presentation/screen/notifications.dart';
@@ -7,13 +11,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
-class BaseScreen extends StatefulWidget {
-  const BaseScreen({Key? key}) : super(key: key);
+class LogistiquesBaseScreen extends StatefulWidget {
+  const LogistiquesBaseScreen({Key? key}) : super(key: key);
   @override
-  State<BaseScreen> createState() => _BaseScreenState();
+  State<LogistiquesBaseScreen> createState() => _LogistiquesBaseScreenState();
 }
 
-class _BaseScreenState extends State<BaseScreen> {
+class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
   final _controller = PersistentTabController(initialIndex: 0);
 
   List<Widget> _buildScreens() {
@@ -21,11 +25,11 @@ class _BaseScreenState extends State<BaseScreen> {
       const OrdersPage(),
       const Notifications(),
       const Logistiques(),
-      Container()
+      LogoutButton()
     ];
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
+  List<PersistentBottomNavBarItem> _navBarsItems(context) {
     return [
       PersistentBottomNavBarItem(
         icon: SvgPicture.asset(
@@ -82,6 +86,15 @@ class _BaseScreenState extends State<BaseScreen> {
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
+        onPressed: (BuildContext? context) {
+          if (context != null) {
+            performLogout(context);
+          } else {
+            log("context null");
+          }
+        },
+        // onSelectedTabPressWhenNoScreensPushed: performLogout
+        
       ),
     ];
   }
@@ -92,7 +105,7 @@ class _BaseScreenState extends State<BaseScreen> {
       context,
       controller: _controller,
       screens: _buildScreens(),
-      items: _navBarsItems(),
+      items: _navBarsItems(context),
       confineInSafeArea: true,
       backgroundColor: Colors.white, // Default is Colors.white.
       handleAndroidBackButtonPress: true, // Default is true.
@@ -118,6 +131,17 @@ class _BaseScreenState extends State<BaseScreen> {
       ),
       navBarStyle:
           NavBarStyle.style5, // Choose the nav bar style with this property.
+    );
+  }
+
+  void performLogout(BuildContext ontext) {
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return const LoginPage();
+        },
+      ),
+      (_) => false,
     );
   }
 }
