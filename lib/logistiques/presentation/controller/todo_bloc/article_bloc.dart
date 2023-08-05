@@ -15,15 +15,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final GetArticlesUseCase getArticlesUseCase;
   final GetUnDoneArticleUseCase getUnDoneTodoUseCase;
-  final AddArticleUseCase addTodoUseCase;
+  final AddArticleUseCase createArticleUseCase;
   final EditArticleUseCase editTodoUseCase;
   final DeleteArticleUseCase deleteTodoUseCase;
   ArticleBloc(this.getArticlesUseCase, this.getUnDoneTodoUseCase,
-      this.addTodoUseCase, this.editTodoUseCase, this.deleteTodoUseCase)
+      this.createArticleUseCase, this.editTodoUseCase, this.deleteTodoUseCase)
       : super(const ArticleState()) {
     on<GetArticlesEvent>(_getArticlesEvent);
     // on<GetUnDoneTodoEvent>(_getUnDoneTodoEvent);
-    // on<AddTodoEvent>(_addTodoEvent);
+    on<CreateArticleEvent>(_createArticlesEvent);
     // on<EditTodoEvent>(_editTodoEvent);
     // on<DeleteTodoEvent>(_deleteTodoEvent);
   }
@@ -37,6 +37,14 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
         (r) => emit(state.copyWith(
             getArticles: r, getArticlesState: RequestState.loaded)));
   }
+  FutureOr<void> _createArticlesEvent(
+      CreateArticleEvent event, Emitter<ArticleState> emit) async {
+    final result = await createArticleUseCase(event.article);
+    result.fold(
+        (l) => emit(state.copyWith(
+            createArticleState: RequestState.error, createArticleMessage: l.message)),
+        (r) => emit(state.copyWith(createArticleState: RequestState.loaded)));
+  }
 
   // FutureOr<void> _getUnDoneTodoEvent(
   //     GetUnDoneTodoEvent event, Emitter<TodoState> emit) async {
@@ -49,14 +57,6 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   //           getUnDoneTodo: r, getUnDoneTodoState: RequestState.loaded)));
   // }
 
-  // FutureOr<void> _addTodoEvent(
-  //     AddTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await addTodoUseCase(event.todo);
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           addTodoState: RequestState.error, addTodoMessage: l.message)),
-  //       (r) => emit(state.copyWith(addTodoState: RequestState.loaded)));
-  // }
 
   // FutureOr<void> _editTodoEvent(
   //     EditTodoEvent event, Emitter<TodoState> emit) async {

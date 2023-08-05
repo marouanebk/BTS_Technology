@@ -22,20 +22,25 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
   Future<Unit> addArticle(ArticleModel article) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     // final userid = prefs.getString("userid");
-    Map<String, String> requestHeaders = {
-      'Content-Type': 'application/json',
-    };
+    log("in adding articles to remote");
+    const String token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNkNTczM2NhNjU1NGZmNjZmNTUyMjgiLCJpYXQiOjE2OTEyMjkxNTYsImV4cCI6MTY5MzgyMTE1Nn0.DS6Ygk1qG8prSw5SppyqQ4LZGT_zmWZ-_Eb0cL496Gc";
+
     final response = await Dio().post(
-      "http://10.0.2.2:4000/add/Article",
+      ApiConstance.createArticle,
       data: article.toJson(),
       options: Options(
         followRedirects: false,
+        headers: {
+          "Authorization": "Bearer $token",
+        },
         validateStatus: (status) {
           return status! < 500;
         },
-        headers: requestHeaders,
       ),
     );
+    log("article created  ");
+    log(article.toString());
     if (response.statusCode == 200) {
       return Future.value(unit);
     } else {
@@ -47,22 +52,13 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
   }
 
   @override
-  Future<Unit> deleteArticle(Article article) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Unit> editArticle(Article article) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List<Article>> getArticles() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userid = prefs.getString("userid");
 
-    final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNkNTczM2NhNjU1NGZmNjZmNTUyMjgiLCJpYXQiOjE2OTEyMjkxNTYsImV4cCI6MTY5MzgyMTE1Nn0.DS6Ygk1qG8prSw5SppyqQ4LZGT_zmWZ-_Eb0cL496Gc";
-   final response = await Dio().get(ApiConstance.getArticles,
+    const String token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNkNTczM2NhNjU1NGZmNjZmNTUyMjgiLCJpYXQiOjE2OTEyMjkxNTYsImV4cCI6MTY5MzgyMTE1Nn0.DS6Ygk1qG8prSw5SppyqQ4LZGT_zmWZ-_Eb0cL496Gc";
+    final response = await Dio().get(ApiConstance.getArticles,
         options: Options(
           headers: {
             "Authorization": "Bearer $token",
@@ -79,6 +75,16 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
               statusCode: response.statusCode,
               statusMessage: response.data['message']));
     }
+  }
+
+  @override
+  Future<Unit> deleteArticle(Article article) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Unit> editArticle(Article article) {
+    throw UnimplementedError();
   }
 
   @override

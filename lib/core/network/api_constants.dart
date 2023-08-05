@@ -7,6 +7,7 @@ class ApiConstance {
 
   static const String articleApi = "/api/article";
   static const String getArticles = "$baseUrl$articleApi/get";
+  static const String createArticle = "$baseUrl$articleApi/create";
   
 
 

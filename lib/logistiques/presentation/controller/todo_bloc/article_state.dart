@@ -11,9 +11,9 @@ class ArticleState extends Equatable {
   final RequestState getUnDoneTodoState;
   final String getUnDoneTodomessage;
 
-  // final ToDo addTodo;
-  final RequestState addTodoState;
-  final String addTodoMessage;
+  // final ToDo createArticle;
+  final RequestState createArticleState;
+  final String createArticleMessage;
 
   const ArticleState({
     this.getArticles = const [],
@@ -24,8 +24,8 @@ class ArticleState extends Equatable {
     this.getUnDoneTodoState = RequestState.loading,
     this.getUnDoneTodomessage = "",
     //
-    this.addTodoState = RequestState.loading,
-    this.addTodoMessage = "",
+    this.createArticleState = RequestState.loading,
+    this.createArticleMessage = "",
   });
 
   ArticleState copyWith({
@@ -37,8 +37,8 @@ class ArticleState extends Equatable {
     RequestState? getUnDoneTodoState,
     String? getUnDoneTodomessage,
     //
-    RequestState? addTodoState,
-    String? addTodoMessage,
+    RequestState? createArticleState,
+    String? createArticleMessage,
   }) {
     return ArticleState(
       getArticles: getArticles ?? this.getArticles,
@@ -49,8 +49,8 @@ class ArticleState extends Equatable {
       getUnDoneTodoState: getUnDoneTodoState ?? this.getUnDoneTodoState,
       getUnDoneTodomessage: getUnDoneTodomessage ?? this.getUnDoneTodomessage,
       //
-      addTodoState: addTodoState ?? this.addTodoState,
-      addTodoMessage: addTodoMessage ?? this.addTodoMessage,
+      createArticleState: createArticleState ?? this.createArticleState,
+      createArticleMessage: createArticleMessage ?? this.createArticleMessage,
     );
     //
   }
@@ -65,8 +65,8 @@ class ArticleState extends Equatable {
         getUnDoneTodoState,
         getUnDoneTodomessage,
         
-        addTodoState,
-        addTodoMessage,
+        createArticleState,
+        createArticleMessage,
         //
       ];
 }

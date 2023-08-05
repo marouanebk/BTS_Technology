@@ -26,7 +26,7 @@ class ServiceLocator {
     //Articles usecase
 
     //todo usecases
-    sl.registerLazySingleton(() => GetArticlesUseCase(sl()));
+    sl.registerLazySingleton(() => GetArticlesUseCase (sl()));
     sl.registerLazySingleton(() => GetUnDoneArticleUseCase(sl()));
     sl.registerLazySingleton(() => AddArticleUseCase(sl()));
     sl.registerLazySingleton(() => EditArticleUseCase(sl()));

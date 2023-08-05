@@ -17,6 +17,9 @@ class ArticleRepository implements BaseArticleRepository {
       buyingPrice: article.buyingPrice,
       grosPrice: article.grosPrice,
       alertQuantity: article.alertQuantity,
+      name: article.name,
+      unity: article.unity,
+      variants: article.variants
     );
     
 

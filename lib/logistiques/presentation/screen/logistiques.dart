@@ -58,8 +58,7 @@ class _LogistiquesState extends State<Logistiques> {
                         shrinkWrap: true,
                         itemCount: state.getArticles.length,
                         itemBuilder: (context, index) {
-                          return logiItem(
-                              state.getArticles[index],index);
+                          return logiItem(state.getArticles[index], index);
                         },
                       ),
                   ],
@@ -97,7 +96,7 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget logiItem(article ,  int index) {
+  Widget logiItem(article, int index) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -112,7 +111,14 @@ class _LogistiquesState extends State<Logistiques> {
             padding:
                 const EdgeInsets.only(left: 15, right: 20, top: 8, bottom: 10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.vertical(
+                top: const Radius.circular(5),
+                bottom: isDropDownVisibleList[index]
+                    ? const Radius.circular(
+                        0) // Remove bottom-left and bottom-right radius
+                    : const Radius.circular(
+                        5), // Keep radius when dropdown is not visible
+              ),
               color: Colors.white,
               boxShadow: isDropDownVisibleList[index]
                   ? [
@@ -120,15 +126,27 @@ class _LogistiquesState extends State<Logistiques> {
                         color: Color.fromRGBO(0, 0, 0, 0.15),
                         blurRadius: 12,
                         spreadRadius: 0,
-                        offset: Offset(0, 0),
+                        offset: Offset(-5, -5), // Add shadows to top-left
+                      ),
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(5, -5), // Add shadows to top-right
+                      ),
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(0, -5), // Add shadow to top
                       ),
                     ]
                   : [
                       const BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0),
-                        blurRadius: 0,
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
                         spreadRadius: 0,
-                        offset: Offset(0, 0),
+                        offset: Offset(0, 0), // Add shadows to all sides
                       ),
                     ],
             ),
@@ -145,48 +163,52 @@ class _LogistiquesState extends State<Logistiques> {
                 SizedBox(
                   width: 40,
                   height: 52,
-                  child: Image.asset("assets/images/logistiques/sweat_oversize.png"),
+                  child: Image.asset(
+                      "assets/images/logistiques/sweat_oversize.png"),
                 ),
               ],
             ),
           ),
-          if (isDropDownVisibleList[index]) articleDropDown(),
+          if (isDropDownVisibleList[index]) articleDropDown(article),
         ],
       ),
     );
   }
 
-  Widget articleDropDown() {
+  Widget articleDropDown(article) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(left: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(5), // Remove top-left and top-right radius
+        ),
         color: Colors.white,
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.15),
             blurRadius: 12,
             spreadRadius: 0,
-            offset: Offset(-5, 0), // Add left shadow
+            offset: Offset(-5, 5), // Add shadows to bottom-left
           ),
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.15),
             blurRadius: 12,
             spreadRadius: 0,
-            offset: Offset(5, 0), // Add right shadow
+            offset: Offset(5, 5), // Add shadows to bottom-right
           ),
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.15),
             blurRadius: 12,
             spreadRadius: 0,
-            offset: Offset(0, 5), // Add bottom shadow
+            offset: Offset(0, 5), // Add shadow to bottom
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 10,),
           const SizedBox(
             width: double.infinity, // To take full width
             child: Divider(
@@ -196,15 +218,15 @@ class _LogistiquesState extends State<Logistiques> {
                   0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
             ),
           ),
-          logExpandedText("Prix d'achat: ", "800 DA"),
+          logExpandedText("Prix d'achat: ", "${article.buyingPrice} DA"),
           const SizedBox(
             height: 15,
           ),
-          logExpandedText("Prix de vente en gros: ", "800 DA"),
+          logExpandedText("Prix de vente en gros: ", "${article.grosPrice} DA"),
           const SizedBox(
             height: 15,
           ),
-          logExpandedText("Quantité d'alerte: ", "800 DA"),
+          logExpandedText("Quantité d'alerte: ", "${article.alertQuantity} DA"),
           const SizedBox(
             height: 15,
           ),
@@ -217,12 +239,8 @@ class _LogistiquesState extends State<Logistiques> {
                   0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
             ),
           ),
-          logExpandedVariant("Noir", "S", "regular", 12),
-          logExpandedVariant("Noir", "S", "regular", 12),
-          logExpandedVariant("Noir", "S", "regular", 12),
-          logExpandedVariant("Noir", "S", "regular", 12),
-          logExpandedVariant("Noir", "S", "regular", 12),
-          logExpandedVariant("Noir", "S", "regular", 3),
+          for (int i = 0; i < article.variants.length; i++)
+            logExpandedVariant(article.variants[i], article.alertQuantity),
           const SizedBox(
             height: 15,
           ),
@@ -298,9 +316,8 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget logExpandedVariant(
-      String color, String size, String type, int numberOfArticles) {
-    Color articlesColor = numberOfArticles < 5 ? Colors.red : Colors.black;
+  Widget logExpandedVariant(article, alertQuantity) {
+    Color articlesColor = alertQuantity < 5 ? Colors.red : Colors.black;
 
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
@@ -317,7 +334,7 @@ class _LogistiquesState extends State<Logistiques> {
               ),
             )),
             TextSpan(
-              text: "   $color",
+              text: "   ${article.colour}",
               style: const TextStyle(
                 color: Color(0xFF9F9F9F), // Use var(--text-grey, #9F9F9F) here
                 fontFamily: 'Inter',
@@ -328,7 +345,7 @@ class _LogistiquesState extends State<Logistiques> {
               ),
             ),
             TextSpan(
-              text: " | $size | $type ----- ",
+              text: " | ${article.taille} | ${article.family} ----- ",
               style: const TextStyle(
                 color: Color(0xFF9F9F9F),
                 fontFamily: 'Inter',
@@ -339,7 +356,7 @@ class _LogistiquesState extends State<Logistiques> {
               ),
             ),
             TextSpan(
-              text: "$numberOfArticles articles",
+              text: "${article.quantity} articles",
               style: TextStyle(
                 color: articlesColor,
                 fontFamily: 'Inter',

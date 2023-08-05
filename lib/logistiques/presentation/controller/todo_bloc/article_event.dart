@@ -12,12 +12,12 @@ class GetArticlesEvent extends ArticleEvent {}
 
 class GetUnDoneTodoEvent extends ArticleEvent {}
 
-class AddTodoEvent extends ArticleEvent {
-  final Article todo;
-  const AddTodoEvent({required this.todo});
+class CreateArticleEvent extends ArticleEvent {
+  final Article article;
+  const CreateArticleEvent({required this.article});
 
   @override
-  List<Object> get props => [todo];
+  List<Object> get props => [article];
 }
 
 class EditTodoEvent extends ArticleEvent {}
