@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
@@ -11,6 +10,7 @@ abstract class BaseUserRemoteDateSource {
   Future<UserModel> createUser(UserModel userModel);
   Future<UserModel> loginUser(UserModel userModel);
   Future<bool> logOutUser();
+  Future<List<UserModel>> getAllUsers();
 }
 
 class UserRemoteDataSource extends BaseUserRemoteDateSource {
@@ -21,7 +21,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     };
 
     final response = await Dio().post(
-      "http://10.0.2.2:4000/users/register",
+      ApiConstance.signup,
       data: userModel.toJson(),
       options: Options(
         followRedirects: false,
@@ -39,12 +39,13 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
       // await prefs.setString('userid', userModel.userid!);
       // await prefs.setInt('is logged in', 1);
 
-      return UserModel.fromJson(response.data['userid']);
+      // return UserModel.fromJson(response.data['userid']);
+      return UserModel.fromJson(response.data['user']);
     } else {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+              statusMessage: response.data['error']));
     }
   }
 
@@ -53,8 +54,6 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
-
-    log("in user remooote deatasource login");
 
     final response = await Dio().post(
       ApiConstance.login,
@@ -75,7 +74,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
       await prefs.setString("id", response.data['user']["_id"]);
       await prefs.setString("token", response.data['token']);
       await prefs.setString("type", response.data['user']["role"]);
-      
+
       return UserModel.fromJson(response.data['user']);
     } else {
       throw ServerException(
@@ -95,5 +94,29 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     await prefs.remove('type');
 
     return true;
+  }
+
+  @override
+  Future<List<UserModel>> getAllUsers() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    log("response");
+    final response = await Dio().get(ApiConstance.getAllUsers,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ));
+    if (response.statusCode == 200) {
+      // log(response.data.toString());
+      return List<UserModel>.from((response.data as List).map(
+        (e) => UserModel.fromJson(e),
+      ));
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              statusMessage: response.data['message']));
+    }
   }
 }

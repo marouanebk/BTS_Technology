@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/logistiques/data/model/article_model.dart';
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
+import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
+import 'package:bts_technologie/logistiques/presentation/components/select_field_input.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:flutter/material.dart';
@@ -143,43 +145,43 @@ class _NewArticleState extends State<NewArticle> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    _buildInputField(
-                      label: "Nom de l'article",
-                      hintText: "Entrez le nom de l'article",
-                      errorText: "Vous devez entrer une nom",
-                      controller: nomArticleController,
-                    ),
+                    buildInputField(
+                        label: "Nom de l'article",
+                        hintText: "Entrez le nom de l'article",
+                        errorText: "Vous devez entrer une nom",
+                        controller: nomArticleController,
+                        formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
-                    _buildInputField(
-                      label: "Unité",
-                      hintText: "Entrez l'unité",
-                      errorText: "Vous devez entrer une Unité",
-                      controller: uniteController,
-                    ),
+                    buildInputField(
+                        label: "Unité",
+                        hintText: "Entrez l'unité",
+                        errorText: "Vous devez entrer une Unité",
+                        controller: uniteController,
+                        formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
-                    _buildInputField(
-                      label: "Prix d'achat",
-                      hintText: "Entrez le prix d'achat",
-                      errorText: "Vous devez entrer le prix d'achat",
-                      controller: prixAchatController,
-                      isNumeric: true,
-                    ),
+                    buildInputField(
+                        label: "Prix d'achat",
+                        hintText: "Entrez le prix d'achat",
+                        errorText: "Vous devez entrer le prix d'achat",
+                        controller: prixAchatController,
+                        isNumeric: true,
+                        formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
-                    _buildInputField(
-                      label: "Prix de ventre en gros",
-                      hintText: "Entrez le prix de vente en gros",
-                      errorText: "Vous devez entrer le prix de vente en gros",
-                      controller: prixGrosController,
-                      isNumeric: true,
-                    ),
+                    buildInputField(
+                        label: "Prix de ventre en gros",
+                        hintText: "Entrez le prix de vente en gros",
+                        errorText: "Vous devez entrer le prix de vente en gros",
+                        controller: prixGrosController,
+                        isNumeric: true,
+                        formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
-                    _buildInputField(
-                      label: "Quantité d'alerte",
-                      hintText: "Entrez la quantité d'alerte",
-                      errorText: "Vous devez entrer la quantité d'alerte",
-                      controller: quanAlertController,
-                      isNumeric: true,
-                    ),
+                    buildInputField(
+                        label: "Quantité d'alerte",
+                        hintText: "Entrez la quantité d'alerte",
+                        errorText: "Vous devez entrer la quantité d'alerte",
+                        controller: quanAlertController,
+                        isNumeric: true,
+                        formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
                     _imagePickerContainer(),
                     const SizedBox(
@@ -214,14 +216,6 @@ class _NewArticleState extends State<NewArticle> {
                       onPressed: () {
                         _checkFormValidation(context);
                       },
-                      // onPressed: () {
-                      //   // Navigator.of(context, rootNavigator: true).push(
-                      //   //   MaterialPageRoute(
-                      //   //     builder: (_) => const NewFactorPage(),
-                      //   //   ),
-                      //   // );
-
-                      // },
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Colors.black),
@@ -259,7 +253,6 @@ class _NewArticleState extends State<NewArticle> {
   Widget _addVariantContainer() {
     return InkWell(
       onTap: () {
-        log("clicking the button on the");
         setState(() {
           variants.add(VariantItem());
         });
@@ -342,42 +335,48 @@ class _NewArticleState extends State<NewArticle> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              _buildInputField(
+              buildInputField(
                 label: "Nom de la couleur",
                 hintText: "Entrez le nom de la couleur",
                 errorText: "Vous devez entrer le nom de la couleur",
-                controller:
-                    variant.nomCouleurController, // Use variant controller
+                controller: variant
+                    .nomCouleurController, // Use variant controller                      formSubmitted: _formSubmitted
               ),
               const SizedBox(height: 18),
-              _buildInputField(
+              buildInputField(
                 label: "Code de la couleur",
                 hintText: "Entrez le code HEX de la couleur",
                 errorText: "Vous devez entrer un code HEX valide",
-                controller:
-                    variant.codeCouleurController, // Use variant controller
+                controller: variant
+                    .codeCouleurController, // Use variant controller                      formSubmitted: _formSubmitted
               ),
               const SizedBox(height: 18),
-              _buildInputField(
+              buildInputField(
                 label: "Taille",
                 hintText: "Entrez la taille",
                 errorText: "Vous devez entrer une taille",
-                controller: variant.tailleController, // Use variant controller
+                controller: variant
+                    .tailleController, // Use variant controller                      formSubmitted: _formSubmitted
               ),
               const SizedBox(height: 18),
-              _buildInputField(
-                label: "Quantité",
-                hintText: "Entrez la Quantité",
-                errorText: "Vous devez entrer la Quantité",
-                controller: variant.quantiteController,
-                isNumeric: true,
-              ),
+              buildInputField(
+                  label: "Quantité",
+                  hintText: "Entrez la Quantité",
+                  errorText: "Vous devez entrer la Quantité",
+                  controller: variant.quantiteController,
+                  isNumeric: true,
+                  formSubmitted: _formSubmitted),
               const SizedBox(height: 18),
-              _buildSelectField(
+              buildSelectField(
                 label: "Famille",
                 hintText: "- selectioner ume famille d'articles",
                 errorText: "Vous devez entrer une page",
                 value: variant.family,
+                formSubmitted: _formSubmitted,
+                items: [
+                  "Regular",
+                  "Oversize",
+                ],
                 onChanged: (value) {
                   setState(() {
                     variant.family = value;
@@ -398,7 +397,7 @@ class _NewArticleState extends State<NewArticle> {
             ),
             child: Center(
               child: IconButton(
-                icon: Icon(Icons.clear, color: Colors.white),
+                icon: const Icon(Icons.clear, color: Colors.white),
                 onPressed: () {
                   setState(() {
                     variants.remove(variant);
@@ -406,137 +405,6 @@ class _NewArticleState extends State<NewArticle> {
                 },
               ),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInputField({
-    String? label,
-    String? hintText,
-    String? errorText,
-    TextEditingController? controller,
-    bool isNumeric =
-        false, // New parameter for specifying if it's a numeric field
-  }) {
-    // Check if the field is empty to show the error text
-    final bool isEmpty = controller?.text.isEmpty ?? false;
-
-    // Show the error text only if the form has been submitted and the field is empty
-    final bool showErrorText = _formSubmitted && isEmpty;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label!,
-          style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF9F9F9F)),
-        ),
-        Stack(
-          alignment: Alignment.centerRight,
-          children: [
-            TextField(
-              controller: controller,
-              keyboardType:
-                  isNumeric ? TextInputType.number : TextInputType.text,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF9F9F9F)),
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                border: const UnderlineInputBorder(),
-              ),
-            ),
-            // Show "DA" at the end for numeric fields (isNumeric = true)
-            if (isNumeric)
-              const Positioned(
-                right: 0,
-                child: Text(
-                  "DA",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-          ],
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            showErrorText ? errorText! : "",
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSelectField({
-    required String label,
-    required String hintText,
-    required String? value,
-    required String errorText,
-    required void Function(String?) onChanged,
-  }) {
-    // Check if the field is empty to show the error text
-    final bool isEmpty = value?.isEmpty ?? true;
-
-    // Show the error text only if the form has been submitted and the field is empty
-    final bool showErrorText = _formSubmitted && isEmpty;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF9F9F9F)),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value,
-              onChanged: onChanged,
-              hint: Text(hintText),
-              style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black),
-              items: const [
-                DropdownMenuItem<String>(
-                  value: "regular",
-                  child: Text("Regular"),
-                ),
-                DropdownMenuItem<String>(
-                  value: "oversize",
-                  child: Text("Oversize"),
-                ),
-              ],
-              // Add your DropdownMenuItem items here
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            showErrorText ? errorText : "",
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.right,
           ),
         ),
       ],

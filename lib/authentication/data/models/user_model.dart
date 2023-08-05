@@ -7,29 +7,39 @@ class UserModel extends User {
     required String username,
     required String password,
     String? role,
+    List<String?>? pages,
+    List<String?>? commandeTypes,
   }) : super(
-            id: id,
-            fullname: fullname,
-            username: username,
-            password: password,
-            role: role);
+          id: id,
+          fullname: fullname,
+          username: username,
+          password: password,
+          role: role,
+          pages: pages,
+          commandeTypes: commandeTypes,
+        );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-        id: json["_id"],
-        fullname: json["fullname"],
-        username: json["username"],
-        password: json["password"],
-        role: json['role']);
+      id: json["_id"],
+      fullname: json["fullName"],
+      username: json["username"],
+      password: json["password"],
+      role: json['role'],
+      pages: List<String?>.from(json["pages"] ?? []),
+      commandeTypes: List<String?>.from(json["commandeTypes"] ?? []),
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       "id": id,
-      "fullname": fullname,
+      "fullName": fullname,
       "username": username,
       "password": password,
-      "role": role
+      "role": role,
+      "pages": pages,
+      "commandeTypes": commandeTypes,
     };
   }
 }

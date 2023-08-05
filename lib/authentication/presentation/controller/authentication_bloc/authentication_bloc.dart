@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
+import 'package:bts_technologie/authentication/domaine/usecases/get_all_users_usecase.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,10 +15,12 @@ import 'package:bts_technologie/authentication/presentation/controller/authentic
 class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
   final LoginUseCase loginUserCase;
   final CreateUserUseCase createUserUseCase;
+  // final GetAllUsersUseCase getAllUsersUseCase;
 
   UserBloc(
     this.loginUserCase,
     this.createUserUseCase,
+    // this.getAllUsersUseCase,
   ) : super(UserBlocStateInitial()) {
     on<UserBlocEvent>((event, emit) async {
       if (event is CreateUserEvent) {
@@ -26,13 +30,28 @@ class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
             result: failuerOrDoneMessage, message: "ADD_SUCCESS_MESSAGE"));
       } else if (event is LoginuserEvent) {
         log("HEEEEEEEEEEregistered");
-        emit(LoadingUserBlocState());
         final failuerOrDoneMessage = await loginUserCase(event.user);
         emit(_login(
             result: failuerOrDoneMessage, message: "UPDATE_SUCCESS_MESSAG"));
-      }
+      } 
+      
+      // else if (event is GetAllUsersEvent) {
+      //   log("getting all users from");
+      //   emit(LoadingUserBlocState());
+
+      //   _getAllUsersEvent(emit);
+      // }
     });
   }
+
+  // FutureOr<void> _getAllUsersEvent(Emitter<UserBlocState> emit) async {
+  //   final result = await getAllUsersUseCase();
+  //   result.fold(
+  //     (l) => emit(ErrorUserBlocState(message: l.message)),
+  //     (r) => emit(GetUsersState(users: r)),
+  //   );
+  // }
+
 
   UserBlocState _eitherDoneMessageOrErrorState(
       {required Either<Failure, User> result, required String message}) {
@@ -60,4 +79,3 @@ class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
     });
   }
 }
-

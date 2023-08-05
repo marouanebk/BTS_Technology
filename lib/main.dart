@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
@@ -20,7 +22,6 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-
   await ServiceLocator().init();
   SharedPreferences prefs = await SharedPreferences.getInstance();
 

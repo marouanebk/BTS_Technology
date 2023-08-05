@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
@@ -29,92 +28,93 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _topContainer(context),
-            Center(
-              child: Container(
-                height: 3,
-                width: 43,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                decoration: const BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(22),
-                  ),
-                ),
-              ),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  dateFilter(0, "Avr 23"),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  dateFilter(1, "Mai 23"),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  dateFilter(2, "Jui 23"),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  dateFilter(3, "Jui 23"),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 30,
+                  _topContainer(context),
+                  
+                  Center(
+                    child: Container(
+                      height: 3,
+                      width: 43,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(22),
+                        ),
+                      ),
+                    ),
                   ),
-                  SizedBox(
-                    height: 330,
-                    child: PageView(
-                      controller: controller,
-                      onPageChanged: (index) {
-                        log("page ${index + 1} ");
-                        pageindex = index;
-                        setState(() {
-                          index;
-                        });
-                      },
-                      physics: const NeverScrollableScrollPhysics(),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: [
-                        _commandsStats(),
-                        const SizedBox(height: 24),
+                        dateFilter(0, "Avr 23"),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        dateFilter(1, "Mai 23"),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        dateFilter(2, "Jui 23"),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        dateFilter(3, "Jui 23"),
+                        const SizedBox(
+                          width: 10,
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  usersList(),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  pagesList(),
-                  const SizedBox(
-                    height: 50,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        SizedBox(
+                          height: 330,
+                          child: PageView(
+                            controller: controller,
+                            onPageChanged: (index) {
+                              log("page ${index + 1} ");
+                              pageindex = index;
+                              setState(() {
+                                index;
+                              });
+                            },
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              _commandsStats(),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        usersList(),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        pagesList(),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget pagesList() {

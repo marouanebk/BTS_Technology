@@ -1,7 +1,10 @@
+import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:flutter/material.dart';
 
 class PagesInfoPageView extends StatefulWidget {
-  const PagesInfoPageView({super.key});
+  final List<FacePage> pages;
+
+  const PagesInfoPageView({required this.pages, super.key});
 
   @override
   State<PagesInfoPageView> createState() => _PagesInfoPageViewState();
@@ -28,9 +31,9 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
               ),
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: 4,
+              itemCount: widget.pages.length,
               itemBuilder: (context, index) {
-                return pageContainerView(index);
+                return pageContainerView(widget.pages[index], index);
               },
             ),
             const SizedBox(
@@ -42,7 +45,7 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
     );
   }
 
-  Widget pageContainerView(int index) {
+  Widget pageContainerView(FacePage page, index) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -56,23 +59,51 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
             height: 70,
             padding: const EdgeInsets.only(left: 15, top: 18),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.vertical(
+                top: const Radius.circular(5),
+                bottom: isUserDropDownVisibleList[index]
+                    ? const Radius.circular(
+                        0) // Remove bottom-left and bottom-right radius
+                    : const Radius.circular(
+                        5), // Keep radius when dropdown is not visible
+              ),
               color: Colors.white,
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                  offset: Offset(0, 0),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
+              boxShadow: isUserDropDownVisibleList[index]
+                  ? [
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(-5, -5), // Add shadows to top-left
+                      ),
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(5, -5), // Add shadows to top-right
+                      ),
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(0, -5), // Add shadow to top
+                      ),
+                    ]
+                  : [
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(0, 0), // Add shadows to all sides
+                      ),
+                    ],
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Text(
-                  "Good Wear",
-                  style: TextStyle(
+                Text(
+                  page.pageName,
+                  style: const TextStyle(
                     color: Colors.black,
                     fontFamily: "Inter",
                     fontSize: 18,
@@ -81,10 +112,10 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                     height: 1.0,
                   ),
                 ),
-                 SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
-                Text(
+                const Text(
                   "Amir Massi",
                   style: TextStyle(
                     color: Color(0xFF9F9F9F),
@@ -107,9 +138,37 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
   Widget pageContainerDropDown() {
     return Container(
       width: double.infinity,
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(5), // Remove top-left and top-right radius
+        ),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(-5, 5), // Add shadows to bottom-left
+          ),
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(5, 5), // Add shadows to bottom-right
+          ),
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(0, 5), // Add shadow to bottom
+          ),
+        ],
+      ),
       child: Column(
         children: [
+          const SizedBox(
+            height: 10,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Container(

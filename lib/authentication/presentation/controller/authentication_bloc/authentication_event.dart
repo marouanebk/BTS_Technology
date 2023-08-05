@@ -24,13 +24,6 @@ class LogOutUserEvent extends UserBlocEvent {
   List<Object> get props => [];
 }
 
-class ChooseTypeEvent extends UserBlocEvent {
-  final int number;
-  const ChooseTypeEvent({required this.number});
-
-  @override
-  List<Object> get props => [number];
-}
 
 class LoginuserEvent extends UserBlocEvent {
   final User user;
@@ -41,13 +34,6 @@ class LoginuserEvent extends UserBlocEvent {
   List<Object> get props => [user];
 }
 
-class SetBiographyEvent extends UserBlocEvent {
-  final String bio;
-  const SetBiographyEvent({required this.bio});
-
-  @override
-  List<Object> get props => [bio];
-}
 class GetUserDetailsEvent extends UserBlocEvent {
   final String id;
   const GetUserDetailsEvent({required this.id});
@@ -55,5 +41,3 @@ class GetUserDetailsEvent extends UserBlocEvent {
   @override
   List<Object> get props => [id];
 }
-
-

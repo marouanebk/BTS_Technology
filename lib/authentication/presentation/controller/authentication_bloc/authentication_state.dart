@@ -1,3 +1,4 @@
+import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 
@@ -28,12 +29,6 @@ class MessageUserBlocState extends UserBlocState {
   List<Object> get props => [message];
 }
 
-class AuthenticatedState extends UserBlocState {}
-
-class UnAuthenticatedState extends UserBlocState {}
-
-class SignOuState extends UserBlocState {}
-
 class UserDetailsState extends UserBlocState {
   final String fullname;
   final String email;
@@ -44,13 +39,21 @@ class UserDetailsState extends UserBlocState {
 }
 
 class AdministratorLoginState extends UserBlocState {}
+
 class PageAdminLoginState extends UserBlocState {}
+
 class FinancesLoginState extends UserBlocState {}
+
 class LogistiquesLoginState extends UserBlocState {}
 
-class StudentLoginState extends UserBlocState {}
+class CreatedUserSuccessState extends UserBlocState {}
 
-class BioSuccessState extends UserBlocState {}
+class GetUsersState extends UserBlocState {
+  final List<User> users;
+  const GetUsersState({required this.users});
+  @override
+  List<Object> get props => [users];
+}
 
 class UserDetailState extends UserBlocState {
   final UserModel usermodel;

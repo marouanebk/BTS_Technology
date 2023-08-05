@@ -164,7 +164,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             child: BlocBuilder<UserBloc, UserBlocState>(
                               builder: (context, state) {
-                                // Determine if the button is in the loading state
                                 final bool isLoading =
                                     state is LoadingUserBlocState;
 

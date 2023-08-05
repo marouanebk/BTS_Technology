@@ -1,3 +1,9 @@
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/livreurs_page_view.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_livreur_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
@@ -5,6 +11,7 @@ import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/n
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/pages_view.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/user_page_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AccountManager extends StatefulWidget {
   const AccountManager({super.key});
@@ -20,86 +27,138 @@ class _AccountManagerState extends State<AccountManager> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: const Text(
-          "Gestionnaire des comptes",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        elevation: 0.0,
-      ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 30,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return BlocProvider(
+      create: (context) => sl<AccountBloc>()
+        ..add(GetAllAccountsEvent())
+        ..add(GetPagesEvent())
+        ..add(GetLivreursEvent()),
+      child: BlocListener<AccountBloc, AccountState>(
+        listener: (context, state) {},
+        child: Builder(builder: (context) {
+          return Scaffold(
+            appBar: const CustomAppBar(
+              titleText: "Gestionnaire des comptes",
+            ),
+            body: Column(
               children: [
-                pageViewController(0, "Utilisateurs"),
-                pageViewController(1, "Pages"),
-                pageViewController(2, "Livreurs"),
+                const SizedBox(
+                  height: 30,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      pageViewController(0, "Utilisateurs"),
+                      pageViewController(1, "Pages"),
+                      pageViewController(2, "Livreurs"),
+                    ],
+                  ),
+                ),
+                // Container for the PageView
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPageIndex = index;
+                      });
+                    },
+                    children: [
+                      BlocBuilder<AccountBloc, AccountState>(
+                        builder: (context, state) {
+                          if (state.getAccountState == RequestState.loading) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (state.getAccountState ==
+                              RequestState.loaded) {
+                            return UsersInfoPageVIew(users: state.getAccount);
+                          } else if (state.getAccountState ==
+                              RequestState.error) {
+                            return Container();
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+                      BlocBuilder<AccountBloc, AccountState>(
+                        builder: (context, state) {
+                          if (state.getPagesState == RequestState.loading) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (state.getPagesState ==
+                              RequestState.loaded) {
+                            return PagesInfoPageView(pages: state.getPages);
+                          } else if (state.getPagesState ==
+                              RequestState.error) {
+                            return Container();
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+                      BlocBuilder<AccountBloc, AccountState>(
+                        builder: (context, state) {
+                          if (state.getLivreursState == RequestState.loading) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (state.getLivreursState ==
+                              RequestState.loaded) {
+                            return LivreursInfoPageView(
+                                livreurs: state.getLivreurs);
+                          } else if (state.getLivreursState ==
+                              RequestState.error) {
+                            return Container();
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-          // Container for the PageView
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
+            floatingActionButton: CustomPopupMenuButton(
+              onItemSelected: (value) {
+                if (value == 'Ajouter une page') {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const NewPageAccount(),
+                    ),
+                  );
+                } else if (value == 'Ajouter un utilisateur') {
+                  final accountBloc = BlocProvider.of<AccountBloc>(context);
+                  final state = accountBloc.state;
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => NewUserPage(
+                        pages: state.getPages,
+                      ),
+                    ),
+                  );
+                } else if (value == 'Ajouter un livreur') {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const NewLivreurAccount(),
+                    ),
+                  );
+                }
+
                 setState(() {
-                  _currentPageIndex = index;
+                  _isMenuOpen = false;
                 });
               },
-              children: const [
-                UsersInfoPageVIew(),
-                PagesInfoPageView(),
-                LivreursInfoPageView(),
-              ],
+              isMenuOpen: _isMenuOpen,
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: CustomPopupMenuButton(
-        onItemSelected: (value) {
-          if (value == 'Ajouter une page') {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const NewUserPage(),
-              ),
-            );
-          } else if (value == 'Ajouter un utilisateur') {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const NewPageAccount(),
-              ),
-            );
-          } else if (value == 'Ajouter un livreur') {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const NewLivreurAccount(),
-              ),
-            );
-
-          }
-
-          setState(() {
-            _isMenuOpen = false;
-          });
-        },
-        isMenuOpen: _isMenuOpen,
+          );
+        }),
       ),
     );
   }

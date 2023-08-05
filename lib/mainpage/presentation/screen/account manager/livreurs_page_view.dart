@@ -1,7 +1,10 @@
+import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
 import 'package:flutter/material.dart';
 
 class LivreursInfoPageView extends StatefulWidget {
-  const LivreursInfoPageView({super.key});
+  final List<Livreur> livreurs;
+
+  const LivreursInfoPageView({required this.livreurs, super.key});
 
   @override
   State<LivreursInfoPageView> createState() => _LivreursInfoPageViewState();
@@ -28,9 +31,9 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
               ),
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: 4,
+              itemCount: widget.livreurs.length,
               itemBuilder: (context, index) {
-                return livreurContainerView(index);
+                return livreurContainerView(widget.livreurs[index], index);
               },
             ),
             const SizedBox(
@@ -42,7 +45,7 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
     );
   }
 
-  Widget livreurContainerView(int index) {
+  Widget livreurContainerView(Livreur livreur, int index) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -54,22 +57,50 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
           Container(
             width: double.infinity,
             height: 70,
-            padding: const EdgeInsets.only(left: 15,top: 30),
+            padding: const EdgeInsets.only(left: 15, top: 30),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.vertical(
+                top: const Radius.circular(5),
+                bottom: isUserDropDownVisibleList[index]
+                    ? const Radius.circular(
+                        0) // Remove bottom-left and bottom-right radius
+                    : const Radius.circular(
+                        5), // Keep radius when dropdown is not visible
+              ),
               color: Colors.white,
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                  offset: Offset(0, 0),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
+              boxShadow: isUserDropDownVisibleList[index]
+                  ? [
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(-5, -5), // Add shadows to top-left
+                      ),
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(5, -5), // Add shadows to top-right
+                      ),
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(0, -5), // Add shadow to top
+                      ),
+                    ]
+                  : [
+                      const BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                        offset: Offset(0, 0), // Add shadows to all sides
+                      ),
+                    ],
             ),
-            child: const Text(
-              "Livreur 1",
-              style: TextStyle(
+            child: Text(
+              livreur.livreurName,
+              style: const TextStyle(
                 color: Colors.black,
                 fontFamily: "Inter",
                 fontSize: 18,
@@ -89,7 +120,32 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
   Widget livreurContainerDropDown() {
     return Container(
       width: double.infinity,
-      color: Colors.white,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(5), // Remove top-left and top-right radius
+        ),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(-5, 5), // Add shadows to bottom-left
+          ),
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(5, 5), // Add shadows to bottom-right
+          ),
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: Offset(0, 5), // Add shadow to bottom
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Padding(

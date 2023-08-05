@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/authentication/data/datasource/user_datasource.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
@@ -13,10 +15,16 @@ class UserRepository extends BaseUserRepository {
 
   @override
   Future<Either<Failure, User>> createUser(user) async {
+    
     final UserModel userModel = UserModel(
-        fullname: user.fullname,
-        username: user.username,
-        password: user.password);
+      fullname: user.fullname,
+      username: user.username,
+      password: user.password,
+      role: user.role,
+      pages: user.pages,
+      commandeTypes: user.commandeTypes,
+    );
+    log(userModel.toString());
 
     try {
       final result = await baseUserRemoteDateSource.createUser(userModel);
@@ -30,7 +38,6 @@ class UserRepository extends BaseUserRepository {
   @override
   Future<Either<Failure, User>> loginUser(user) async {
     final UserModel userModel = UserModel(
-      fullname: user.fullname,
       username: user.username,
       password: user.password,
     );
@@ -51,6 +58,16 @@ class UserRepository extends BaseUserRepository {
       return Right(result);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<User>>> getAllUsers() async {
+    try {
+      final result = await baseUserRemoteDateSource.getAllUsers();
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     }
   }
 }

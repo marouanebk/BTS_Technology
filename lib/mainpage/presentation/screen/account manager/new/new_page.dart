@@ -1,5 +1,12 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/core/network/api_constants.dart';
+import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewPageAccount extends StatefulWidget {
   const NewPageAccount({super.key});
@@ -9,7 +16,15 @@ class NewPageAccount extends StatefulWidget {
 }
 
 class _NewPageAccountState extends State<NewPageAccount> {
-  String? address = '';
+  TextEditingController pageNameController = TextEditingController();
+  bool _formSubmitted = false;
+
+  @override
+  void dispose() {
+    // Dispose the controllers to avoid memory leaks
+    pageNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +38,14 @@ class _NewPageAccountState extends State<NewPageAccount> {
               const SizedBox(
                 height: 30,
               ),
-              _buildInputField(
+              buildInputField(
                 label: "Nom de la page",
                 hintText: "Entrez le nom complet",
                 errorText: "Vous devez entrer le nom",
-                value: address,
-                onChanged: (value) {
-                  setState(() {
-                    address = value;
-                  });
-                },
+                controller: pageNameController,
+                formSubmitted: _formSubmitted,
               ),
-              registerButton(),
+              registerButton(context),
               const SizedBox(
                 height: 30,
               ),
@@ -45,7 +56,7 @@ class _NewPageAccountState extends State<NewPageAccount> {
     );
   }
 
-  Widget registerButton() {
+  Widget registerButton(context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -55,12 +66,34 @@ class _NewPageAccountState extends State<NewPageAccount> {
           width: double.infinity,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
           child: ElevatedButton(
-            onPressed: () {
-              // Navigator.of(context, rootNavigator: true).push(
-              //   MaterialPageRoute(
-              //     builder: (_) => const NewFactorPage(),
-              //   ),
-              // );
+            onPressed: () async {
+              if (pageNameController.text.isEmpty) {
+                setState(() {
+                  _formSubmitted = true;
+                });
+                return;
+              }
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              final token = prefs.getString("token");
+              final response = await Dio().post(ApiConstance.createPage,
+                  data: {"name": pageNameController.text},
+                  options: Options(
+                    headers: {
+                      "Authorization": "Bearer $token",
+                    },
+                  ));
+              log("response");
+              if (response.statusCode == 200) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AccountManager(), // Replace MainPage with the actual widget class for your MainPage
+                  ),
+                );
+              } else {
+                log("failed");
+              }
             },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.black),
@@ -76,50 +109,6 @@ class _NewPageAccountState extends State<NewPageAccount> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInputField({
-    String? label,
-    String? hintText,
-    String? errorText,
-    String? value,
-    void Function(String)? onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label!,
-          style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF9F9F9F)),
-        ),
-        const SizedBox(height: 4), // Smaller gap here
-        TextField(
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF9F9F9F)),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 8), // Smaller padding here
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 2), // Smaller gap here
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            errorText!,
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ],
     );
   }
 }
