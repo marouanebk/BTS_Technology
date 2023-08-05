@@ -70,7 +70,6 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
         ));
     log("response");
     if (response.statusCode == 200) {
-      log("response" + response.toString());
       return List<ArticleModel>.from((response.data as List).map(
         (e) => ArticleModel.fromJson(e),
       ));

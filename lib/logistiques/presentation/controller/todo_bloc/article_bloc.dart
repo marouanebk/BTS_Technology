@@ -4,7 +4,7 @@ import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/add_article_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/delete_article_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/edit_article_usecase.dart';
-import 'package:bts_technologie/logistiques/domaine/usecases/get_done_article_usecase.dart';
+import 'package:bts_technologie/logistiques/domaine/usecases/get_articles_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/get_undone_article_usecase.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';

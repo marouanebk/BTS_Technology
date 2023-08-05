@@ -4,12 +4,12 @@ import 'package:bts_technologie/authentication/domaine/usecases/login_usecase.da
 import 'package:bts_technologie/authentication/domaine/usecases/signup_usecase.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:bts_technologie/logistiques/data/datasource/article_datasource.dart';
-import 'package:bts_technologie/logistiques/data/repository/todo_repo_emplem.dart';
+import 'package:bts_technologie/logistiques/data/repository/article_repo_emplem.dart';
 import 'package:bts_technologie/logistiques/domaine/repository/base_article_repo.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/add_article_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/delete_article_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/edit_article_usecase.dart';
-import 'package:bts_technologie/logistiques/domaine/usecases/get_done_article_usecase.dart';
+import 'package:bts_technologie/logistiques/domaine/usecases/get_articles_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/get_undone_article_usecase.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
 import 'package:get_it/get_it.dart';
