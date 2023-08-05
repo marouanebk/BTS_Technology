@@ -20,13 +20,13 @@ class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
   ) : super(UserBlocStateInitial()) {
     on<UserBlocEvent>((event, emit) async {
       if (event is CreateUserEvent) {
-        emit(LodingUserBlocState());
+        emit(LoadingUserBlocState());
         final failuerOrDoneMessage = await createUserUseCase(event.user);
         emit(_eitherDoneMessageOrErrorState(
             result: failuerOrDoneMessage, message: "ADD_SUCCESS_MESSAGE"));
       } else if (event is LoginuserEvent) {
         log("HEEEEEEEEEEregistered");
-        emit(LodingUserBlocState());
+        emit(LoadingUserBlocState());
         final failuerOrDoneMessage = await loginUserCase(event.user);
         emit(_login(
             result: failuerOrDoneMessage, message: "UPDATE_SUCCESS_MESSAG"));

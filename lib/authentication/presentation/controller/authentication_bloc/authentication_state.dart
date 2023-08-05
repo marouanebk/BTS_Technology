@@ -10,7 +10,7 @@ abstract class UserBlocState extends Equatable {
 
 class UserBlocStateInitial extends UserBlocState {}
 
-class LodingUserBlocState extends UserBlocState {}
+class LoadingUserBlocState extends UserBlocState {}
 
 class ErrorUserBlocState extends UserBlocState {
   final String message;

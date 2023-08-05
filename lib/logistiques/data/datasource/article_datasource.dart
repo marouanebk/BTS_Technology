@@ -20,12 +20,8 @@ abstract class BaseArticleRemoteDateSource {
 class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
   @override
   Future<Unit> addArticle(ArticleModel article) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // final userid = prefs.getString("userid");
-    log("in adding articles to remote");
-    const String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNkNTczM2NhNjU1NGZmNjZmNTUyMjgiLCJpYXQiOjE2OTEyMjkxNTYsImV4cCI6MTY5MzgyMTE1Nn0.DS6Ygk1qG8prSw5SppyqQ4LZGT_zmWZ-_Eb0cL496Gc";
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
     final response = await Dio().post(
       ApiConstance.createArticle,
       data: article.toJson(),
@@ -54,10 +50,7 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
   @override
   Future<List<Article>> getArticles() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userid = prefs.getString("userid");
-
-    const String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNkNTczM2NhNjU1NGZmNjZmNTUyMjgiLCJpYXQiOjE2OTEyMjkxNTYsImV4cCI6MTY5MzgyMTE1Nn0.DS6Ygk1qG8prSw5SppyqQ4LZGT_zmWZ-_Eb0cL496Gc";
+    final token = prefs.getString("token");
     final response = await Dio().get(ApiConstance.getArticles,
         options: Options(
           headers: {

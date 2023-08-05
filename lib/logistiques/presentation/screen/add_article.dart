@@ -47,22 +47,22 @@ class _NewArticleState extends State<NewArticle> {
         prixAchatController.text.isEmpty ||
         prixGrosController.text.isEmpty ||
         quanAlertController.text.isEmpty) {
-      setState(() {
-        hasEmptyFields = true;
-      });
+      hasEmptyFields = true;
     }
-  
 
-    for (var variant in variants) {
-      if (variant.nomCouleurController.text.isEmpty ||
-          variant.codeCouleurController.text.isEmpty ||
-          variant.tailleController.text.isEmpty ||
-          variant.quantiteController.text.isEmpty ||
-          variant.family == null) {
-        setState(() {
+    // Check if any variant is added and if any of the variant fields are empty
+    if (variants.isEmpty) {
+      hasEmptyFields = true;
+    } else {
+      for (var variant in variants) {
+        if (variant.nomCouleurController.text.isEmpty ||
+            variant.codeCouleurController.text.isEmpty ||
+            variant.tailleController.text.isEmpty ||
+            variant.quantiteController.text.isEmpty ||
+            variant.family == null) {
           hasEmptyFields = true;
-        });
-        break;
+          break;
+        }
       }
     }
 

@@ -97,6 +97,9 @@ class _LogistiquesState extends State<Logistiques> {
   }
 
   Widget logiItem(article, int index) {
+    int totalQuantity =
+        article.variants.fold(0, (sum, variant) => sum + variant.quantity);
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -154,7 +157,7 @@ class _LogistiquesState extends State<Logistiques> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "${article.name} x 5",
+                  "${article.name} x $totalQuantity",
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -208,7 +211,9 @@ class _LogistiquesState extends State<Logistiques> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           const SizedBox(
             width: double.infinity, // To take full width
             child: Divider(

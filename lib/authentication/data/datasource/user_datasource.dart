@@ -70,20 +70,18 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     log(response.statusCode.toString());
 
     if (response.statusCode == 200) {
-      // final prefs = await SharedPreferences.getInstance();
-      // await prefs.setInt('is logged in', 1);
-      // await prefs.setString(
-      //     'fullname', response.data["data"]['fullname'].toString());
-      // await prefs.setString('email', response.data["data"]['email'].toString());
-
-      // await prefs.setString(
-      //     "userid", response.data["data"]['userid'].toString());
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('is logged in', 1);
+      await prefs.setString("id", response.data['user']["_id"]);
+      await prefs.setString("token", response.data['token']);
+      await prefs.setString("type", response.data['user']["role"]);
+      
       return UserModel.fromJson(response.data['user']);
     } else {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+              statusMessage: response.data['error']));
     }
   }
 

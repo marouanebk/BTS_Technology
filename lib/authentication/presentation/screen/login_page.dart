@@ -92,15 +92,16 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(height: 16),
                           // Username input field
                           _buildInputField(
-                            label: "Nom d'utilisateur",
-                            hint: "Entrez votre nom d'utilisateur",
-                          ),
+                              label: "Nom d'utilisateur",
+                              hint: "Entrez votre nom d'utilisateur",
+                              controller: _usernameController),
                           const SizedBox(height: 16),
                           // Password input field with toggle icon
                           _buildInputField(
                             label: "Mot de passe",
                             hint: "Entrez votre mot de passe",
                             obscureText: !_isPasswordVisible,
+                            controller: _passwordController,
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
@@ -125,13 +126,13 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const PageAdminBaseScreen()),
+                                            const PageAdministratorBaseScreen()),
                                     (Route<dynamic> route) => false);
                               } else if (state is PageAdminLoginState) {
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const PageAdminBaseScreen()),
+                                            const PageAdministratorBaseScreen()),
                                     (Route<dynamic> route) => false);
                               } else if (state is FinancesLoginState) {
                                 Navigator.of(context).pushAndRemoveUntil(
@@ -147,50 +148,72 @@ class _LoginPageState extends State<LoginPage> {
                                     (Route<dynamic> route) => false);
                               }
                             },
-                            child: Container(),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                error,
+                                style: const TextStyle(color: Colors.red),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
                           ),
                           const Spacer(),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                             ),
-                            child: InkWell(
-                              onTap: () {
-                                String username = _usernameController.text;
-                                String password = _passwordController.text;
-                                final userCred = User(
-                                  username: username,
-                                  password: password,
-                                );
-                                //
-                                BlocProvider.of<UserBloc>(context).add(
-                                  LoginuserEvent(
-                                    user: userCred,
+                            child: BlocBuilder<UserBloc, UserBlocState>(
+                              builder: (context, state) {
+                                // Determine if the button is in the loading state
+                                final bool isLoading =
+                                    state is LoadingUserBlocState;
+
+                                return GestureDetector(
+                                  onTap: isLoading
+                                      ? null // Disable tap if it's loading
+                                      : () {
+                                          String username =
+                                              _usernameController.text;
+                                          String password =
+                                              _passwordController.text;
+                                          final userCred = User(
+                                            username: username,
+                                            password: password,
+                                          );
+
+                                          BlocProvider.of<UserBloc>(context)
+                                              .add(
+                                            LoginuserEvent(
+                                              user: userCred,
+                                            ),
+                                          );
+                                        },
+                                  child: Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: isLoading
+                                          ? Colors.grey
+                                          : Colors.black,
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(5)),
+                                    ),
+                                    child: Center(
+                                      child: isLoading
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white,
+                                            )
+                                          : const Text(
+                                              "Se connecter",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                    ),
                                   ),
                                 );
-                                // Navigator.of(context, rootNavigator: true).push(
-                                //   MaterialPageRoute(
-                                //     builder: (_) => const BaseScreen(),
-                                //   ),
-                                // );
                               },
-                              child: Container(
-                                height: 50,
-                                decoration: const BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5)),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "Se connecter",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
                             ),
                           ),
                         ],
@@ -209,6 +232,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildInputField({
     required String label,
     required String hint,
+    TextEditingController? controller,
     bool obscureText = false,
     Widget? suffixIcon,
   }) {
@@ -234,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           child: TextField(
             obscureText: obscureText,
-            controller: obscureText ? _passwordController : _usernameController,
+            controller: controller,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle:

@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -32,7 +34,7 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _topContainer(),
+            _topContainer(context),
             Center(
               child: Container(
                 height: 3,
@@ -470,7 +472,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _topContainer() {
+  Widget _topContainer(context) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -496,7 +498,23 @@ class _MainPageState extends State<MainPage> {
                     width: 20,
                     height: 30,
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+
+                    await prefs.setInt('is logged in', 0);
+                    await prefs.remove("id");
+                    await prefs.remove('type');
+                    await prefs.remove("token");
+                    Navigator.of(context, rootNavigator: true)
+                        .pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return const LoginPage();
+                        },
+                      ),
+                      (_) => false,
+                    );
+                  },
                 ),
                 IconButton(
                   icon: SvgPicture.asset(
