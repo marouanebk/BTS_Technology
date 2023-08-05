@@ -1,27 +1,30 @@
-import 'package:bts_technologie/logistiques/domaine/entities/to_do_entity.dart';
+import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 
 class ArticleModel extends Article {
   const ArticleModel({
-    String? todoid,
-    String? userid,
-    required String todo,
-    required String status,
-  }) : super(todoid: todoid, userid: userid, todo: todo, status: status);
+    String? name,
+    String? unity,
+    required num buyingPrice,
+    required num grosPrice,
+    required int alertQuantity,
+  }) : super(name: name, unity: unity, buyingPrice: buyingPrice, grosPrice: grosPrice, alertQuantity :alertQuantity);
 
   factory ArticleModel.fromJson(Map<String, dynamic> json) {
     return ArticleModel(
-      todoid: json["_id"],
-      userid: json["userid"],
-      todo: json["todo"],
-      status: json["status"],
+      name: json["name"],
+      unity: json["Unity"],
+      buyingPrice: json["buyingPrice"],
+      grosPrice: json["grosPrice"],
+      alertQuantity : json["alertQuantity"]
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "userid": userid,
-      "todo": todo,
-      "status": status,
+      "name": name,
+      "buyingPrice": buyingPrice,
+      "grosPrice": grosPrice,
+      "alertQuantity" : alertQuantity,
     };
   }
 }

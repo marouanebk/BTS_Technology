@@ -1,6 +1,12 @@
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Logistiques extends StatefulWidget {
   const Logistiques({super.key});
@@ -18,74 +24,80 @@ class _LogistiquesState extends State<Logistiques> {
     //   statusBarColor: Colors.white,
     // ));
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 40,
-              ),
-              screenHeader(
-                  "Logistiques", 'assets/images/navbar/logis_activated.svg'),
-              const SizedBox(
-                height: 30,
-              ),
-              logiItem("Sweat oversize", 128,
-                  "assets/images/logistiques/sweat_oversize.png", 0),
-              const SizedBox(
-                height: 7,
-              ),
-              logiItem("Bob", 21, "assets/images/logistiques/bob.jpg", 1),
-              const SizedBox(
-                height: 7,
-              ),
-              logiItem(
-                  "Tshirt", 229, "assets/images/logistiques/tshirt.jpg", 2),
-              const SizedBox(
-                height: 7,
-              ),
-              logiItem(
-                  "jogging", 76, "assets/images/logistiques/jogging.jpg", 3),
-              const SizedBox(
-                height: 7,
-              ),
-              logiItem(
-                  "Casquette", 48, "assets/images/logistiques/casquet.jpg", 4),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: Align(
-        alignment: Alignment.bottomRight,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 20, bottom: 20),
-          child: Container(
-            height: 76,
-            width: 76,
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: Colors.black),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).push(
-                    MaterialPageRoute(
-                      builder: (_) => NewArticle(),
+    return BlocProvider(
+      create: (context) => sl<ArticleBloc>()..add(GetArticlesEvent()),
+      child: BlocBuilder<ArticleBloc, ArticleState>(
+        builder: (context, state) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 40,
                     ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.add,
-                  size: 35,
+                    screenHeader("Logistiques",
+                        'assets/images/navbar/logis_activated.svg'),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    if (state.getArticlesState == RequestState.loading)
+                      const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.red,
+                        ),
+                      ),
+                    if (state.getArticlesState == RequestState.loaded)
+                      ListView.separated(
+                        scrollDirection: Axis.vertical,
+                        separatorBuilder: (context, index) => const SizedBox(
+                          height: 7,
+                        ),
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: state.getArticles.length,
+                        itemBuilder: (context, index) {
+                          return logiItem(
+                              state.getArticles[index],index);
+                        },
+                      ),
+                  ],
                 ),
-                color: Colors.white),
-          ),
-        ),
+              ),
+            ),
+            floatingActionButton: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 20),
+                child: Container(
+                  height: 76,
+                  width: 76,
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle, color: Colors.black),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) => NewArticle(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        size: 35,
+                      ),
+                      color: Colors.white),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget logiItem(String product, int quantity, String link, int index) {
+  Widget logiItem(article ,  int index) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -124,7 +136,7 @@ class _LogistiquesState extends State<Logistiques> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "$product x $quantity",
+                  "${article.name} x 5",
                   style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -133,7 +145,7 @@ class _LogistiquesState extends State<Logistiques> {
                 SizedBox(
                   width: 40,
                   height: 52,
-                  child: Image.asset(link),
+                  child: Image.asset("assets/images/logistiques/sweat_oversize.png"),
                 ),
               ],
             ),
@@ -205,12 +217,12 @@ class _LogistiquesState extends State<Logistiques> {
                   0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
             ),
           ),
-          logExpandedVariant("Noir", "S","regular", 12),
-          logExpandedVariant("Noir", "S","regular", 12),
-          logExpandedVariant("Noir", "S","regular", 12),
-          logExpandedVariant("Noir", "S","regular", 12),
-          logExpandedVariant("Noir", "S","regular", 12),
-          logExpandedVariant("Noir", "S","regular", 3),
+          logExpandedVariant("Noir", "S", "regular", 12),
+          logExpandedVariant("Noir", "S", "regular", 12),
+          logExpandedVariant("Noir", "S", "regular", 12),
+          logExpandedVariant("Noir", "S", "regular", 12),
+          logExpandedVariant("Noir", "S", "regular", 12),
+          logExpandedVariant("Noir", "S", "regular", 3),
           const SizedBox(
             height: 15,
           ),
@@ -286,7 +298,8 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget logExpandedVariant(String color, String size,String type, int numberOfArticles) {
+  Widget logExpandedVariant(
+      String color, String size, String type, int numberOfArticles) {
     Color articlesColor = numberOfArticles < 5 ? Colors.red : Colors.black;
 
     return Padding(

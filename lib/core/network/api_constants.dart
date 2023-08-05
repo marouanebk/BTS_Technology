@@ -5,20 +5,20 @@ class ApiConstance {
   static const String signup = "$baseUrl$authApi/signup";
   static const String login = "$baseUrl$authApi/login";
 
-  static const String messageRoutes = "/api/message";
-  static const String conversationRoutes = "/api/conversation";
-  static const String groupRoutes = "/api/groupe";
+  static const String articleApi = "/api/article";
+  static const String getArticles = "$baseUrl$articleApi/get";
+  
 
-  static String addMessage = "$baseUrl$messageRoutes/addmessage/";
-  static String getMessage(String userid) =>
-      '$baseUrl$messageRoutes/getallmessag/$userid';
 
-  static String addConversation =
-      "$baseUrl$conversationRoutes/addconversation/";
 
-  static String getAllConversations(String userid) =>
-      '$baseUrl$conversationRoutes/getconversations/$userid';
 
-  static String addGroup = "$baseUrl$groupRoutes/addgroupe/";
-  static String addtogroupe = '$baseUrl$groupRoutes/addtogroupe/';
+
+  // static String addConversation =
+  //     "$baseUrl$conversationRoutes/addconversation/";
+
+  // static String getAllConversations(String userid) =>
+  //     '$baseUrl$conversationRoutes/getconversations/$userid';
+
+  // static String addGroup = "$baseUrl$groupRoutes/addgroupe/";
+  // static String addtogroupe = '$baseUrl$groupRoutes/addtogroupe/';
 }
