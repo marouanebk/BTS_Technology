@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
-import 'package:bts_technologie/logistiques/data/model/article_model.dart';
+import 'package:bts_technologie/mainpage/data/Models/entreprise_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/livreur_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/page_model.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class BaseAccountRemoteDateSource {
   Future<List<FacePage>> getPages();
   Future<List<LivreurModel>> getLivreurs();
+  Future<EntrepriseModel> getEntrepriseInfo();
 }
 
 class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
@@ -27,9 +28,8 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
           },
         ));
     log(response.statusCode.toString());
-  
+
     if (response.statusCode == 200) {
-      
       return List<PageModel>.from((response.data as List).map(
         (e) => PageModel.fromJson(e),
       ));
@@ -61,6 +61,34 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
               statusMessage: response.data['message']));
+    }
+  }
+
+  @override
+  Future<EntrepriseModel> getEntrepriseInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+
+    final response = await Dio().get(
+      ApiConstance.getEntrepriseApi,
+      options: Options(
+        followRedirects: false,
+        validateStatus: (status) {
+          return status! < 500;
+        },
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return EntrepriseModel.fromJson(response.data);
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              statusMessage: response.data['error']));
     }
   }
 }

@@ -14,6 +14,10 @@ class ApiConstance {
   static const String createPage= "$baseUrl/api/page/add";
   static const String createLivreur= "$baseUrl/api/livreur/add";
 
+
+  static const String getEntrepriseApi= "$baseUrl/api/entreprise/";
+
+
   static const String articleApi = "/api/article";
   static const String getArticles = "$baseUrl$articleApi/get";
   static const String createArticle = "$baseUrl$articleApi/create";

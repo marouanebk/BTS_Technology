@@ -1,5 +1,6 @@
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/entreprise_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:equatable/equatable.dart';
@@ -17,25 +18,31 @@ class AccountState extends Equatable {
   final RequestState getLivreursState;
   final String getLivreursmessage;
 
+  final Entreprise? getEntrepriseInfo;
+  final RequestState getEntrepriseInfoState;
+  final String getEntrepriseInfomessage;
+
   // final ToDo createArticle;
   final RequestState createArticleState;
   final String createArticleMessage;
 
-  const AccountState({
-    this.getAccount = const [],
-    this.getAccountState = RequestState.loading,
-    this.getAccountmessage = "",
-    //
-    this.getPages = const [],
-    this.getPagesState = RequestState.loading,
-    this.getPagesmessage = "",
-    this.getLivreurs = const [],
-    this.getLivreursState = RequestState.loading,
-    this.getLivreursmessage = "",
-    //
-    this.createArticleState = RequestState.loading,
-    this.createArticleMessage = "",
-  });
+  const AccountState(
+      {this.getAccount = const [],
+      this.getAccountState = RequestState.loading,
+      this.getAccountmessage = "",
+      //
+      this.getPages = const [],
+      this.getPagesState = RequestState.loading,
+      this.getPagesmessage = "",
+      this.getLivreurs = const [],
+      this.getLivreursState = RequestState.loading,
+      this.getLivreursmessage = "",
+      //
+      this.createArticleState = RequestState.loading,
+      this.createArticleMessage = "",
+      this.getEntrepriseInfo = null,
+      this.getEntrepriseInfoState = RequestState.loading,
+      this.getEntrepriseInfomessage = ""});
 
   AccountState copyWith({
     List<User>? getAccount,
@@ -50,6 +57,11 @@ class AccountState extends Equatable {
     List<Livreur>? getLivreurs,
     RequestState? getLivreursState,
     String? getLivreursmessage,
+
+    //
+    Entreprise? getEntrepriseInfo,
+    RequestState? getEntrepriseInfoState,
+    String? getEntrepriseInfomessage,
     //
     RequestState? createArticleState,
     String? createArticleMessage,
@@ -68,6 +80,12 @@ class AccountState extends Equatable {
       getLivreursState: getLivreursState ?? this.getLivreursState,
       getLivreursmessage: getLivreursmessage ?? this.getLivreursmessage,
       //
+
+      getEntrepriseInfo: getEntrepriseInfo ?? this.getEntrepriseInfo,
+      getEntrepriseInfoState:
+          getEntrepriseInfoState ?? this.getEntrepriseInfoState,
+      getEntrepriseInfomessage:
+          getEntrepriseInfomessage ?? this.getEntrepriseInfomessage,
       createArticleState: createArticleState ?? this.createArticleState,
       createArticleMessage: createArticleMessage ?? this.createArticleMessage,
     );
@@ -84,6 +102,9 @@ class AccountState extends Equatable {
         getPagesState,
         getPagesmessage,
 
+        getEntrepriseInfo,
+        getEntrepriseInfoState,
+        getEntrepriseInfomessage,
         getLivreurs,
         getLivreursState,
         getLivreursmessage,

@@ -10,4 +10,5 @@ abstract class AccountEvent extends Equatable {
 class GetAllAccountsEvent extends AccountEvent {}
 class GetPagesEvent extends AccountEvent {}
 class GetLivreursEvent extends AccountEvent {}
+class GetEntrepriseInfoEvent extends AccountEvent {}
 
