@@ -2,6 +2,8 @@ import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
+import 'package:bts_technologie/orders/data/Models/command_model.dart';
+import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
 import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_bloc.dart';
 import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_event.dart';
@@ -46,125 +48,145 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<CommandBloc>()..add(GetCommandesEvent()),
-      child: BlocBuilder<CommandBloc, CommandesState>(
-        builder: (context, state) {
-          return SafeArea(
-            child: Scaffold(
-              body: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  screenHeader("Commandes",
-                      'assets/images/navbar/commandes_activated.svg'),
-                  const SizedBox(
-                    height: 28,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: searchContainer("Chercher une commande"),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: Row(
-                        children: List.generate(statusList.length, (index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10.0),
-                            child: dateFilter(index, statusList[index]),
-                          );
-                        }),
-                      ),
+      child: Builder(builder: (context) {
+        return SafeArea(
+          child: Scaffold(
+            body: Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                screenHeader("Commandes",
+                    'assets/images/navbar/commandes_activated.svg'),
+                const SizedBox(
+                  height: 28,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: searchContainer("Chercher une commande"),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Row(
+                      children: List.generate(statusList.length, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
+                          child: dateFilter(index, statusList[index]),
+                        );
+                      }),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  if (state.getCommandesState == RequestState.loading)
-                    const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.red,
-                      ),
-                    ),
-                  if (state.getCommandesState == RequestState.loaded)
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text("Aujourd'hui"),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              ListView.separated(
-                                scrollDirection: Axis.vertical,
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                  height: 14,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                BlocBuilder<CommandBloc, CommandesState>(
+                  builder: (context, state) {
+                    if (state.getCommandesState == RequestState.loading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.red,
+                        ),
+                      );
+                    }
+                    if (state.getCommandesState == RequestState.error) {
+                      return Text(
+                        state.getCommandesmessage,
+                        style: const TextStyle(color: Colors.red),
+                      );
+                    }
+                    if (state.getCommandesState == RequestState.loaded) {
+                      Map<String, List<Command>> groupedData = {};
+                      for (Command command in state.getCommandes) {
+                        if (!groupedData.containsKey(command.date)) {
+                          groupedData[command.date!] = [];
+                        }
+                        groupedData[command.date]?.add(command);
+                      }
+                      return Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                for (String date in groupedData.keys) ...[
+                                  Text(date),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  ListView.separated(
+                                    scrollDirection: Axis.vertical,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(
+                                      height: 14,
+                                    ),
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: groupedData[date]!.length,
+                                    itemBuilder: (context, index) {
+                                      Command command =
+                                          groupedData[date]![index];
+                                      return commandeCard(command, index);
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                ],
+                                const SizedBox(
+                                  height: 80,
                                 ),
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: 15,
-                                itemBuilder: (context, index) {
-                                  return commandeCard(
-                                      18796, "Numéro érroné", index);
-                                },
-                              ),
-                              const SizedBox(
-                                height: 80,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
+                      );
+                    }
+                    return Container();
+                  },
+                ),
+              ],
+            ),
+            floatingActionButton: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 20),
+                child: Container(
+                  height: 76,
+                  width: 76,
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle, color: Colors.black),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) => AddOrderPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        size: 35,
                       ),
-                    ),
-                  if (state.getCommandesState == RequestState.error)
-                    Text(
-                      state.getCommandesmessage,
-                      style: const TextStyle(color: Colors.red),
-                    )
-                ],
-              ),
-              floatingActionButton: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 20),
-                  child: Container(
-                    height: 76,
-                    width: 76,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.black),
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                              builder: (_) => AddOrderPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          size: 35,
-                        ),
-                        color: Colors.white),
-                  ),
+                      color: Colors.white),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      }),
     );
   }
 
-  Widget commandeCard(int number, String status, int index) {
+  Widget commandeCard(Command command, int index) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -199,14 +221,14 @@ class _OrdersPageState extends State<OrdersPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Com N° $number",
+                    "Com N° ${command.comNumber}",
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    status,
+                    command.status,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -217,7 +239,10 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ),
           ),
-          if (isDropDownVisibleList[index]) const FactorCommandContainer(),
+          if (isDropDownVisibleList[index])
+            FactorCommandContainer(
+              command: command,
+            ),
         ],
       ),
     );

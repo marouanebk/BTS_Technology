@@ -24,8 +24,10 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
         ));
     log("response");
     if (response.statusCode == 200) {
-      return List<CommandModel>.from(
-          (response.data as List).map((e) => CommandModel.fromJson(e)));
+      // return List<CommandModel>.from(
+      //     (response.data as List).map((e) => CommandModel.fromJson(e)));
+
+      return CommandModel.fromJsonList(response.data);
     } else {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(

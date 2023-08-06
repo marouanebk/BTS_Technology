@@ -6,10 +6,12 @@ class Command extends Equatable {
   final num? comNumber;
   final String? noteClient;
   final List<Article?>? articles;
+  final String? date;
+
   final String user;
+  final String page;
   final String nomClient;
   final String adresse;
-  final String page;
   final num phoneNumber;
   final num sommePaid;
   final String status;
@@ -19,6 +21,7 @@ class Command extends Equatable {
     this.comNumber,
     this.noteClient,
     this.articles,
+    this.date,
     required this.nomClient,
     required this.user,
     required this.adresse,

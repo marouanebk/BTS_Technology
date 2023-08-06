@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 
 class CommandModel extends Command {
+  // final Map<String, dynamic> data; // Store dynamic data for each date
+  // final String? date;
   const CommandModel({
+    String? date,
     String? id,
     num? comNumber,
     String? noteClient,
@@ -26,7 +31,39 @@ class CommandModel extends Command {
           phoneNumber: phoneNumber,
           sommePaid: sommePaid,
           status: status,
+          date: date,
         );
+
+  static List<CommandModel> fromJsonList(Map<String, dynamic> json) {
+    final dateKeys = json.keys.toList();
+
+    final List<CommandModel> commandModels = [];
+
+    dateKeys.forEach((dateKey) {
+      final dateData = json[dateKey];
+
+      dateData.forEach((data) {
+        final commandModel = CommandModel(
+          date: dateKey,
+          id: data["_id"],
+          comNumber: data["comNumber"],
+          noteClient: data["noteClient"],
+          sommePaid: data["sommePaid"],
+          user: data["user"]["username"],
+          nomClient: data["nomClient"],
+          adresse: data["adresse"],
+          page: data["page"]["name"],
+          phoneNumber: data["phoneNumber"],
+          status: data["status"],
+        );
+
+        // Add the CommandModel instance to the list
+        commandModels.add(commandModel);
+      });
+    });
+
+    return commandModels;
+  }
 
   factory CommandModel.fromJson(Map<String, dynamic> json) {
     return CommandModel(
@@ -38,7 +75,7 @@ class CommandModel extends Command {
         user: json["user"],
         nomClient: json["nomClient"],
         adresse: json["adresse"],
-        page: json["page"],
+        page: json["page"]["name"],
         phoneNumber: json["phoneNumber"],
         status: json["status"]);
   }
@@ -53,5 +90,10 @@ class CommandModel extends Command {
       "page": page,
       "status": status,
     };
+  }
+
+  @override
+  String toString() {
+    return 'CommandModel($date, $id, $comNumber, $noteClient, $articles, $nomClient, $user, $adresse, $phoneNumber, $sommePaid, $page, $status)';
   }
 }

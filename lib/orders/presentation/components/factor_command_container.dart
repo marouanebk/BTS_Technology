@@ -1,8 +1,10 @@
+import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
 import 'package:flutter/material.dart';
 
 class FactorCommandContainer extends StatelessWidget {
-  const FactorCommandContainer({super.key});
+  final Command command;
+  const FactorCommandContainer({required this.command, super.key});
 
   @override
   Widget build(BuildContext context) {
