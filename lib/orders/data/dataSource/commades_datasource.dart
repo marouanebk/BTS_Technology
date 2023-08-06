@@ -16,7 +16,7 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
   Future<List<CommandModel>> getCommandes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    final response = await Dio().get(ApiConstance.getArticles,
+    final response = await Dio().get(ApiConstance.getCommandes,
         options: Options(
           headers: {
             "Authorization": "Bearer $token",

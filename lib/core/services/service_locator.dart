@@ -20,6 +20,11 @@ import 'package:bts_technologie/mainpage/domaine/UseCase/get_entreprise_usecase.
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/orders/data/Repository/commandes_repo_implem.dart';
+import 'package:bts_technologie/orders/data/dataSource/commades_datasource.dart';
+import 'package:bts_technologie/orders/domaine/Repository/base_command_repo.dart';
+import 'package:bts_technologie/orders/domaine/UseCase/get_commandes_use_case.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bts_technologie/authentication/domaine/repository/user_repository.dart';
 
@@ -29,8 +34,9 @@ class ServiceLocator {
   Future<void> init() async {
     // Bloc
     sl.registerFactory(() => UserBloc(sl(), sl()));
-    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(),sl()));
+    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl()));
     sl.registerFactory(() => ArticleBloc(sl(), sl(), sl(), sl(), sl()));
+    sl.registerFactory(() => CommandBloc(sl()));
 
     //Articles usecase
 
@@ -52,12 +58,17 @@ class ServiceLocator {
     sl.registerLazySingleton(() => GetLivreurUseCase(sl()));
     sl.registerLazySingleton(() => GetEntrepriseInfoUsecase(sl()));
 
+    // Commandes
+    sl.registerLazySingleton(() => GetCommandesUseCase(sl()));
+
     // Repository
     sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));
     sl.registerLazySingleton<BaseArticleRepository>(
         () => ArticleRepository(sl()));
     sl.registerLazySingleton<BaseAccountRepository>(
         () => AccountRepository(sl()));
+    sl.registerLazySingleton<BaseCommandRepository>(
+        () => CommandesRepository(sl()));
 
     // sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));
 
@@ -69,5 +80,8 @@ class ServiceLocator {
 
     sl.registerLazySingleton<BaseAccountRemoteDateSource>(
         () => AccountRemoteDataSource());
+
+    sl.registerLazySingleton<BaseCommandRemoteDatasource>(
+        () => CommandRemoteDataSource());
   }
 }

@@ -1,5 +1,11 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PagesInfoPageView extends StatefulWidget {
   final List<FacePage> pages;
@@ -33,7 +39,7 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
               shrinkWrap: true,
               itemCount: widget.pages.length,
               itemBuilder: (context, index) {
-                return pageContainerView(widget.pages[index], index);
+                return pageContainerView(widget.pages[index], index, context);
               },
             ),
             const SizedBox(
@@ -45,7 +51,7 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
     );
   }
 
-  Widget pageContainerView(FacePage page, index) {
+  Widget pageContainerView(FacePage page, index, context) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -129,13 +135,14 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
               ],
             ),
           ),
-          if (isUserDropDownVisibleList[index]) pageContainerDropDown()
+          if (isUserDropDownVisibleList[index])
+            pageContainerDropDown(context, page.id)
         ],
       ),
     );
   }
 
-  Widget pageContainerDropDown() {
+  Widget pageContainerDropDown(context, id) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -178,7 +185,30 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  final token = prefs.getString("token");
+                  final response =
+                      await Dio().delete(ApiConstance.deletePage(id),
+                          options: Options(
+                            headers: {
+                              "Authorization": "Bearer $token",
+                            },
+                          ));
+                  log("response");
+                  if (response.statusCode == 200) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AccountManager(), // Replace MainPage with the actual widget class for your MainPage
+                      ),
+                    );
+                  } else {
+                    log("failed");
+                  }
+                },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.red),
                 ),

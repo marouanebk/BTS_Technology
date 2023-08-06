@@ -1,8 +1,14 @@
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_bloc.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_event.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_order.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -15,6 +21,20 @@ class _OrdersPageState extends State<OrdersPage> {
   final controller = PageController(initialPage: 0);
   int pageindex = 0;
   List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
+  List<String> statusList = [
+    'Tous',
+    'Téléphone éteint',
+    'Ne répond pas',
+    'Numero erroné',
+    'Annulé',
+    'Pas confirmé',
+    'Confirmé',
+    'Annulé',
+    'Préparé',
+    'Expédié',
+    'Encaissé',
+    'Retourné',
+  ];
 
   @override
   void dispose() {
@@ -24,107 +44,122 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 20,
+    return BlocProvider(
+      create: (context) => sl<CommandBloc>()..add(GetCommandesEvent()),
+      child: BlocBuilder<CommandBloc, CommandesState>(
+        builder: (context, state) {
+          return SafeArea(
+            child: Scaffold(
+              body: Column(
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  screenHeader("Commandes",
+                      'assets/images/navbar/commandes_activated.svg'),
+                  const SizedBox(
+                    height: 28,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: searchContainer("Chercher une commande"),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Row(
+                        children: List.generate(statusList.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: dateFilter(index, statusList[index]),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (state.getCommandesState == RequestState.loading)
+                    const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.red,
+                      ),
+                    ),
+                  if (state.getCommandesState == RequestState.loaded)
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Aujourd'hui"),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              ListView.separated(
+                                scrollDirection: Axis.vertical,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(
+                                  height: 14,
+                                ),
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: 15,
+                                itemBuilder: (context, index) {
+                                  return commandeCard(
+                                      18796, "Numéro érroné", index);
+                                },
+                              ),
+                              const SizedBox(
+                                height: 80,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (state.getCommandesState == RequestState.error)
+                    Text(
+                      state.getCommandesmessage,
+                      style: const TextStyle(color: Colors.red),
+                    )
+                ],
               ),
-              screenHeader(
-                  "Commandes", 'assets/images/navbar/commandes_activated.svg'),
-              const SizedBox(
-                height: 28,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal : 20.0),
-                child: searchContainer("Chercher une commande"),
-              ),
-                 const SizedBox(
-                height: 15,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              floatingActionButton: Align(
+                alignment: Alignment.bottomRight,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Row(
-                    children: [
-                      dateFilter(0, "Tous"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      dateFilter(1, "Telephone eteint"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      dateFilter(2, "Pas confirme"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      dateFilter(3, "Annule"),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                    ],
+                  padding: const EdgeInsets.only(right: 20, bottom: 20),
+                  child: Container(
+                    height: 76,
+                    width: 76,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.black),
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (_) => AddOrderPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          size: 35,
+                        ),
+                        color: Colors.white),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Aujourd'hui"),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    ListView.separated(
-                      scrollDirection: Axis.vertical,
-                      separatorBuilder: (context, index) => const SizedBox(
-                        height: 14,
-                      ),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 15,
-                      itemBuilder: (context, index) {
-                        return commandeCard(18796, "Numéro érroné", index);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 20, bottom: 20),
-            child: Container(
-              height: 76,
-              width: 76,
-              decoration: const BoxDecoration(
-                  shape: BoxShape.circle, color: Colors.black),
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => AddOrderPage(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    size: 35,
-                  ),
-                  color: Colors.white),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -144,7 +179,12 @@ class _OrdersPageState extends State<OrdersPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.vertical(
+                top: const Radius.circular(5),
+                bottom: isDropDownVisibleList[index]
+                    ? const Radius.circular(0)
+                    : const Radius.circular(5),
+              ),
               boxShadow: const [
                 BoxShadow(
                   color: Color.fromRGBO(0, 0, 0, 0.15),
@@ -186,8 +226,9 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget dateFilter(number, text) {
     return GestureDetector(
       onTap: () {
-        controller.animateToPage(number,
-            duration: const Duration(seconds: 1), curve: Curves.ease);
+        setState(() {
+          pageindex = number;
+        });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

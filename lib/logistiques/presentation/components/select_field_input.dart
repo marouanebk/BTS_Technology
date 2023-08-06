@@ -6,7 +6,8 @@ Widget buildSelectField({
   required String? value,
   required String errorText,
   required void Function(String?) onChanged,
-  required List<String> items, // List of strings for labels
+  // required List<String> items, // List of strings for labels
+  required List<Map<String, String>> items, // Add this parameter
 
   bool formSubmitted = false,
 }) {
@@ -39,10 +40,10 @@ Widget buildSelectField({
             hint: Text(hintText),
             style: const TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
-            items: items.map<DropdownMenuItem<String>>((label) {
+            items: items.map<DropdownMenuItem<String>>((item) {
               return DropdownMenuItem<String>(
-                value: label,
-                child: Text(label),
+                value: item['value'],
+                child: Center(child: Text(item['label']!)),
               );
             }).toList(),
           ),

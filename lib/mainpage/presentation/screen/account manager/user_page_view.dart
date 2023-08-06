@@ -15,6 +15,7 @@ class UsersInfoPageVIew extends StatefulWidget {
 
 class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
   List<bool> isUserDropDownVisibleList = List.generate(15, (index) => false);
+  bool _isPasswordVisible = false; // Add this variable
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +243,7 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 RichText(
+                  overflow: TextOverflow.ellipsis,
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -273,9 +275,10 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                   height: 5,
                 ),
                 RichText(
-                  text: const TextSpan(
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: "mot de passe: ",
                         style: TextStyle(
                           color: Color(0xFF9F9F9F),
@@ -287,8 +290,8 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                         ),
                       ),
                       TextSpan(
-                        text: " ********",
-                        style: TextStyle(
+                        text: _isPasswordVisible ? user.password : " ********",
+                        style: const TextStyle(
                           color: Color(0xFF9F9F9F),
                           fontFamily: "Inter",
                           fontSize: 16,
@@ -297,15 +300,24 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                           height: 1.0,
                         ),
                       ),
-                      WidgetSpan(
+                      const WidgetSpan(
                           child: SizedBox(
                         width: 4,
                       )),
                       WidgetSpan(
-                        child: Icon(
-                          Icons.visibility,
-                          color: Color(0xFF9F9F9F),
-                          size: 16,
+                        child: InkWell(
+                          child: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: const Color(0xFF9F9F9F),
+                            size: 16,
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
                         ),
                       ),
                     ],
@@ -351,7 +363,9 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
       ),
       child: Column(
         children: [
-          const SizedBox(height: 12,),
+          const SizedBox(
+            height: 12,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Container(

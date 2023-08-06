@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
@@ -49,11 +48,11 @@ class _NewUserPageState extends State<NewUserPage> {
     'Gros détail',
   ];
 
-  List<String> rolesList = [
-    "admin",
-    "pageAdmin",
-    "financier",
-    "logistics",
+  List<Map<String, String>> rolesList = [
+    {"label": "Admin de lapplication", "value": "admin"},
+    {"label": "Admin d'une page", "value": "pageAdmin"},
+    {"label": "Responsable logistiques", "value": "financier"},
+    {"label": "Financier", "value": "logistics"},
   ];
 
   void _checkFormValidation(context) {
@@ -84,7 +83,7 @@ class _NewUserPageState extends State<NewUserPage> {
   void _submitForm(context) {
     if (type == "pageAdmin") {
       List<String> selectedPages = _selectedPages.map((index) {
-        return widget.pages[index].pageName;
+        return widget.pages[index].id!;
       }).toList();
 
       // Retrieve selected commande types
@@ -110,6 +109,8 @@ class _NewUserPageState extends State<NewUserPage> {
         password: passwordController.text,
         fullname: fullnameController.text,
         role: type,
+        pages: const [],
+        commandeTypes: const [],
       );
       BlocProvider.of<UserBloc>(context).add(
         CreateUserEvent(
@@ -187,7 +188,7 @@ class _NewUserPageState extends State<NewUserPage> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        error!,
+                        error,
                         style: const TextStyle(color: Colors.red),
                         textAlign: TextAlign.right,
                       ),

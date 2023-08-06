@@ -153,11 +153,12 @@ class _NewArticleState extends State<NewArticle> {
                         formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
                     buildInputField(
-                        label: "Unité",
-                        hintText: "Entrez l'unité",
-                        errorText: "Vous devez entrer une Unité",
-                        controller: uniteController,
-                        formSubmitted: _formSubmitted),
+                      label: "Unité",
+                      hintText: "Entrez l'unité",
+                      errorText: "Vous devez entrer une Unité",
+                      controller: uniteController,
+                      formSubmitted: _formSubmitted,
+                    ),
                     const SizedBox(height: 20),
                     buildInputField(
                         label: "Prix d'achat",
@@ -374,8 +375,8 @@ class _NewArticleState extends State<NewArticle> {
                 value: variant.family,
                 formSubmitted: _formSubmitted,
                 items: [
-                  "Regular",
-                  "Oversize",
+                  {"label": "Regular", "value": "regular"},
+                  {"label": "Oversize", "value": "oversize"},
                 ],
                 onChanged: (value) {
                   setState(() {

@@ -1,3 +1,4 @@
+import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
 import 'package:flutter/material.dart';
 
 class FactorCommandContainer extends StatelessWidget {
@@ -7,10 +8,12 @@ class FactorCommandContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: const [
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(5),
+        ),
+        boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.15),
             offset: Offset(0, 0),
@@ -46,41 +49,34 @@ class FactorCommandContainer extends StatelessWidget {
             const SizedBox(
               height: 16,
             ),
-            Row(
+            Wrap(
+              spacing: 8.0, // Adjust spacing between images
+              runSpacing: 8.0, // Adjust spacing between lines
               children: [
-                Container(
-                  height: 72,
-                  width: 72,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: const Color(
-                          0xFFECECEC), // You can also use Colors.grey[200]
-                      width: 1,
+                ...List.generate(
+                  5,
+                  (index) => InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        _createRoute("assets/images/tshirt_${index + 1}.png"),
+                      );
+                    },
+                    child: Container(
+                      height: 72,
+                      width: 72,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: const Color(0xFFECECEC),
+                          width: 1,
+                        ),
+                      ),
+                      child: Image.asset(
+                        "assets/images/tshirt_2.png",
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  child: Image.asset(
-                    "assets/images/tshirt_2.png",
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(
-                  width: 8,
-                ),
-                Container(
-                  height: 72,
-                  width: 72,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: const Color(
-                          0xFFECECEC), // You can also use Colors.grey[200]
-                      width: 1,
-                    ),
-                  ),
-                  child: Image.asset(
-                    "assets/images/tshirt_1.png",
-                    fit: BoxFit.cover,
                   ),
                 ),
               ],
@@ -296,4 +292,25 @@ class FactorCommandContainer extends StatelessWidget {
       ),
     );
   }
+}
+
+Route _createRoute(String imagePath) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return ImageDetailPage(imagePath: imagePath);
+    },
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0.0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var offsetAnimation = animation.drive(tween);
+
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
+    },
+  );
 }

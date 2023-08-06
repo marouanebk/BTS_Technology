@@ -33,7 +33,7 @@ class CommandModel extends Command {
         id: json["_id"],
         comNumber: json["comNumber"],
         noteClient: json["noteClient"],
-        articles: json["articles"],
+        // articles: json["articles"],
         sommePaid: json["sommePaid"],
         user: json["user"],
         nomClient: json["nomClient"],
