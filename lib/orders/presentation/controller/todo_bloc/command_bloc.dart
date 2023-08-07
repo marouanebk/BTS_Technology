@@ -33,6 +33,11 @@ class CommandBloc extends Bloc<CommandEvent, CommandesState> {
 
   FutureOr<void> _createCommandEvent(
       CreateCommandEvent event, Emitter<CommandesState> emit) async {
+    emit(
+      state.copyWith(
+        createCommandState: RequestState.loading,
+      ),
+    );
     final result = await createCommandUseCase(event.command);
     result.fold(
         (l) => emit(state.copyWith(

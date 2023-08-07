@@ -21,6 +21,8 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   final controller = PageController(initialPage: 0);
+  String selectedStatus = 'Tous'; // Initialize with 'Tous'
+
   int pageindex = 0;
   List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
   List<String> statusList = [
@@ -33,7 +35,7 @@ class _OrdersPageState extends State<OrdersPage> {
     'Confirmé',
     'Annulé',
     'Préparé',
-    'Expédié',
+    'Expidié',
     'Encaissé',
     'Retourné',
   ];
@@ -76,7 +78,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       children: List.generate(statusList.length, (index) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 10.0),
-                          child: dateFilter(index, statusList[index]),
+                          child: statusFilter(index, statusList[index]),
                         );
                       }),
                     ),
@@ -101,8 +103,17 @@ class _OrdersPageState extends State<OrdersPage> {
                       );
                     }
                     if (state.getCommandesState == RequestState.loaded) {
+                      List<Command> filteredCommands = state.getCommandes
+                          .where((command) =>
+                              selectedStatus == 'Tous' ||
+                              command.status == selectedStatus)
+                          .toList();
+
+                      // Group and display filtered data
                       Map<String, List<Command>> groupedData = {};
-                      for (Command command in state.getCommandes) {
+                      // for (Command command in state.getCommandes) {
+
+                      for (Command command in filteredCommands) {
                         if (!groupedData.containsKey(command.date)) {
                           groupedData[command.date!] = [];
                         }
@@ -187,6 +198,24 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget commandeCard(Command command, int index) {
+    Color statusColor;
+
+    if (command.status == 'Numero erroné' ||
+        command.status == 'Ne répond pas' ||
+        command.status == 'Annulé' ||
+        command.status == 'En attente de confirmation' ||
+        command.status == 'Pas confirmé' ||
+        command.status == 'Retourné') {
+      statusColor = Colors.red;
+    } else if (command.status == 'Confirmé' || command.status == 'Préparé') {
+      statusColor = Colors.yellow;
+    } else if (command.status == 'Encaissé') {
+      statusColor = Colors.blue;
+    } else if (command.status == 'Expidié') {
+      statusColor = Colors.green;
+    } else {
+      statusColor = Colors.black;
+    }
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -229,10 +258,10 @@ class _OrdersPageState extends State<OrdersPage> {
                   ),
                   Text(
                     command.status!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
-                      color: Colors.red,
+                      color: statusColor,
                     ),
                   )
                 ],
@@ -248,10 +277,11 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  Widget dateFilter(number, text) {
+  Widget statusFilter(number, text) {
     return GestureDetector(
       onTap: () {
         setState(() {
+          selectedStatus = text;
           pageindex = number;
         });
       },

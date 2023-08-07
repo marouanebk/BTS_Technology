@@ -32,7 +32,7 @@ class CommandesState extends Equatable {
     this.addTodoState = RequestState.loading,
     this.addTodoMessage = "",
     //
-    this.createCommandState = RequestState.loading,
+    this.createCommandState = RequestState.initial,
     this.createCommandMessage = "",
   });
 

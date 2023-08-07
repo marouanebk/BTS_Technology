@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +62,8 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 color: Color(0xFFECECEC),
               ),
             ),
+            for (var item in widget.command.articleList )
+            
             productDetail("Sweat oversize", 3),
             productDetail("Tshirt", 3),
             const SizedBox(

@@ -15,6 +15,7 @@ import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
 import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_event.dart';
 import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_state.dart';
+import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -160,32 +161,49 @@ class _AddOrderPageState extends State<AddOrderPage> {
           create: (context) => sl<CommandBloc>(),
         ),
       ],
-      child: BlocListener<ArticleBloc, ArticleState>(
-        listener: (context, state) {
-          if (state.getArticlesState == RequestState.loaded) {
-            articles = state.getArticles;
-            articlesList = articles.map((article) {
-              return {
-                'label': article.name ?? "",
-                'value': article.id ?? "",
-              };
-            }).toList();
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<ArticleBloc, ArticleState>(
+            listener: (context, state) {
+              if (state.getArticlesState == RequestState.loaded) {
+                articles = state.getArticles;
+                articlesList = articles.map((article) {
+                  return {
+                    'label': article.name ?? "",
+                    'value': article.id ?? "",
+                  };
+                }).toList();
 
-            //   articlesList = state.getArticles.map((article) {
-            //     return {
-            //       'label': article.name ?? "",
-            //       'value': article.id ?? "",
-            //       'variants': article.variants.map((variant) {
-            //         return {
-            //           'label': variant.name ?? "",
-            //           'value': variant.id ?? "",
-            //         };
-            //       }).toList(),
-            //     };
-            //   }).toList();
-            // }
-          }
-        },
+                //   articlesList = state.getArticles.map((article) {
+                //     return {
+                //       'label': article.name ?? "",
+                //       'value': article.id ?? "",
+                //       'variants': article.variants.map((variant) {
+                //         return {
+                //           'label': variant.name ?? "",
+                //           'value': variant.id ?? "",
+                //         };
+                //       }).toList(),
+                //     };
+                //   }).toList();
+                // }
+              }
+            },
+          ),
+          BlocListener<CommandBloc, CommandesState>(
+            listener: (context, state) {
+              if (state.createCommandState == RequestState.loaded) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const OrdersPage(), // Replace MainPage with the actual widget class for your MainPage
+                  ),
+                );
+              }
+            },
+          ),
+        ],
         child: Builder(builder: (context) {
           return Scaffold(
             backgroundColor: Colors.white,
@@ -273,44 +291,67 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   if (state.createCommandState == RequestState.error) {
                     return Text(
                       state.createCommandMessage,
-                      style: TextStyle(color: Colors.red),
+                      style: const TextStyle(color: Colors.red),
                     );
                   }
                   return Container();
                 }),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      height: 50, // Set the height to 50
-                      width: double.infinity,
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _checkFormValidation(context);
-                          // Navigator.of(context, rootNavigator: true).push(
-                          //   MaterialPageRoute(
-                          //     builder: (_) => const NewFactorPage(),
-                          //   ),
-                          // );
-                        },
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.black),
+                BlocBuilder<CommandBloc, CommandesState>(
+                  builder: (context, state) {
+                    if (state.createCommandState == RequestState.loading) {
+                      // Display the button style with the circular indicator
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.black,
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          ),
                         ),
-                        child: const Text(
-                          "Enregistrer la commande",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                      );
+                    }
+                    // When not in loading state, show the button
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5)),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _checkFormValidation(context);
+                            },
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.black),
+                            ),
+                            child: const Text(
+                              "Enregistrer la commande",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
