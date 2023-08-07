@@ -35,8 +35,6 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
         },
       ),
     );
-    log("article created  ");
-    log(article.toString());
     if (response.statusCode == 200) {
       return Future.value(unit);
     } else {

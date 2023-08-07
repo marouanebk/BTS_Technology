@@ -5,9 +5,9 @@ import 'package:bts_technologie/mainpage/presentation/components/search_containe
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_bloc.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_event.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/article_state.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_event.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_state.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -228,7 +228,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     ),
                   ),
                   Text(
-                    command.status,
+                    command.status!,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w400,

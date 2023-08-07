@@ -12,13 +12,15 @@ class CommandModel extends Command {
     num? comNumber,
     String? noteClient,
     List<Article?>? articles,
-    required String user,
+    String? user,
+    String? status,
     required String nomClient,
     required String adresse,
     required String page,
     required num phoneNumber,
     required num sommePaid,
-    required String status,
+    //
+    List<CommandArticle?> articleList = const [],
   }) : super(
           id: id,
           comNumber: comNumber,
@@ -32,6 +34,7 @@ class CommandModel extends Command {
           sommePaid: sommePaid,
           status: status,
           date: date,
+          articleList: articleList,
         );
 
   static List<CommandModel> fromJsonList(Map<String, dynamic> json) {
@@ -81,6 +84,18 @@ class CommandModel extends Command {
   }
 
   Map<String, dynamic> toJson() {
+    List<Map<String, dynamic>> articles = [];
+    if (articleList != null) {
+      articles = articleList.map((variant) {
+        return {
+          'articleId': variant!.articleId,
+          'variantId': variant.variantId,
+          'commandType': variant.commandType,
+          'quantity': variant.quantity,
+          'unityPrice': variant.unityPrice,
+        };
+      }).toList();
+    }
     return {
       "sommePaid": sommePaid,
       "user": user,
@@ -89,11 +104,12 @@ class CommandModel extends Command {
       "phoneNumber": phoneNumber,
       "page": page,
       "status": status,
+      "articles": articles,
     };
   }
 
-  @override
-  String toString() {
-    return 'CommandModel($date, $id, $comNumber, $noteClient, $articles, $nomClient, $user, $adresse, $phoneNumber, $sommePaid, $page, $status)';
-  }
+  // @override
+  // String toString() {
+  //   return 'CommandModel($date, $id, $comNumber, $noteClient, $articles, $nomClient, $user, $adresse, $phoneNumber, $sommePaid, $page, $status , $articles)';
+  // }
 }

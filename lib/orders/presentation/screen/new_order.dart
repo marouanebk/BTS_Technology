@@ -10,6 +10,11 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/orders/data/Models/command_model.dart';
+import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_event.dart';
+import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_state.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,15 +50,11 @@ class _AddOrderPageState extends State<AddOrderPage> {
     super.dispose();
   }
 
-  List<Map<String, String>> statusListAdmin = [
-    {'label': 'Téléphone', "value": "Téléphone"},
-    {'label': 'Numero erroné', "value": "Numero erroné"},
-    {'label': 'Annulé', "value": "Annulé"},
-    {'label': 'Pas confirmé', "value": "Pas confirmé"},
-    {'label': 'Préparé', "value": "Préparé"},
-    {'label': 'Expidié', "value": "Expidié"},
-    {'label': 'Encaissé', "value": "Encaissé"},
-    {'label': 'Retourné', "value": "Retourné"},
+  List<Map<String, String>> commandTypesEnum = [
+    {"label": "Vierge détail", "value": "Vierge détail"},
+    {"label": "Personnalisé détail", "value": "Personnalisé détail"},
+    {"label": "Gros personnalisé", "value": "Gros personnalisé"},
+    {"label": "Gros détail", "value": "Gros détail"},
   ];
 
   List<Article> articles = [];
@@ -68,9 +69,12 @@ class _AddOrderPageState extends State<AddOrderPage> {
         adresssController.text.isEmpty ||
         phonenumberController.text.isEmpty ||
         sommePaidController.text.isEmpty ||
-        noteClientController.text.isEmpty ||
+        // noteClientController.text.isEmpty ||
         selectedPage == null) {
       hasEmptyFields = true;
+      log(
+        "74",
+      );
     }
 
     // Check if any variant is added and if any of the variant fields are empty
@@ -104,44 +108,62 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   void _submitForm(context) {
-    log(fullnameController.toString());
+    // log(fullnameController.toString());
+    // log('fullnameController: ${fullnameController.text}');
+    // log('adresssController: ${adresssController.text}');
+    // log('phonenumberController: ${phonenumberController.text}');
+    // log('sommePaidController: ${sommePaidController.text}');
+    // log('noteClientController: ${noteClientController.text}');
 
-    // final articleModel = ArticleModel(
-    //   name: nomArticleController.text,
-    //   unity: uniteController.text,
-    //   buyingPrice: double.parse(prixAchatController.text),
-    //   grosPrice: double.parse(prixGrosController.text),
-    //   alertQuantity: int.parse(quanAlertController.text),
-    //   variants: variants.map((variant) {
-    //     return Variant(
-    //       colour: variant.nomCouleurController.text,
-    //       colourCode: variant.codeCouleurController.text,
-    //       taille: variant.tailleController.text,
-    //       quantity: int.parse(variant.quantiteController
-    //           .text), // Note: this should be a String, not int.parse
-    //       family: variant.family!,
-    //     );
-    //   }).toList(),
-    // );
+    // for (var variant in variants) {
+    //   log('variant.prixController: ${variant.prixController.text}');
+    //   log('variant.nbrArticlesController: ${variant.nbrArticlesController.text}');
+    // }
 
-    // log(articleModel.toJson().toString());
+    final commandModel = CommandModel(
+      adresse: adresssController.text,
+      nomClient: fullnameController.text,
+      phoneNumber: int.parse(phonenumberController.text),
+      // page: article.page,
+      page: "dsdf",
+      sommePaid: double.parse(sommePaidController.text),
+      // articleList: article.articleList,
+      articleList: variants.map((variant) {
+        return CommandArticle(
+          quantity: int.parse(variant.nbrArticlesController.text),
+          articleId: variant.article!,
+          unityPrice: double.parse(variant.prixController.text),
+          commandType: variant.type!,
+          variantId:
+              variant.variant!, // Note: this should be a String, not int.parse
+        );
+      }).toList(),
+    );
 
-    // BlocProvider.of<ArticleBloc>(context).add(
-    //   CreateArticleEvent(
-    //     article: articleModel,
-    //   ),
-    // );
+    log(commandModel.toJson().toString());
+
+    BlocProvider.of<CommandBloc>(context).add(
+      CreateCommandEvent(
+        command: commandModel,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<ArticleBloc>()..add(GetArticlesEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<ArticleBloc>()..add(GetArticlesEvent()),
+        ),
+        BlocProvider(
+          create: (context) => sl<CommandBloc>(),
+        ),
+      ],
       child: BlocListener<ArticleBloc, ArticleState>(
         listener: (context, state) {
           if (state.getArticlesState == RequestState.loaded) {
             articles = state.getArticles;
-            log(articles.toString());
             articlesList = articles.map((article) {
               return {
                 'label': article.name ?? "",
@@ -164,124 +186,136 @@ class _AddOrderPageState extends State<AddOrderPage> {
             // }
           }
         },
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: const CustomAppBar(titleText: "Ajouter une Commande"),
-          body: Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    buildInputField(
-                      label: "Nom complet",
-                      hintText: "Entrez le nom du client",
-                      errorText: "Vous devez entrer le nom",
-                      controller: fullnameController,
-                      formSubmitted: _formSubmitted,
-                    ),
-                    const SizedBox(height: 15),
-                    buildInputField(
-                      label: "Adresse",
-                      hintText: "Entrez l'adresse de livraison",
-                      errorText: "Vous devez entrer une adresse",
-                      controller: adresssController,
-                      formSubmitted: _formSubmitted,
-                    ),
-                    const SizedBox(height: 15),
-                    buildInputField(
-                      label: "Numéro de téléphone",
-                      hintText: "Entrez un numéro de téléphone",
-                      errorText: "Vous devez entrer un numéro de téléphone",
-                      controller: phonenumberController,
-                      formSubmitted: _formSubmitted,
-                      isNumeric: true,
-                    ),
-                    const SizedBox(height: 15),
-                    buildInputField(
-                      label: "Somme versée",
-                      hintText: "Entrez une somme versée",
-                      errorText: "Vous devez entrer une somme versée",
-                      controller: sommePaidController,
-                      formSubmitted: _formSubmitted,
-                      isNumeric: true,
-                      isMoney: true,
-                    ),
-                    const SizedBox(height: 15),
-                    buildSelectField(
-                      label: "Sélectionner une page",
-                      hintText: "- Sélectionnez une page -",
-                      errorText: "Vous devez entrer une page",
-                      value: selectedPage,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedPage = value;
-                        });
-                      },
-                      formSubmitted: _formSubmitted,
-                      items: [
-                        {"label": "1", "value": "1"},
-                        {"label": "1", "value": "1"},
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    const Text(
-                      "Liste d'articles",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF9F9F9F)),
-                    ),
-                    const SizedBox(height: 10),
-                    _variantContainerList(),
-                    // articleContainer(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    _addArticleItem(),
-                    const SizedBox(height: 80),
-                  ],
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
+        child: Builder(builder: (context) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: const CustomAppBar(titleText: "Ajouter une Commande"),
+            body: Stack(
+              children: [
+                SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                    height: 50, // Set the height to 50
-                    width: double.infinity,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _checkFormValidation(context);
-                        // Navigator.of(context, rootNavigator: true).push(
-                        //   MaterialPageRoute(
-                        //     builder: (_) => const NewFactorPage(),
-                        //   ),
-                        // );
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.black),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      buildInputField(
+                        label: "Nom complet",
+                        hintText: "Entrez le nom du client",
+                        errorText: "Vous devez entrer le nom",
+                        controller: fullnameController,
+                        formSubmitted: _formSubmitted,
                       ),
-                      child: const Text(
-                        "Enregistrer la commande",
+                      const SizedBox(height: 15),
+                      buildInputField(
+                        label: "Adresse",
+                        hintText: "Entrez l'adresse de livraison",
+                        errorText: "Vous devez entrer une adresse",
+                        controller: adresssController,
+                        formSubmitted: _formSubmitted,
+                      ),
+                      const SizedBox(height: 15),
+                      buildInputField(
+                        label: "Numéro de téléphone",
+                        hintText: "Entrez un numéro de téléphone",
+                        errorText: "Vous devez entrer un numéro de téléphone",
+                        controller: phonenumberController,
+                        formSubmitted: _formSubmitted,
+                        isNumeric: true,
+                      ),
+                      const SizedBox(height: 15),
+                      buildInputField(
+                        label: "Somme versée",
+                        hintText: "Entrez une somme versée",
+                        errorText: "Vous devez entrer une somme versée",
+                        controller: sommePaidController,
+                        formSubmitted: _formSubmitted,
+                        isNumeric: true,
+                        isMoney: true,
+                      ),
+                      const SizedBox(height: 15),
+                      buildSelectField(
+                        label: "Sélectionner une page",
+                        hintText: "- Sélectionnez une page -",
+                        errorText: "Vous devez entrer une page",
+                        value: selectedPage,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedPage = value;
+                          });
+                        },
+                        formSubmitted: _formSubmitted,
+                        items: [
+                          {"label": "1", "value": "1"},
+                          {"label": "1", "value": "2"},
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      const Text(
+                        "Liste d'articles",
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF9F9F9F)),
+                      ),
+                      const SizedBox(height: 10),
+                      _variantContainerList(),
+                      // articleContainer(),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      _addArticleItem(),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                ),
+                BlocBuilder<CommandBloc, CommandesState>(
+                    builder: (context, state) {
+                  if (state.createCommandState == RequestState.error) {
+                    return Text(
+                      state.createCommandMessage,
+                      style: TextStyle(color: Colors.red),
+                    );
+                  }
+                  return Container();
+                }),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      height: 50, // Set the height to 50
+                      width: double.infinity,
+                      decoration:
+                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _checkFormValidation(context);
+                          // Navigator.of(context, rootNavigator: true).push(
+                          //   MaterialPageRoute(
+                          //     builder: (_) => const NewFactorPage(),
+                          //   ),
+                          // );
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.black),
+                        ),
+                        child: const Text(
+                          "Enregistrer la commande",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -327,7 +361,11 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 value: article.article,
                 onChanged: (value) {
                   setState(() {
+                    variantsList.clear();
+                    article.variant = null;
+
                     article.article = value;
+
                     // Find the selected article in the articles list
                     final selectedArticle = articles.firstWhere(
                       (item) => item.id == value,
@@ -335,17 +373,14 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     );
                     log(selectedArticle.toString());
                     // Update the variants list based on the selected article
-                    if (selectedArticle != null) {
-                      article.variants = selectedArticle.variants
-                          .map((variant) {
-                            return {
-                              'label': variant?.family ?? "",
-                              'value': variant?.id ?? "",
-                            };
-                          })
-                          .toList()
-                          .cast<Map<String, String>>();
-                      log(variantsList.toString());
+                    if (selectedArticle.variants != null) {
+                      article.variants =
+                          selectedArticle.variants.map((variant) {
+                        return {
+                          'label': variant?.family ?? "",
+                          'value': variant?.id ?? "",
+                        };
+                      }).toList();
                     } else {
                       variantsList.clear();
                     }
@@ -359,10 +394,10 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 label: "Variant",
                 hintText: "- Sélectionnez un variant -",
                 errorText: "Vous devez entrer un variant ",
-                value: article.type,
+                value: article.variant,
                 onChanged: (value) {
                   setState(() {
-                    article.type = value;
+                    article.variant = value;
                   });
                 },
                 formSubmitted: _formSubmitted,
@@ -381,10 +416,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   });
                 },
                 formSubmitted: _formSubmitted,
-                items: [
-                  {"label": "3", "value": "3"},
-                  {"label": "3", "value": "3"},
-                ],
+                items: commandTypesEnum,
               ),
               const SizedBox(height: 15),
               buildInputField(

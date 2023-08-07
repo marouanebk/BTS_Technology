@@ -16,6 +16,10 @@ class CommandesState extends Equatable {
   final RequestState addTodoState;
   final String addTodoMessage;
 
+  //
+  final RequestState createCommandState;
+  final String createCommandMessage;
+
   const CommandesState({
     this.getCommandes = const [],
     this.getCommandesState = RequestState.loading,
@@ -27,6 +31,9 @@ class CommandesState extends Equatable {
     //
     this.addTodoState = RequestState.loading,
     this.addTodoMessage = "",
+    //
+    this.createCommandState = RequestState.loading,
+    this.createCommandMessage = "",
   });
 
   CommandesState copyWith({
@@ -40,6 +47,9 @@ class CommandesState extends Equatable {
     //
     RequestState? addTodoState,
     String? addTodoMessage,
+    //
+    RequestState? createCommandState,
+    String? createCommandMessage,
   }) {
     return CommandesState(
       getCommandes: getCommandes ?? this.getCommandes,
@@ -52,6 +62,9 @@ class CommandesState extends Equatable {
       //
       addTodoState: addTodoState ?? this.addTodoState,
       addTodoMessage: addTodoMessage ?? this.addTodoMessage,
+
+      createCommandState: createCommandState ?? this.createCommandState,
+      createCommandMessage: createCommandMessage ?? this.createCommandMessage,
     );
     //
   }
@@ -65,9 +78,12 @@ class CommandesState extends Equatable {
         getUnDoneTodo,
         getUnDoneTodoState,
         getUnDoneTodomessage,
-        
+
         addTodoState,
         addTodoMessage,
+
         //
+        createCommandState,
+        createCommandMessage,
       ];
 }
