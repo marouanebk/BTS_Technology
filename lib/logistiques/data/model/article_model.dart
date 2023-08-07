@@ -4,6 +4,7 @@ import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart
 
 class ArticleModel extends Article {
   const ArticleModel({
+    String? id,
     String? name,
     String? unity,
     List<Variant?> variants = const [],
@@ -11,6 +12,7 @@ class ArticleModel extends Article {
     required num grosPrice,
     required int alertQuantity,
   }) : super(
+            id: id,
             name: name,
             unity: unity,
             buyingPrice: buyingPrice,
@@ -25,6 +27,7 @@ class ArticleModel extends Article {
     if (variantList != null) {
       variants = variantList.map((variantJson) {
         return Variant(
+          id: variantJson['_id'],
           colour: variantJson['colour'],
           colourCode: variantJson['colourCode'],
           taille: variantJson['taille'],
@@ -35,6 +38,7 @@ class ArticleModel extends Article {
     }
 
     return ArticleModel(
+      id: json['_id'],
       name: json["name"],
       unity: json["Unity"],
       buyingPrice: json["buyingPrice"],

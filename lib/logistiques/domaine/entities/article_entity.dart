@@ -2,6 +2,7 @@
 import 'package:equatable/equatable.dart';
 
 class Article extends Equatable {
+  final String? id;
   final String? name;
   final String? unity;
   final num buyingPrice;
@@ -10,6 +11,7 @@ class Article extends Equatable {
   final List<Variant?> variants;
 
   const Article({
+    this.id,
     this.name,
     this.unity,
     required this.variants,
@@ -20,10 +22,11 @@ class Article extends Equatable {
 
   @override
   List<Object?> get props =>
-      [name, unity, buyingPrice, grosPrice, alertQuantity , variants];
+      [id, name, unity, buyingPrice, grosPrice, alertQuantity, variants];
 }
 
 class Variant extends Equatable {
+  final String? id;
   final String colour;
   final String colourCode;
   final String taille;
@@ -31,6 +34,7 @@ class Variant extends Equatable {
   final String family;
 
   const Variant({
+    this.id,
     required this.colour,
     required this.colourCode,
     required this.taille,
@@ -38,5 +42,5 @@ class Variant extends Equatable {
     required this.family,
   });
   @override
-  List<Object?> get props => [colour, colourCode, taille, quantity, family];
+  List<Object?> get props => [id, colour, colourCode, taille, quantity, family];
 }

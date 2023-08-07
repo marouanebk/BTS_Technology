@@ -1,11 +1,37 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
 import 'package:flutter/material.dart';
 
-class FactorCommandContainer extends StatelessWidget {
+class FactorCommandContainer extends StatefulWidget {
   final Command command;
   const FactorCommandContainer({required this.command, super.key});
 
+  @override
+  State<FactorCommandContainer> createState() => _FactorCommandContainerState();
+}
+
+class _FactorCommandContainerState extends State<FactorCommandContainer> {
+  String? type;
+  @override
+  void initState() {
+    super.initState();
+    type = widget.command.status;
+    // type = "Pas confirmé";
+  }
+
+  List<Map<String, String>> statusListAdmin = [
+    {'label': 'Téléphone', "value": "Téléphone"},
+    {'label': 'Numero erroné', "value": "Numero erroné"},
+    {'label': 'Annulé', "value": "Annulé"},
+    {'label': 'Pas confirmé', "value": "Pas confirmé"},
+    {'label': 'Préparé', "value": "Préparé"},
+    {'label': 'Expidié', "value": "Expidié"},
+    {'label': 'Encaissé', "value": "Encaissé"},
+    {'label': 'Retourné', "value": "Retourné"},
+  ];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -90,11 +116,21 @@ class FactorCommandContainer extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
+            // ElevatedButton(onPressed: () {
+            //   log(type.toString());
+            // }, child: Text("click me")),
             containerButton("Générer une facture"),
             const SizedBox(
               height: 10,
             ),
-            confirmationContainer(),
+            confirmationContainer(
+              value: type,
+              onChanged: (value) {
+                setState(() {
+                  type = value;
+                });
+              },
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -231,13 +267,15 @@ class FactorCommandContainer extends StatelessWidget {
     );
   }
 
-  Widget confirmationContainer() {
+  Widget confirmationContainer(
+      {required String? value, required void Function(String?) onChanged}) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Container(
         height: 50, // Set the height to 50
         width: double.infinity,
         decoration: BoxDecoration(
+          color: Colors.black,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
             color: const Color(
@@ -245,17 +283,30 @@ class FactorCommandContainer extends StatelessWidget {
             width: 1,
           ),
         ),
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.black),
-          ),
-          child: const Text(
-            "Confirme",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
+        child: Center(
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              onChanged: onChanged,
+
+              // hint: Text("hintText"),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+              // style: const TextStyle(
+              //     fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+              dropdownColor: Colors.black,
+              iconEnabledColor: Colors.white,
+              iconSize: 30,
+              icon: const Icon(Icons.arrow_drop_down),
+              items: statusListAdmin.map<DropdownMenuItem<String>>((item) {
+                return DropdownMenuItem<String>(
+                  value: item['value'],
+                  child: Center(child: Text(item['label']!)),
+                );
+              }).toList(),
             ),
           ),
         ),

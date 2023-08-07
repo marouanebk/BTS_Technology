@@ -1,11 +1,23 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/logistiques/data/model/article_model.dart';
+import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/logistiques/presentation/components/select_field_input.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddOrderPage extends StatefulWidget {
+  const AddOrderPage({super.key});
+
   @override
   _AddOrderPageState createState() => _AddOrderPageState();
 }
@@ -18,14 +30,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
   TextEditingController noteClientController = TextEditingController();
   bool _formSubmitted = false;
 
-  String? address;
-  String? phoneNumber;
-  String? sum;
   String? selectedPage;
-  String? selectedArticle;
-  String? selectedType;
-  String? selectedColor;
-  String? selectedSize;
 
   List<ArticleItem> variants = [];
   int count = 1;
@@ -40,275 +45,417 @@ class _AddOrderPageState extends State<AddOrderPage> {
     super.dispose();
   }
 
+  List<Map<String, String>> statusListAdmin = [
+    {'label': 'Téléphone', "value": "Téléphone"},
+    {'label': 'Numero erroné', "value": "Numero erroné"},
+    {'label': 'Annulé', "value": "Annulé"},
+    {'label': 'Pas confirmé', "value": "Pas confirmé"},
+    {'label': 'Préparé', "value": "Préparé"},
+    {'label': 'Expidié', "value": "Expidié"},
+    {'label': 'Encaissé', "value": "Encaissé"},
+    {'label': 'Retourné', "value": "Retourné"},
+  ];
+
+  List<Article> articles = [];
+  List<Map<String, String>> articlesList = [];
+  List<Map<String, String>> variantsList = [];
+
+  void _checkFormValidation(context) {
+    bool hasEmptyFields = false;
+
+    // Check if any of the input fields are empty
+    if (fullnameController.text.isEmpty ||
+        adresssController.text.isEmpty ||
+        phonenumberController.text.isEmpty ||
+        sommePaidController.text.isEmpty ||
+        noteClientController.text.isEmpty ||
+        selectedPage == null) {
+      hasEmptyFields = true;
+    }
+
+    // Check if any variant is added and if any of the variant fields are empty
+    if (variants.isEmpty) {
+      hasEmptyFields = true;
+    } else {
+      for (var variant in variants) {
+        if (variant.prixController.text.isEmpty ||
+            variant.nbrArticlesController.text.isEmpty ||
+            variant.article == null ||
+            variant.type == null) {
+          hasEmptyFields = true;
+          break;
+        }
+      }
+    }
+
+    // If there are empty fields, do not proceed with the submission
+    if (hasEmptyFields) {
+      setState(() {
+        _formSubmitted = true;
+      });
+      return;
+    }
+
+    // If all fields are filled, proceed with the submission
+    setState(() {
+      _formSubmitted = true;
+    });
+    _submitForm(context);
+  }
+
+  void _submitForm(context) {
+    log(fullnameController.toString());
+
+    // final articleModel = ArticleModel(
+    //   name: nomArticleController.text,
+    //   unity: uniteController.text,
+    //   buyingPrice: double.parse(prixAchatController.text),
+    //   grosPrice: double.parse(prixGrosController.text),
+    //   alertQuantity: int.parse(quanAlertController.text),
+    //   variants: variants.map((variant) {
+    //     return Variant(
+    //       colour: variant.nomCouleurController.text,
+    //       colourCode: variant.codeCouleurController.text,
+    //       taille: variant.tailleController.text,
+    //       quantity: int.parse(variant.quantiteController
+    //           .text), // Note: this should be a String, not int.parse
+    //       family: variant.family!,
+    //     );
+    //   }).toList(),
+    // );
+
+    // log(articleModel.toJson().toString());
+
+    // BlocProvider.of<ArticleBloc>(context).add(
+    //   CreateArticleEvent(
+    //     article: articleModel,
+    //   ),
+    // );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CustomAppBar(titleText: "Ajouter une Commande"),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                buildInputField(
-                  label: "Nom complet",
-                  hintText: "Entrez le nom du client",
-                  errorText: "Vous devez entrer le nom",
-                  controller: fullnameController,
-                  formSubmitted: _formSubmitted,
-                ),
-                const SizedBox(height: 15),
-                buildInputField(
-                  label: "Adresse",
-                  hintText: "Entrez l'adresse de livraison",
-                  errorText: "Vous devez entrer une adresse",
-                  controller: adresssController,
-                  formSubmitted: _formSubmitted,
-                ),
-                const SizedBox(height: 15),
-                buildInputField(
-                  label: "Numéro de téléphone",
-                  hintText: "Entrez un numéro de téléphone",
-                  errorText: "Vous devez entrer un numéro de téléphone",
-                  controller: fullnameController,
-                  formSubmitted: _formSubmitted,
-                  isNumeric: true,
-                ),
-                const SizedBox(height: 15),
-                buildInputField(
-                  label: "Somme versée",
-                  hintText: "Entrez une somme versée",
-                  errorText: "Vous devez entrer une somme versée",
-                  controller: fullnameController,
-                  formSubmitted: _formSubmitted,
-                  isNumeric: true,
-                  isMoney: true,
-                ),
-                const SizedBox(height: 15),
-                buildSelectField(
-                  label: "Sélectionner une page",
-                  hintText: "- Sélectionnez une page -",
-                  errorText: "Vous devez entrer une page",
-                  value: selectedPage,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedPage = value;
-                    });
-                  },
-                  formSubmitted: _formSubmitted,
-                  items: [
-                    {"label": "1", "value": "1"},
-                    {"label": "1", "value": "1"},
+    return BlocProvider(
+      create: (context) => sl<ArticleBloc>()..add(GetArticlesEvent()),
+      child: BlocListener<ArticleBloc, ArticleState>(
+        listener: (context, state) {
+          if (state.getArticlesState == RequestState.loaded) {
+            articles = state.getArticles;
+            log(articles.toString());
+            articlesList = articles.map((article) {
+              return {
+                'label': article.name ?? "",
+                'value': article.id ?? "",
+              };
+            }).toList();
+
+            //   articlesList = state.getArticles.map((article) {
+            //     return {
+            //       'label': article.name ?? "",
+            //       'value': article.id ?? "",
+            //       'variants': article.variants.map((variant) {
+            //         return {
+            //           'label': variant.name ?? "",
+            //           'value': variant.id ?? "",
+            //         };
+            //       }).toList(),
+            //     };
+            //   }).toList();
+            // }
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: const CustomAppBar(titleText: "Ajouter une Commande"),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    buildInputField(
+                      label: "Nom complet",
+                      hintText: "Entrez le nom du client",
+                      errorText: "Vous devez entrer le nom",
+                      controller: fullnameController,
+                      formSubmitted: _formSubmitted,
+                    ),
+                    const SizedBox(height: 15),
+                    buildInputField(
+                      label: "Adresse",
+                      hintText: "Entrez l'adresse de livraison",
+                      errorText: "Vous devez entrer une adresse",
+                      controller: adresssController,
+                      formSubmitted: _formSubmitted,
+                    ),
+                    const SizedBox(height: 15),
+                    buildInputField(
+                      label: "Numéro de téléphone",
+                      hintText: "Entrez un numéro de téléphone",
+                      errorText: "Vous devez entrer un numéro de téléphone",
+                      controller: phonenumberController,
+                      formSubmitted: _formSubmitted,
+                      isNumeric: true,
+                    ),
+                    const SizedBox(height: 15),
+                    buildInputField(
+                      label: "Somme versée",
+                      hintText: "Entrez une somme versée",
+                      errorText: "Vous devez entrer une somme versée",
+                      controller: sommePaidController,
+                      formSubmitted: _formSubmitted,
+                      isNumeric: true,
+                      isMoney: true,
+                    ),
+                    const SizedBox(height: 15),
+                    buildSelectField(
+                      label: "Sélectionner une page",
+                      hintText: "- Sélectionnez une page -",
+                      errorText: "Vous devez entrer une page",
+                      value: selectedPage,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedPage = value;
+                        });
+                      },
+                      formSubmitted: _formSubmitted,
+                      items: [
+                        {"label": "1", "value": "1"},
+                        {"label": "1", "value": "1"},
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Liste d'articles",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF9F9F9F)),
+                    ),
+                    const SizedBox(height: 10),
+                    _variantContainerList(),
+                    // articleContainer(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _addArticleItem(),
+                    const SizedBox(height: 80),
                   ],
                 ),
-                const SizedBox(height: 15),
-                const Text(
-                  "Liste d'articles",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF9F9F9F)),
-                ),
-                const SizedBox(height: 10),
-                articleContainer(),
-                const SizedBox(
-                  height: 20,
-                ),
-                _addArticleItem(),
-                const SizedBox(height: 50),
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                height: 50, // Set the height to 50
-                width: double.infinity,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => const NewFactorPage(),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    height: 50, // Set the height to 50
+                    width: double.infinity,
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _checkFormValidation(context);
+                        // Navigator.of(context, rootNavigator: true).push(
+                        //   MaterialPageRoute(
+                        //     builder: (_) => const NewFactorPage(),
+                        //   ),
+                        // );
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.black),
                       ),
-                    );
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.black),
-                  ),
-                  child: const Text(
-                    "Enregistrer la commande",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      child: const Text(
+                        "Enregistrer la commande",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget articleContainer() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            offset: const Offset(0, 0),
-            blurRadius: 8,
-            spreadRadius: 0,
-          ),
-        ],
-        border: Border.all(color: const Color(0xFF9F9F9F)),
-        borderRadius: BorderRadius.circular(9),
+  Widget _variantContainerList() {
+    return ListView.separated(
+      separatorBuilder: (context, index) => const SizedBox(
+        height: 12,
       ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          buildSelectField(
-            label: "Article",
-            hintText: "- Sélectionnez un article -",
-            errorText: "Vous devez entrer un article",
-            value: selectedArticle,
-            onChanged: (value) {
-              setState(() {
-                selectedArticle = value;
-              });
-            },
-            formSubmitted: _formSubmitted,
-            items: [
-              {"label": "2", "value": "2"},
-              {"label": "2", "value": "2"},
+      shrinkWrap: true,
+      itemCount: variants.length,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return articleContainer(variants[index]);
+      },
+    );
+  }
+
+  Widget articleContainer(ArticleItem article) {
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                offset: const Offset(0, 0),
+                blurRadius: 8,
+                spreadRadius: 0,
+              ),
             ],
+            border: Border.all(color: const Color(0xFF9F9F9F)),
+            borderRadius: BorderRadius.circular(9),
           ),
-          const SizedBox(height: 15),
-          buildSelectField(
-            label: "Type",
-            hintText: "- Sélectionnez un type -",
-            errorText: "Vous devez entrer un type",
-            value: selectedType,
-            onChanged: (value) {
-              setState(() {
-                selectedType = value;
-              });
-            },
-            formSubmitted: _formSubmitted,
-            items: [
-              {"label": "3", "value": "3"},
-              {"label": "3", "value": "3"},
-            ],
-          ),
-          const SizedBox(height: 15),
-          buildSelectField(
-            label: "Couleur",
-            hintText: "- Sélectionnez une couleur -",
-            errorText: "Vous devez entrer une couleur",
-            value: selectedColor,
-            onChanged: (value) {
-              setState(() {
-                selectedColor = value;
-              });
-            },
-            formSubmitted: _formSubmitted,
-            items: [
-              {"label": "4", "value": "4"},
-              {"label": "4", "value": "4"},
-            ],
-          ),
-          const SizedBox(height: 15),
-          buildSelectField(
-            label: "Taille",
-            hintText: "- Sélectionnez une taille -",
-            errorText: "Vous devez entrer une taille",
-            value: selectedSize,
-            onChanged: (value) {
-              setState(() {
-                selectedSize = value;
-              });
-            },
-            formSubmitted: _formSubmitted,
-            items: [
-              {"label": "5", "value": "5"},
-              {"label": "5", "value": "5"},
-            ],
-          ),
-          const SizedBox(height: 15),
-          buildSelectField(
-            label: "Famille",
-            hintText: "- Sélectionnez une famille -",
-            errorText: "Vous devez entrer une famille -",
-            value: selectedSize,
-            onChanged: (value) {
-              setState(() {
-                selectedSize = value;
-              });
-            },
-            formSubmitted: _formSubmitted,
-            items: [
-              {"label": "5", "value": "5"},
-              {"label": "5", "value": "5"},
-            ],
-          ),
-          const SizedBox(height: 15),
-          buildInputField(
-            label: "Prix",
-            hintText: "Entrer le prix d'un seul article",
-            errorText: "Vous devez entrer un prix",
-            controller: fullnameController,
-            formSubmitted: _formSubmitted,
-            isNumeric: true,
-          ),
-          const SizedBox(height: 15),
-          buildInputField(
-            label: "Nbr d'articles",
-            hintText: "Le nombre d'articles",
-            errorText: "Vous devez entrer le nombre d'articles",
-            controller: fullnameController,
-            formSubmitted: _formSubmitted,
-            isNumeric: true,
-          ),
-          _imagePickerContainer(),
-          Wrap(
-            spacing: 8.0, // Adjust spacing between images
-            runSpacing: 8.0, // Adjust spacing between lines
+          padding: const EdgeInsets.all(16),
+          child: Column(
             children: [
-              ...List.generate(
-                5,
-                (index) => InkWell(
-                  onTap: () {},
-                  child: Container(
-                    height: 72,
-                    width: 72,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: const Color(0xFFECECEC),
-                        width: 1,
+              buildSelectField(
+                label: "Article",
+                hintText: "- Sélectionnez un article -",
+                errorText: "Vous devez entrer un article",
+                value: article.article,
+                onChanged: (value) {
+                  setState(() {
+                    article.article = value;
+                    // Find the selected article in the articles list
+                    final selectedArticle = articles.firstWhere(
+                      (item) => item.id == value,
+                      // orElse: () => null,
+                    );
+                    log(selectedArticle.toString());
+                    // Update the variants list based on the selected article
+                    if (selectedArticle != null) {
+                      article.variants = selectedArticle.variants
+                          .map((variant) {
+                            return {
+                              'label': variant?.family ?? "",
+                              'value': variant?.id ?? "",
+                            };
+                          })
+                          .toList()
+                          .cast<Map<String, String>>();
+                      log(variantsList.toString());
+                    } else {
+                      variantsList.clear();
+                    }
+                  });
+                },
+                formSubmitted: _formSubmitted,
+                items: articlesList,
+              ),
+              const SizedBox(height: 15),
+              buildSelectField(
+                label: "Variant",
+                hintText: "- Sélectionnez un variant -",
+                errorText: "Vous devez entrer un variant ",
+                value: article.type,
+                onChanged: (value) {
+                  setState(() {
+                    article.type = value;
+                  });
+                },
+                formSubmitted: _formSubmitted,
+                items: article
+                    .variants, // Use the variants list of the selected article
+              ),
+              const SizedBox(height: 15),
+              buildSelectField(
+                label: "Type",
+                hintText: "- Sélectionnez un type -",
+                errorText: "Vous devez entrer un type",
+                value: article.type,
+                onChanged: (value) {
+                  setState(() {
+                    article.type = value;
+                  });
+                },
+                formSubmitted: _formSubmitted,
+                items: [
+                  {"label": "3", "value": "3"},
+                  {"label": "3", "value": "3"},
+                ],
+              ),
+              const SizedBox(height: 15),
+              buildInputField(
+                label: "Prix",
+                hintText: "Entrer le prix d'un seul article",
+                errorText: "Vous devez entrer un prix",
+                controller: article.prixController,
+                formSubmitted: _formSubmitted,
+                isNumeric: true,
+                isMoney: true,
+              ),
+              const SizedBox(height: 15),
+              buildInputField(
+                label: "Nbr d'articles",
+                hintText: "Le nombre d'articles",
+                errorText: "Vous devez entrer le nombre d'articles",
+                controller: article.nbrArticlesController,
+                formSubmitted: _formSubmitted,
+                isNumeric: true,
+              ),
+              _imagePickerContainer(),
+              Wrap(
+                spacing: 8.0, // Adjust spacing between images
+                runSpacing: 8.0, // Adjust spacing between lines
+                children: [
+                  ...List.generate(
+                    5,
+                    (index) => InkWell(
+                      onTap: () {},
+                      child: Container(
+                        height: 72,
+                        width: 72,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: const Color(0xFFECECEC),
+                            width: 1,
+                          ),
+                        ),
+                        child: Image.asset(
+                          "assets/images/tshirt_2.png",
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    child: Image.asset(
-                      "assets/images/tshirt_2.png",
-                      fit: BoxFit.cover,
-                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              onPressed: () {
+                setState(() {
+                  variants.remove(article);
+                });
+              },
+              icon: const Icon(Icons.close),
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -392,7 +539,6 @@ class ArticleItem {
   TextEditingController nbrArticlesController = TextEditingController();
   String? article;
   String? type;
-  String? couleur;
-  String? taille;
-  String? famille;
+  String? variant;
+  List<Map<String, String>> variants = []; // Add this line
 }
