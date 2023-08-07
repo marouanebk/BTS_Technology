@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
+import 'package:bts_technologie/mainpage/data/Models/command_stats_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/entreprise_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/livreur_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/page_model.dart';
@@ -13,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class BaseAccountRemoteDateSource {
   Future<List<FacePage>> getPages();
   Future<List<LivreurModel>> getLivreurs();
+  Future<List<CommandStatsModel>> getCommandStats();
   Future<EntrepriseModel> getEntrepriseInfo();
 }
 
@@ -89,6 +91,29 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
               statusMessage: response.data['error']));
+    }
+  }
+
+  @override
+  Future<List<CommandStatsModel>> getCommandStats() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final response = await Dio().get(ApiConstance.getCommandesStatsForAdmin,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ));
+    log("response");
+    if (response.statusCode == 200) {
+      return List<CommandStatsModel>.from((response.data as List).map(
+        (e) => CommandStatsModel.fromJson(e),
+      ));
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              statusMessage: response.data['message']));
     }
   }
 }

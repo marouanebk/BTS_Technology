@@ -24,6 +24,8 @@ class _OrdersPageState extends State<OrdersPage> {
   String selectedStatus = 'Tous'; // Initialize with 'Tous'
 
   int pageindex = 0;
+  String searchQuery = ''; // Add this line
+
   List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
   List<String> statusList = [
     'Tous',
@@ -36,7 +38,7 @@ class _OrdersPageState extends State<OrdersPage> {
     'Annulé',
     'Préparé',
     'Expidié',
-    'Encaissé',
+    'Encaisse',
     'Retourné',
   ];
 
@@ -65,7 +67,11 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: searchContainer("Chercher une commande"),
+                  child: searchContainer("Chercher une commande", (query) {
+                    setState(() {
+                      searchQuery = query;
+                    });
+                  }),
                 ),
                 const SizedBox(
                   height: 15,
@@ -105,8 +111,10 @@ class _OrdersPageState extends State<OrdersPage> {
                     if (state.getCommandesState == RequestState.loaded) {
                       List<Command> filteredCommands = state.getCommandes
                           .where((command) =>
-                              selectedStatus == 'Tous' ||
-                              command.status == selectedStatus)
+                              (selectedStatus == 'Tous' ||
+                                  command.status == selectedStatus) &&
+                              (searchQuery.isEmpty ||
+                                  command.phoneNumber.toString().contains(searchQuery)))
                           .toList();
 
                       // Group and display filtered data
@@ -209,7 +217,7 @@ class _OrdersPageState extends State<OrdersPage> {
       statusColor = Colors.red;
     } else if (command.status == 'Confirmé' || command.status == 'Préparé') {
       statusColor = Colors.yellow;
-    } else if (command.status == 'Encaissé') {
+    } else if (command.status == 'Encaisse') {
       statusColor = Colors.blue;
     } else if (command.status == 'Expidié') {
       statusColor = Colors.green;

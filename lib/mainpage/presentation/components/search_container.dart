@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget searchContainer(String hinttext) {
+Widget searchContainer(String hinttext, Function(String) onSearchChanged) {
   return Container(
     height: 40,
     width: double.infinity,
@@ -20,6 +20,7 @@ Widget searchContainer(String hinttext) {
       children: [
         Expanded(
           child: TextField(
+            onChanged: onSearchChanged,
             decoration: InputDecoration(
               hintText: hinttext,
               hintStyle: const TextStyle(

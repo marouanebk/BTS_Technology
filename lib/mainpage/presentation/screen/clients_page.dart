@@ -9,6 +9,8 @@ class ClientsPage extends StatefulWidget {
 }
 
 class _ClientsPageState extends State<ClientsPage> {
+  String searchQuery = ''; // Add this line
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,11 @@ class _ClientsPageState extends State<ClientsPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
-              searchContainer("Chercher un client "),
+              searchContainer("Chercher un client ", (query) {
+                setState(() {
+                  searchQuery = query;
+                });
+              }),
               const SizedBox(
                 height: 30,
               ),

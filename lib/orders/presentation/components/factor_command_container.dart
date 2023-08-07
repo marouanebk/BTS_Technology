@@ -1,8 +1,11 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FactorCommandContainer extends StatefulWidget {
   final Command command;
@@ -18,19 +21,39 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   void initState() {
     super.initState();
     type = widget.command.status;
+    log(widget.command.articleList.toString());
     // type = "Pas confirmé";
   }
 
   List<Map<String, String>> statusListAdmin = [
-    {'label': 'Téléphone', "value": "Téléphone"},
+    {'label': 'Téléphone éteint', "value": "Téléphone éteint"},
     {'label': 'Numero erroné', "value": "Numero erroné"},
     {'label': 'Annulé', "value": "Annulé"},
     {'label': 'Pas confirmé', "value": "Pas confirmé"},
     {'label': 'Préparé', "value": "Préparé"},
     {'label': 'Expidié', "value": "Expidié"},
-    {'label': 'Encaissé', "value": "Encaissé"},
+    {'label': 'Encaisse', "value": "Encaisse"},
     {'label': 'Retourné', "value": "Retourné"},
   ];
+
+  Future<void> _updateStatus(String? newStatus) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("token");
+      final response = await Dio().patch(
+        ApiConstance.updateCommandStatus(
+            widget.command.id!), // Replace with your API URL
+        data: {'status': newStatus},
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      log('Status updated successfully: ${response.data}');
+    } catch (error) {
+      log('Error updating status: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,10 +85,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 color: Color(0xFFECECEC),
               ),
             ),
-            for (var item in widget.command.articleList )
-            
-            productDetail("Sweat oversize", 3),
-            productDetail("Tshirt", 3),
+            for (var item in widget.command.articleList) productDetail(item!),
             const SizedBox(
               width: double.infinity,
               child: Divider(
@@ -74,7 +94,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 color: Color(0xFFECECEC),
               ),
             ),
-            clientInfo(),
+            clientInfo(widget.command),
             const SizedBox(
               height: 16,
             ),
@@ -128,6 +148,8 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
               value: type,
               onChanged: (value) {
                 setState(() {
+                  _updateStatus(value);
+
                   type = value;
                 });
               },
@@ -135,10 +157,10 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 10,
             ),
-            const Center(
+            Center(
               child: Text(
-                "Saisie par @walid",
-                style: TextStyle(
+                "Saisie par @${widget.command.user}",
+                style: const TextStyle(
                   color: Color(0xFF9F9F9F),
                   fontFamily: "Inter",
                   fontSize: 16,
@@ -167,14 +189,21 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     );
   }
 
-  Widget clientInfo() {
+  Widget clientInfo(Command command) {
+    String totalPriceText = command.articleList
+        .map((article) => "${article!.quantity} x ${article.unityPrice}DA")
+        .join(" + ");
+
+    int totalPrice = command.articleList.fold(0, (sum, article) {
+      return sum + (article!.quantity * article.unityPrice.toInt());
+    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             children: [
-              WidgetSpan(
+              const WidgetSpan(
                 child: Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: Icon(
@@ -184,8 +213,8 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 ),
               ),
               TextSpan(
-                text: 'Kalitous, Alger',
-                style: TextStyle(
+                text: command.adresse,
+                style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF9F9F9F),
                     fontWeight: FontWeight.w400),
@@ -194,9 +223,9 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           ),
         ),
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             children: [
-              WidgetSpan(
+              const WidgetSpan(
                 child: Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: Icon(
@@ -206,8 +235,8 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 ),
               ),
               TextSpan(
-                text: '0783 98 78 67',
-                style: TextStyle(
+                text: command.phoneNumber.toString(),
+                style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF9F9F9F),
                     fontWeight: FontWeight.w400),
@@ -216,9 +245,9 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           ),
         ),
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             children: [
-              WidgetSpan(
+              const WidgetSpan(
                 child: Padding(
                   padding: EdgeInsets.only(right: 8),
                   child: Icon(
@@ -229,8 +258,31 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 ),
               ),
               TextSpan(
-                text: '3 x 1200DA',
-                style: TextStyle(
+                text: totalPriceText,
+                style: const TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF9F9F9F),
+                    fontWeight: FontWeight.w400),
+              ),
+            ],
+          ),
+        ),
+        RichText(
+          text: TextSpan(
+            children: [
+              const WidgetSpan(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.event_note,
+                    color: Colors.black,
+                    size: 16,
+                  ),
+                ),
+              ),
+              TextSpan(
+                text: command.noteClient,
+                style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF9F9F9F),
                     fontWeight: FontWeight.w400),
@@ -242,21 +294,21 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     );
   }
 
-  Widget productDetail(String title, int quantity) {
+  Widget productDetail(CommandArticle command) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "$quantity x $title",
+          "${command.quantity} x ${command.articleName}",
           style: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(
           height: 10,
         ),
-        const Text(
-          "Personnalisé détail | rouge | XL | regular",
-          style: TextStyle(
+        Text(
+          "${command.commandType} | ${command.colour} | ${command.taille} | ${command.family} ",
+          style: const TextStyle(
               color: Color(0xFF9F9F9F),
               fontSize: 14,
               fontWeight: FontWeight.w400),

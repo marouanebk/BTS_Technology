@@ -8,7 +8,7 @@ class Command extends Equatable {
   final List<Article?>? articles;
   final String? date;
   final String? user;
-  final String ?status;
+  final String? status;
 
   final String page;
   final String nomClient;
@@ -52,21 +52,40 @@ class Command extends Equatable {
 
 class CommandArticle extends Equatable {
   final String? id;
+  final String? articleName;
+  final String? taille;
+  final String? colour;
+  final String? family;
+  final String? commandType;
   final String articleId;
   final String variantId;
-  final String commandType;
   final int quantity;
   final num unityPrice;
 
   const CommandArticle({
     this.id,
+    this.articleName,
+    this.taille,
+    this.colour,
+    this.family,
+     this.commandType,
+     
     required this.articleId,
     required this.variantId,
-    required this.commandType,
     required this.quantity,
     required this.unityPrice,
   });
   @override
-  List<Object?> get props =>
-      [id, articleId, variantId, commandType, quantity, unityPrice];
+  List<Object?> get props => [
+        id,
+        articleName,
+        taille,
+        colour,
+        family,
+        articleId,
+        variantId,
+        commandType,
+        quantity,
+        unityPrice
+      ];
 }

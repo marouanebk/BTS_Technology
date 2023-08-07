@@ -4,6 +4,11 @@ import 'package:bts_technologie/authentication/domaine/usecases/get_all_users_us
 import 'package:bts_technologie/authentication/domaine/usecases/login_usecase.dart';
 import 'package:bts_technologie/authentication/domaine/usecases/signup_usecase.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
+import 'package:bts_technologie/finances/data/datasource/finance_datasource.dart';
+import 'package:bts_technologie/finances/data/repository/finance_repo_emplem.dart';
+import 'package:bts_technologie/finances/domaine/repository/base_finance_repo.dart';
+import 'package:bts_technologie/finances/domaine/usecases/get_finances_usecase.dart';
+import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_bloc.dart';
 import 'package:bts_technologie/logistiques/data/datasource/article_datasource.dart';
 import 'package:bts_technologie/logistiques/data/repository/article_repo_emplem.dart';
 import 'package:bts_technologie/logistiques/domaine/repository/base_article_repo.dart';
@@ -37,7 +42,8 @@ class ServiceLocator {
     sl.registerFactory(() => UserBloc(sl(), sl()));
     sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl()));
     sl.registerFactory(() => ArticleBloc(sl(), sl(), sl(), sl(), sl()));
-    sl.registerFactory(() => CommandBloc(sl(),sl()));
+    sl.registerFactory(() => CommandBloc(sl(), sl()));
+    sl.registerFactory(() => FinanceBloc(sl()));
 
     //Articles usecase
 
@@ -63,6 +69,9 @@ class ServiceLocator {
     sl.registerLazySingleton(() => GetCommandesUseCase(sl()));
     sl.registerLazySingleton(() => CreateCommandUseCase(sl()));
 
+    //
+    sl.registerLazySingleton(() => GetFinancesUseCase(sl()));
+
     // Repository
     sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));
     sl.registerLazySingleton<BaseArticleRepository>(
@@ -71,6 +80,9 @@ class ServiceLocator {
         () => AccountRepository(sl()));
     sl.registerLazySingleton<BaseCommandRepository>(
         () => CommandesRepository(sl()));
+
+    sl.registerLazySingleton<BaseFinanceRepository>(
+        () => FinanceRepository(sl()));
 
     // sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));
 
@@ -85,5 +97,8 @@ class ServiceLocator {
 
     sl.registerLazySingleton<BaseCommandRemoteDatasource>(
         () => CommandRemoteDataSource());
+
+    sl.registerLazySingleton<BaseFinanceRemoteDateSource>(
+        () => FinanceRemoteDataSource());
   }
 }

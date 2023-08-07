@@ -30,6 +30,7 @@ class CommandesRepository implements BaseCommandRepository {
       adresse: command.adresse,
       nomClient: command.nomClient,
       phoneNumber: command.phoneNumber,
+      noteClient: command.noteClient,
       // page: article.page,
       page: "64cd480d77bfd292828bb74e",
       status: command.status,

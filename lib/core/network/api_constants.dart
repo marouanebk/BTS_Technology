@@ -32,7 +32,9 @@ class ApiConstance {
   // static const String updateCommandStatus = "$baseUrl$commandApi/create";
   static const String editCommand = "$baseUrl$commandApi/create";
   static String updateCommandStatus(String id) =>
-      '$baseUrl$commandApi/update/$id';
+      '$baseUrl$commandApi/status/update/$id';
+
+  static const String getCommandesStatsForAdmin = "$baseUrl$commandApi/status/stats";
 
   // static String addConversation =
   //     "$baseUrl$conversationRoutes/addconversation/";

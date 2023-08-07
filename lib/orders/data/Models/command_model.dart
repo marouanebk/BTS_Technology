@@ -46,6 +46,23 @@ class CommandModel extends Command {
       final dateData = json[dateKey];
 
       dateData.forEach((data) {
+        var articleList = data['articles'] as List<dynamic>?;
+        List<CommandArticle> variants = [];
+        if (articleList != null) {
+          variants = articleList.map((variantJson) {
+            return CommandArticle(
+              articleId: variantJson['_id'],
+              variantId: variantJson['variantID'],
+              commandType: variantJson['commandType'],
+              unityPrice: variantJson['unityPrice'],
+              colour: variantJson['colour'],
+              taille: variantJson['taille'],
+              quantity: variantJson['quantity'],
+              family: variantJson['family'],
+              articleName: variantJson['articleName'],
+            );
+          }).toList();
+        }
         final commandModel = CommandModel(
           date: dateKey,
           id: data["_id"],
@@ -58,6 +75,7 @@ class CommandModel extends Command {
           page: data["page"]["name"],
           phoneNumber: data["phoneNumber"],
           status: data["status"],
+          articleList: variants,
         );
 
         // Add the CommandModel instance to the list
@@ -105,6 +123,7 @@ class CommandModel extends Command {
       "page": page,
       "status": status,
       "articles": articles,
+      "noteClient" : noteClient,
     };
   }
 
