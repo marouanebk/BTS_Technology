@@ -5,15 +5,15 @@ class FinanceEntity extends Equatable {
   final String? id;
   final String label;
   final num money;
+  final String? date;
 
   const FinanceEntity({
-
-     this.id,
+    this.id,
     required this.money,
     required this.label,
+    this.date,
   });
 
   @override
-  List<Object?> get props =>
-      [id, label, money];
+  List<Object?> get props => [id, label, money, date];
 }

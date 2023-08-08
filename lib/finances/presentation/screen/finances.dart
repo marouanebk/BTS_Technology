@@ -1,7 +1,17 @@
 import 'dart:math';
 
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/finances/domaine/entities/finance_entity.dart';
+import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_bloc.dart';
+import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_event.dart';
+import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_state.dart';
+import 'package:bts_technologie/finances/presentation/screen/new_charge.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
 class FinancesPage extends StatefulWidget {
   const FinancesPage({super.key});
@@ -11,100 +21,188 @@ class FinancesPage extends StatefulWidget {
 }
 
 class _FinancesPageState extends State<FinancesPage> {
+  late List<_ChartData> data;
+  late TooltipBehavior _tooltip;
+
+  @override
+  void initState() {
+    data = [
+      _ChartData('CHN', 12),
+      _ChartData('GER', 15),
+      _ChartData('RUS', 30),
+      _ChartData('BRZ', 6.4),
+      _ChartData('IND', 14)
+    ];
+    _tooltip = TooltipBehavior(enable: true);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 20,
+    return BlocProvider(
+      create: (context) => sl<FinanceBloc>()..add(GetFinancesEvent()),
+      child: Builder(builder: (context) {
+        return SafeArea(
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                        child: screenHeader("Finances",
+                            'assets/images/navbar/finances_activated.svg')),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    _topContainer(),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    _cashflow(),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    SfCartesianChart(
+                      primaryXAxis: CategoryAxis(),
+                      primaryYAxis:
+                          NumericAxis(minimum: 0, maximum: 40, interval: 10),
+                      tooltipBehavior: _tooltip,
+                      series: <ChartSeries<_ChartData, String>>[
+                        ColumnSeries<_ChartData, String>(
+                          dataSource: data,
+                          xValueMapper: (_ChartData data, _) => data.x,
+                          yValueMapper: (_ChartData data, _) => data.y,
+                          name: 'Gold',
+                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                          color: const Color(0xFFECECEC),
+                          selectionBehavior: SelectionBehavior(
+                            enable: true,
+                            unselectedOpacity: 1.0,
+                            selectedColor: Colors.black,
+                            unselectedColor: Color(0xFFECECEC),
+                          ),
+                        )
+                        // color: Color.fromRGBO(8, 142, 255, 1))
+                      ],
+                    ),
+
+                    //put the bar charts here :
+
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    BlocBuilder<FinanceBloc, FinancesState>(
+                      builder: (context, state) {
+                        if (state.getFinancesState == RequestState.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.red,
+                            ),
+                          );
+                        }
+                        if (state.getFinancesState == RequestState.error) {
+                          return Text(
+                            state.getFinancesmessage,
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
+                        if (state.getFinancesState == RequestState.loaded) {
+                          Map<String, List<FinanceEntity>> groupedData = {};
+                          // for (Command command in state.getCommandes) {
+
+                          for (FinanceEntity finance in state.getFinances) {
+                            if (!groupedData.containsKey(finance.date)) {
+                              groupedData[finance.date!] = [];
+                            }
+                            groupedData[finance.date]?.add(finance);
+                          }
+                          return revenueList(groupedData);
+                        }
+
+                        return Container();
+                      },
+                    ),
+                  ],
                 ),
-                Center(
-                    child: screenHeader("Finances",
-                        'assets/images/navbar/finances_activated.svg')),
-                const SizedBox(
-                  height: 30,
+              ),
+            ),
+            floatingActionButton: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 20),
+                child: Container(
+                  height: 76,
+                  width: 76,
+                  decoration: const BoxDecoration(
+                      shape: BoxShape.circle, color: Colors.black),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) => const NewFinanceCharge(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        size: 35,
+                      ),
+                      color: Colors.white),
                 ),
-                _topContainer(),
-                const SizedBox(
-                  height: 30,
-                ),
-                _cashflow(),
-                const SizedBox(
-                  height: 30,
-                ),
-                revenueList(),
-              ],
+              ),
             ),
           ),
-        ),
-        floatingActionButton: Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 20, bottom: 20),
-            child: Container(
-              height: 76,
-              width: 76,
-              decoration: const BoxDecoration(
-                  shape: BoxShape.circle, color: Colors.black),
-              child: IconButton(
-                  onPressed: () {
-                    // Navigator.of(context, rootNavigator: true).push(
-                    //   MaterialPageRoute(
-                    //     builder: (_) => NewArticle(),
-                    //   ),
-                    // );
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    size: 35,
-                  ),
-                  color: Colors.white),
-            ),
-          ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
-  Widget revenueList() {
-    final random = Random();
-
+  Widget revenueList(Map<String, List<FinanceEntity>> groupedData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "admins",
-          style: TextStyle(
-            color:
-                Color(0xFF9F9F9F), // Replace with your custom color if needed
-            fontFamily: "Inter", // Replace with the desired font family
-            fontSize: 16,
-            fontStyle: FontStyle.normal,
-            fontWeight: FontWeight.w400,
-            height: 1.0, // Default line height is normal (1.0)
+        for (String date in groupedData.keys) ...[
+          Text(
+            date,
+            style: const TextStyle(
+              color:
+                  Color(0xFF9F9F9F), // Replace with your custom color if needed
+              fontFamily: "Inter", // Replace with the desired font family
+              fontSize: 16,
+              fontStyle: FontStyle.normal,
+              fontWeight: FontWeight.w400,
+              height: 1.0, // Default line height is normal (1.0)
+            ),
+            textAlign: TextAlign.right,
           ),
-          textAlign: TextAlign.right,
-        ),
-        ListView.separated(
-          scrollDirection: Axis.vertical,
-          separatorBuilder: (context, index) => const SizedBox(
-            height: 14,
+          const SizedBox(
+            height: 12,
           ),
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 8,
-          itemBuilder: (context, index) {
-            final isRed = random.nextBool();
+          ListView.separated(
+            scrollDirection: Axis.vertical,
+            separatorBuilder: (context, index) => const SizedBox(
+              height: 14,
+            ),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: groupedData[date]!.length,
+            itemBuilder: (context, index) {
+              FinanceEntity finance = groupedData[date]![index];
+              final isRed = finance.money < 0;
+              // final isRed = random.nextBool();
 
-            return revenueItem(isRed);
-          },
-        ),
+              return revenueItem(finance, isRed);
+            },
+          ),
+          const SizedBox(
+            height: 12,
+          )
+        ],
         const SizedBox(
           height: 50,
         ),
@@ -112,7 +210,7 @@ class _FinancesPageState extends State<FinancesPage> {
     );
   }
 
-  Widget revenueItem(bool isRed) {
+  Widget revenueItem(FinanceEntity finance, bool isRed) {
     final backgroundColor = isRed ? Colors.red : Colors.green;
 
     return Container(
@@ -135,8 +233,8 @@ class _FinancesPageState extends State<FinancesPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(
+          Padding(
+            padding: const EdgeInsets.only(
               right: 15,
               left: 15,
               top: 18,
@@ -145,8 +243,8 @@ class _FinancesPageState extends State<FinancesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "- 8,000 DA",
-                  style: TextStyle(
+                  "${finance.money} DA",
+                  style: const TextStyle(
                     color: Colors.black,
                     fontFamily: "Inter",
                     fontSize: 18,
@@ -155,12 +253,12 @@ class _FinancesPageState extends State<FinancesPage> {
                     height: 1.0,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Text(
-                  "Frais des livraisons",
-                  style: TextStyle(
+                  isRed ? finance.label : "Com N° ${finance.label}",
+                  style: const TextStyle(
                     color: Color(0xFF9F9F9F),
                     fontFamily: "Inter",
                     fontSize: 14,
@@ -354,4 +452,11 @@ class _FinancesPageState extends State<FinancesPage> {
       ],
     );
   }
+}
+
+class _ChartData {
+  _ChartData(this.x, this.y);
+
+  final String x;
+  final double y;
 }

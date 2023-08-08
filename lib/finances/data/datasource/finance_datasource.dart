@@ -19,7 +19,7 @@ class FinanceRemoteDataSource extends BaseFinanceRemoteDateSource {
   Future<List<FinanceModel>> getFinances() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    final response = await Dio().get(ApiConstance.getArticles,
+    final response = await Dio().get(ApiConstance.getFinancesApi,
         options: Options(
           headers: {
             "Authorization": "Bearer $token",
@@ -27,14 +27,12 @@ class FinanceRemoteDataSource extends BaseFinanceRemoteDateSource {
         ));
     log("response");
     if (response.statusCode == 200) {
-      return List<FinanceModel>.from((response.data as List).map(
-        (e) => FinanceModel.fromJson(e),
-      ));
+      return FinanceModel.fromJsonList(response.data);
     } else {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+              statusMessage: response.data['err']));
     }
   }
 }

@@ -5,6 +5,7 @@ class ApiConstance {
   static const String authApi = "/api/auth";
   static const String accountApi = "/api/account";
   static const String commandApi = "/api/command";
+  static const String financeApi = "/api/finance";
 
   static const String signup = "$baseUrl$authApi/signup";
   static const String login = "$baseUrl$authApi/login";
@@ -36,12 +37,9 @@ class ApiConstance {
 
   static const String getCommandesStatsForAdmin = "$baseUrl$commandApi/status/stats";
 
-  // static String addConversation =
-  //     "$baseUrl$conversationRoutes/addconversation/";
+  //finances
+    static const String getFinancesApi = "$baseUrl$financeApi/";
+    static const String createFinanceChargeApi = "$baseUrl$financeApi/add";
 
-  // static String getAllConversations(String userid) =>
-  //     '$baseUrl$conversationRoutes/getconversations/$userid';
 
-  // static String addGroup = "$baseUrl$groupRoutes/addgroupe/";
-  // static String addtogroupe = '$baseUrl$groupRoutes/addtogroupe/';
 }
