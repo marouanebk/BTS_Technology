@@ -88,7 +88,7 @@ class _NewPageAccountState extends State<NewPageAccount> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AccountManager(), // Replace MainPage with the actual widget class for your MainPage
+                      const   AccountManager(), // Replace MainPage with the actual widget class for your MainPage
                   ),
                 );
               } else {

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
@@ -6,12 +5,10 @@ import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
-import 'package:bts_technologie/finances/presentation/screen/finances.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 int? isLoggedIn;
 String? type;

@@ -12,23 +12,27 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 class PageAdministratorBaseScreen extends StatefulWidget {
   const PageAdministratorBaseScreen({Key? key}) : super(key: key);
   @override
-  State<PageAdministratorBaseScreen> createState() => _PageAdministratorBaseScreenState();
+  State<PageAdministratorBaseScreen> createState() =>
+      _PageAdministratorBaseScreenState();
 }
 
-class _PageAdministratorBaseScreenState extends State<PageAdministratorBaseScreen> {
+class _PageAdministratorBaseScreenState
+    extends State<PageAdministratorBaseScreen> {
   final _controller = PersistentTabController(initialIndex: 0);
 
-  List<Widget> _buildScreens() {
+  List<Widget> _buildScreens(context) {
     return [
       const MainPage(),
-      const OrdersPage(),
+      const OrdersPage(
+        role: "admin",
+      ),
       const Notifications(),
       const Logistiques(),
       const FinancesPage()
     ];
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
+  List<PersistentBottomNavBarItem> _navBarsItems(context) {
     return [
       PersistentBottomNavBarItem(
         icon: SvgPicture.asset(
@@ -102,6 +106,7 @@ class _PageAdministratorBaseScreenState extends State<PageAdministratorBaseScree
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
+       
       ),
     ];
   }
@@ -111,8 +116,8 @@ class _PageAdministratorBaseScreenState extends State<PageAdministratorBaseScree
     return PersistentTabView(
       context,
       controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarsItems(),
+      screens: _buildScreens(context),
+      items: _navBarsItems(context),
       confineInSafeArea: true,
       backgroundColor: Colors.white, // Default is Colors.white.
       handleAndroidBackButtonPress: true, // Default is true.
@@ -136,8 +141,9 @@ class _PageAdministratorBaseScreenState extends State<PageAdministratorBaseScree
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle:
-          NavBarStyle.style5, // Choose the nav bar style with this property.
+      navBarStyle: NavBarStyle.style5,
     );
   }
+
+
 }

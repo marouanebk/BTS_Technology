@@ -18,7 +18,7 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
 
   List<Widget> _buildScreens() {
     return [
-      const OrdersPage(),
+      const OrdersPage(role: "pageAdmin",),
       const Notifications(),
       Container(),
     ];

@@ -2,6 +2,7 @@ import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dar
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_event.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_state.dart';
+import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
@@ -132,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const PageAdministratorBaseScreen()),
+                                            const AdminPageBaseScreen()),
                                     (Route<dynamic> route) => false);
                               } else if (state is FinancesLoginState) {
                                 Navigator.of(context).pushAndRemoveUntil(

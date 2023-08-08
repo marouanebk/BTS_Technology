@@ -20,9 +20,9 @@ class LogistiquesBaseScreen extends StatefulWidget {
 class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
   final _controller = PersistentTabController(initialIndex: 0);
 
-  List<Widget> _buildScreens() {
+  List<Widget> _buildScreens(context) {
     return [
-      const OrdersPage(),
+      const OrdersPage(role : "logistics"),
       const Notifications(),
       const Logistiques(),
       const LogoutButton()
@@ -102,7 +102,7 @@ class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
     return PersistentTabView(
       context,
       controller: _controller,
-      screens: _buildScreens(),
+      screens: _buildScreens(context),
       items: _navBarsItems(context),
       confineInSafeArea: true,
       backgroundColor: Colors.white, // Default is Colors.white.

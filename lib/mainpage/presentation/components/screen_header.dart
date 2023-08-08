@@ -36,7 +36,7 @@ Widget smallRichText(String title, String link) {
               link,
               width: 10,
               height: 10,
-              color: Color(0xFF9F9F9F),
+              color: const Color(0xFF9F9F9F),
             ),
           ),
         ),

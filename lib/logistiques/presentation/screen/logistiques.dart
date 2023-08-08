@@ -78,7 +78,7 @@ class _LogistiquesState extends State<Logistiques> {
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
-                            builder: (_) => NewArticle(),
+                            builder: (_) => const NewArticle(),
                           ),
                         );
                       },

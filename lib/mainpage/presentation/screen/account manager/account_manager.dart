@@ -213,7 +213,7 @@ class CustomPopupMenuButton extends StatelessWidget {
   final Function(String) onItemSelected;
 
   const CustomPopupMenuButton(
-      {required this.isMenuOpen, required this.onItemSelected});
+      {super.key, required this.isMenuOpen, required this.onItemSelected});
 
   @override
   Widget build(BuildContext context) {

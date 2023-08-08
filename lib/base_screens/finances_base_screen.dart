@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/finances/presentation/screen/finances.dart';
 import 'package:bts_technologie/notifications/presentation/screen/notifications.dart';
@@ -16,16 +19,18 @@ class FinancesBaseScreen extends StatefulWidget {
 class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
   final _controller = PersistentTabController(initialIndex: 0);
 
-  List<Widget> _buildScreens() {
+  List<Widget> _buildScreens(context) {
     return [
-      const OrdersPage(),
+      const OrdersPage(
+        role: "financier",
+      ),
       const Notifications(),
       const FinancesPage(),
       Container()
     ];
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
+  List<PersistentBottomNavBarItem> _navBarsItems(context) {
     return [
       PersistentBottomNavBarItem(
         icon: SvgPicture.asset(
@@ -82,6 +87,13 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
+        onPressed: (BuildContext? context) {
+          if (context != null) {
+            performLogout(context);
+          } else {
+            log("context null");
+          }
+        },
       ),
     ];
   }
@@ -91,8 +103,8 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
     return PersistentTabView(
       context,
       controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarsItems(),
+      screens: _buildScreens(context),
+      items: _navBarsItems(context),
       confineInSafeArea: true,
       backgroundColor: Colors.white, // Default is Colors.white.
       handleAndroidBackButtonPress: true, // Default is true.
@@ -118,6 +130,17 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
       ),
       navBarStyle:
           NavBarStyle.style5, // Choose the nav bar style with this property.
+    );
+  }
+
+  void performLogout(BuildContext ontext) {
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return const LoginPage();
+        },
+      ),
+      (_) => false,
     );
   }
 }

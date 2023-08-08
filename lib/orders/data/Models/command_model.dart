@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
@@ -14,9 +13,11 @@ class CommandModel extends Command {
     List<Article?>? articles,
     String? user,
     String? status,
+    num? prixSoutraitant,
+    String? page,
+    String? livreur,
     required String nomClient,
     required String adresse,
-    required String page,
     required num phoneNumber,
     required num sommePaid,
     //
@@ -26,6 +27,7 @@ class CommandModel extends Command {
           comNumber: comNumber,
           noteClient: noteClient,
           articles: articles,
+          prixSoutraitant: prixSoutraitant,
           user: user,
           nomClient: nomClient,
           adresse: adresse,
@@ -35,6 +37,7 @@ class CommandModel extends Command {
           status: status,
           date: date,
           articleList: articleList,
+          livreur: livreur,
         );
 
   static List<CommandModel> fromJsonList(Map<String, dynamic> json) {
@@ -42,7 +45,7 @@ class CommandModel extends Command {
 
     final List<CommandModel> commandModels = [];
 
-    dateKeys.forEach((dateKey) {
+    for (var dateKey in dateKeys) {
       final dateData = json[dateKey];
 
       dateData.forEach((data) {
@@ -69,6 +72,7 @@ class CommandModel extends Command {
           comNumber: data["comNumber"],
           noteClient: data["noteClient"],
           sommePaid: data["sommePaid"],
+          prixSoutraitant: data["prixSoutraitant"],
           user: data["user"]["username"],
           nomClient: data["nomClient"],
           adresse: data["adresse"],
@@ -76,34 +80,36 @@ class CommandModel extends Command {
           phoneNumber: data["phoneNumber"],
           status: data["status"],
           articleList: variants,
+          livreur: data["livreur"],
         );
 
         // Add the CommandModel instance to the list
         commandModels.add(commandModel);
       });
-    });
+    }
 
     return commandModels;
   }
 
-  factory CommandModel.fromJson(Map<String, dynamic> json) {
-    return CommandModel(
-        id: json["_id"],
-        comNumber: json["comNumber"],
-        noteClient: json["noteClient"],
-        // articles: json["articles"],
-        sommePaid: json["sommePaid"],
-        user: json["user"],
-        nomClient: json["nomClient"],
-        adresse: json["adresse"],
-        page: json["page"]["name"],
-        phoneNumber: json["phoneNumber"],
-        status: json["status"]);
-  }
+  // factory CommandModel.fromJson(Map<String, dynamic> json) {
+  //   return CommandModel(
+  //     id: json["_id"],
+  //     comNumber: json["comNumber"],
+  //     noteClient: json["noteClient"],
+  //     prixSoutraitant: json["prixSoutraitant"],
+  //     // articles: json["articles"],
+  //     sommePaid: json["sommePaid"],
+  //     user: json["user"],
+  //     nomClient: json["nomClient"],
+  //     adresse: json["adresse"],
+  //     page: json["page"]["name"],
+  //     phoneNumber: json["phoneNumber"],
+  //     status: json["status"],
+  //   );
+  // }
 
   Map<String, dynamic> toJson() {
     List<Map<String, dynamic>> articles = [];
-    if (articleList != null) {
       articles = articleList.map((variant) {
         return {
           'articleId': variant!.articleId,
@@ -113,7 +119,7 @@ class CommandModel extends Command {
           'unityPrice': variant.unityPrice,
         };
       }).toList();
-    }
+    
     return {
       "sommePaid": sommePaid,
       "user": user,
@@ -123,7 +129,9 @@ class CommandModel extends Command {
       "page": page,
       "status": status,
       "articles": articles,
-      "noteClient" : noteClient,
+      "noteClient": noteClient,
+      "livreur": livreur,
+      "prixSoutraitant": prixSoutraitant,
     };
   }
 

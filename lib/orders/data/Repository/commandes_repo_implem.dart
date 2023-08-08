@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/error/failure.dart';
-import 'package:bts_technologie/logistiques/data/model/article_model.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/data/dataSource/commades_datasource.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
@@ -31,8 +28,9 @@ class CommandesRepository implements BaseCommandRepository {
       nomClient: command.nomClient,
       phoneNumber: command.phoneNumber,
       noteClient: command.noteClient,
+      page: command.page,
+      prixSoutraitant: command.prixSoutraitant,
       // page: article.page,
-      page: "64cd480d77bfd292828bb74e",
       status: command.status,
       sommePaid: command.sommePaid,
       articleList: command.articleList,

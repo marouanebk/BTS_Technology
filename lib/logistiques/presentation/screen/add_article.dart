@@ -1,18 +1,24 @@
 import 'dart:developer';
 
 import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/data/model/article_model.dart';
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/logistiques/presentation/components/select_field_input.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
+import 'package:bts_technologie/logistiques/presentation/screen/logistiques.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class NewArticle extends StatefulWidget {
+  const NewArticle({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _NewArticleState createState() => _NewArticleState();
 }
 
@@ -115,128 +121,142 @@ class _NewArticleState extends State<NewArticle> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<ArticleBloc>(),
-      child: Builder(builder: (context) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            centerTitle: true, // Align the title to the center
-
-            title: const Text(
-              "Ajouter un article",
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            // backgroundColor:
-            //     Colors.blue.withOpacity(0.3), //You can make this transparent
-            elevation: 0.0,
-          ),
-          body: Stack(
-            children: [
-              SingleChildScrollView(
-                padding: const EdgeInsets.only(right: 20.0, left: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    buildInputField(
-                        label: "Nom de l'article",
-                        hintText: "Entrez le nom de l'article",
-                        errorText: "Vous devez entrer une nom",
-                        controller: nomArticleController,
-                        formSubmitted: _formSubmitted),
-                    const SizedBox(height: 20),
-                    buildInputField(
-                      label: "Unité",
-                      hintText: "Entrez l'unité",
-                      errorText: "Vous devez entrer une Unité",
-                      controller: uniteController,
-                      formSubmitted: _formSubmitted,
-                    ),
-                    const SizedBox(height: 20),
-                    buildInputField(
-                        label: "Prix d'achat",
-                        hintText: "Entrez le prix d'achat",
-                        errorText: "Vous devez entrer le prix d'achat",
-                        controller: prixAchatController,
-                        isNumeric: true,
-                        formSubmitted: _formSubmitted),
-                    const SizedBox(height: 20),
-                    buildInputField(
-                        label: "Prix de ventre en gros",
-                        hintText: "Entrez le prix de vente en gros",
-                        errorText: "Vous devez entrer le prix de vente en gros",
-                        controller: prixGrosController,
-                        isNumeric: true,
-                        formSubmitted: _formSubmitted),
-                    const SizedBox(height: 20),
-                    buildInputField(
-                        label: "Quantité d'alerte",
-                        hintText: "Entrez la quantité d'alerte",
-                        errorText: "Vous devez entrer la quantité d'alerte",
-                        controller: quanAlertController,
-                        isNumeric: true,
-                        formSubmitted: _formSubmitted),
-                    const SizedBox(height: 20),
-                    _imagePickerContainer(),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const Text(
-                      "Variants",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF9F9F9F)),
-                    ),
-                    const SizedBox(height: 10),
-                    // _variantContainer(),
-                    _variantContainerList(),
-                    const SizedBox(height: 20),
-                    _addVariantContainer(),
-                    const SizedBox(height: 80),
-                  ],
-                ),
+      child: BlocListener<ArticleBloc, ArticleState>(
+        listener: (context, state) {
+          if (state.createArticleState == RequestState.loaded) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const Logistiques(), // Replace MainPage with the actual widget class for your MainPage
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                    height: 50, // Set the height to 50
-                    width: double.infinity,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _checkFormValidation(context);
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.black),
+            );
+          }
+        },
+        child: Builder(builder: (context) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              centerTitle: true, // Align the title to the center
+
+              title: const Text(
+                "Ajouter un article",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black),
+              ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              // backgroundColor:
+              //     Colors.blue.withOpacity(0.3), //You can make this transparent
+              elevation: 0.0,
+            ),
+            body: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.only(right: 20.0, left: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      buildInputField(
+                          label: "Nom de l'article",
+                          hintText: "Entrez le nom de l'article",
+                          errorText: "Vous devez entrer une nom",
+                          controller: nomArticleController,
+                          formSubmitted: _formSubmitted),
+                      const SizedBox(height: 20),
+                      buildInputField(
+                        label: "Unité",
+                        hintText: "Entrez l'unité",
+                        errorText: "Vous devez entrer une Unité",
+                        controller: uniteController,
+                        formSubmitted: _formSubmitted,
                       ),
-                      child: const Text(
-                        "Ajouter l'article",
+                      const SizedBox(height: 20),
+                      buildInputField(
+                          label: "Prix d'achat",
+                          hintText: "Entrez le prix d'achat",
+                          errorText: "Vous devez entrer le prix d'achat",
+                          controller: prixAchatController,
+                          isNumeric: true,
+                          formSubmitted: _formSubmitted),
+                      const SizedBox(height: 20),
+                      buildInputField(
+                          label: "Prix de ventre en gros",
+                          hintText: "Entrez le prix de vente en gros",
+                          errorText:
+                              "Vous devez entrer le prix de vente en gros",
+                          controller: prixGrosController,
+                          isNumeric: true,
+                          formSubmitted: _formSubmitted),
+                      const SizedBox(height: 20),
+                      buildInputField(
+                          label: "Quantité d'alerte",
+                          hintText: "Entrez la quantité d'alerte",
+                          errorText: "Vous devez entrer la quantité d'alerte",
+                          controller: quanAlertController,
+                          isNumeric: true,
+                          formSubmitted: _formSubmitted),
+                      const SizedBox(height: 20),
+                      _imagePickerContainer(),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      const Text(
+                        "Variants",
                         style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF9F9F9F)),
+                      ),
+                      const SizedBox(height: 10),
+                      // _variantContainer(),
+                      _variantContainerList(),
+                      const SizedBox(height: 20),
+                      _addVariantContainer(),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      height: 50, // Set the height to 50
+                      width: double.infinity,
+                      decoration:
+                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _checkFormValidation(context);
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.black),
+                        ),
+                        child: const Text(
+                          "Ajouter l'article",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 

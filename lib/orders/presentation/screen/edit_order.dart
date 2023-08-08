@@ -19,22 +19,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddOrderPage extends StatefulWidget {
+class EditOrderPage extends StatefulWidget {
   final String role;
-  const AddOrderPage({required this.role, super.key});
+  final Command command;
+  const EditOrderPage({required this.command, required this.role, super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _AddOrderPageState createState() => _AddOrderPageState();
+  _EditOrderPageState createState() => _EditOrderPageState();
 }
 
-class _AddOrderPageState extends State<AddOrderPage> {
+class _EditOrderPageState extends State<EditOrderPage> {
   TextEditingController fullnameController = TextEditingController();
   TextEditingController adresssController = TextEditingController();
   TextEditingController phonenumberController = TextEditingController();
   TextEditingController sommePaidController = TextEditingController();
   TextEditingController noteClientController = TextEditingController();
   TextEditingController prixSoutraitantController = TextEditingController();
+
   bool _formSubmitted = false;
 
   String? selectedPage;
@@ -102,8 +104,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
       });
       return;
     }
-
-    // If all fields are filled, proceed with the submission
     setState(() {
       _formSubmitted = true;
     });
@@ -111,18 +111,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   void _submitForm(context) {
-    // log(fullnameController.toString());
-    // log('fullnameController: ${fullnameController.text}');
-    // log('adresssController: ${adresssController.text}');
-    // log('phonenumberController: ${phonenumberController.text}');
-    // log('sommePaidController: ${sommePaidController.text}');
-    // log('noteClientController: ${noteClientController.text}');
-
-    // for (var variant in variants) {
-    //   log('variant.prixController: ${variant.prixController.text}');
-    //   log('variant.nbrArticlesController: ${variant.nbrArticlesController.text}');
-    // }
-
     final commandModel = CommandModel(
       adresse: adresssController.text,
       nomClient: fullnameController.text,
@@ -176,20 +164,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     'value': article.id ?? "",
                   };
                 }).toList();
-
-                //   articlesList = state.getArticles.map((article) {
-                //     return {
-                //       'label': article.name ?? "",
-                //       'value': article.id ?? "",
-                //       'variants': article.variants.map((variant) {
-                //         return {
-                //           'label': variant.name ?? "",
-                //           'value': variant.id ?? "",
-                //         };
-                //       }).toList(),
-                //     };
-                //   }).toList();
-                // }
               }
             },
           ),
@@ -209,7 +183,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
         child: Builder(builder: (context) {
           return Scaffold(
             backgroundColor: Colors.white,
-            appBar: const CustomAppBar(titleText: "Ajouter une Commande"),
+            appBar: const CustomAppBar(titleText: "Modifier la Commande"),
             body: Stack(
               children: [
                 SingleChildScrollView(

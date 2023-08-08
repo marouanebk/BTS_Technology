@@ -18,7 +18,7 @@ class FinanceModel extends FinanceEntity {
 
     final List<FinanceModel> financeModels = [];
 
-    dateKeys.forEach((dateKey) {
+    for (var dateKey in dateKeys) {
       final dateData = json[dateKey];
 
       dateData.forEach((data) {
@@ -32,7 +32,7 @@ class FinanceModel extends FinanceEntity {
         // Add the CommandModel instance to the list
         financeModels.add(financeModel);
       });
-    });
+    }
 
     return financeModels;
   }

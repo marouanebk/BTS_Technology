@@ -2,7 +2,6 @@ import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
-import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
 import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
@@ -13,7 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrdersPage extends StatefulWidget {
-  const OrdersPage({super.key});
+  final String role;
+  const OrdersPage({required this.role, super.key});
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();
@@ -27,7 +27,7 @@ class _OrdersPageState extends State<OrdersPage> {
   String searchQuery = ''; // Add this line
 
   List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
-  List<String> statusList = [
+  List<String> statusListAdministrator = [
     'Tous',
     'Téléphone éteint',
     'Ne répond pas',
@@ -41,6 +41,17 @@ class _OrdersPageState extends State<OrdersPage> {
     'Encaisse',
     'Retourné',
   ];
+
+   List<String> financierStatusList = [
+    'Tous',
+    'Expidié',
+    'Encaisse',
+    'Retourné',
+  ];
+
+  
+
+
 
   @override
   void dispose() {
@@ -81,10 +92,10 @@ class _OrdersPageState extends State<OrdersPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Row(
-                      children: List.generate(statusList.length, (index) {
+                      children: List.generate(statusListAdministrator.length, (index) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 10.0),
-                          child: statusFilter(index, statusList[index]),
+                          child: statusFilter(index, statusListAdministrator[index]),
                         );
                       }),
                     ),
@@ -114,7 +125,9 @@ class _OrdersPageState extends State<OrdersPage> {
                               (selectedStatus == 'Tous' ||
                                   command.status == selectedStatus) &&
                               (searchQuery.isEmpty ||
-                                  command.phoneNumber.toString().contains(searchQuery)))
+                                  command.phoneNumber
+                                      .toString()
+                                      .contains(searchQuery)))
                           .toList();
 
                       // Group and display filtered data
@@ -187,7 +200,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
-                            builder: (_) => AddOrderPage(),
+                            builder: (_) => AddOrderPage(role: widget.role),
                           ),
                         );
                       },
@@ -207,6 +220,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Widget commandeCard(Command command, int index) {
     Color statusColor;
+    Color bgColor;
 
     if (command.status == 'Numero erroné' ||
         command.status == 'Ne répond pas' ||
@@ -215,14 +229,19 @@ class _OrdersPageState extends State<OrdersPage> {
         command.status == 'Pas confirmé' ||
         command.status == 'Retourné') {
       statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
     } else if (command.status == 'Confirmé' || command.status == 'Préparé') {
-      statusColor = Colors.yellow;
+      statusColor = const Color(0xFFFF9F00);
+      bgColor = const Color.fromRGBO(255, 159, 0, 0.1);
     } else if (command.status == 'Encaisse') {
       statusColor = Colors.blue;
+      bgColor = const Color.fromRGBO(0, 102, 255, 0.1);
     } else if (command.status == 'Expidié') {
       statusColor = Colors.green;
+      bgColor = const Color.fromRGBO(7, 176, 24, 0.1);
     } else {
-      statusColor = Colors.black;
+      statusColor = Colors.white;
+      bgColor = Colors.black;
     }
     return GestureDetector(
       onTap: () {
@@ -264,12 +283,16 @@ class _OrdersPageState extends State<OrdersPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                    command.status!,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: statusColor,
+                  Container(
+                    color: bgColor,
+                    padding: const EdgeInsets.all(5),
+                    child: Text(
+                      command.status!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: statusColor,
+                      ),
                     ),
                   )
                 ],
@@ -278,6 +301,7 @@ class _OrdersPageState extends State<OrdersPage> {
           ),
           if (isDropDownVisibleList[index])
             FactorCommandContainer(
+              role: widget.role,
               command: command,
             ),
         ],

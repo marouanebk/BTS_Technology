@@ -3,13 +3,17 @@ import 'dart:developer';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
+import 'package:bts_technologie/orders/presentation/screen/edit_order.dart';
+import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FactorCommandContainer extends StatefulWidget {
   final Command command;
-  const FactorCommandContainer({required this.command, super.key});
+  final String role;
+  const FactorCommandContainer(
+      {required this.command, required this.role, super.key});
 
   @override
   State<FactorCommandContainer> createState() => _FactorCommandContainerState();
@@ -25,7 +29,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     // type = "Pas confirmé";
   }
 
-  List<Map<String, String>> statusListAdmin = [
+  List<Map<String, String>> statusListAdminstrator = [
     {'label': 'Téléphone éteint', "value": "Téléphone éteint"},
     {'label': 'Numero erroné', "value": "Numero erroné"},
     {'label': 'Annulé', "value": "Annulé"},
@@ -35,6 +39,54 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     {'label': 'Encaisse', "value": "Encaisse"},
     {'label': 'Retourné', "value": "Retourné"},
   ];
+
+  List<Map<String, String>> modificationsRights = [
+    {'label': 'Téléphone éteint', "value": "Téléphone éteint"},
+    {'label': 'Numero erroné', "value": "Numero erroné"},
+    {'label': 'Annulé', "value": "Annulé"},
+    {'label': 'Pas confirmé', "value": "Pas confirmé"},
+    {'label': 'Préparé', "value": "Préparé"},
+  ];
+
+  List<Map<String, String>> statusListPageAdmin = [
+    {'label': 'Téléphone éteint', "value": "Téléphone éteint"},
+    {'label': 'Numero erroné', "value": "Numero erroné"},
+    {'label': 'Annulé', "value": "Annulé"},
+    {'label': 'Pas confirmé', "value": "Pas confirmé"},
+    {'label': 'Préparé', "value": "Préparé"},
+  ];
+
+  List<Map<String, String>> statusListLogistriques = [
+    {'label': 'Téléphone éteint', "value": "Téléphone éteint"},
+    {'label': 'Numero erroné', "value": "Numero erroné"},
+    {'label': 'Annulé', "value": "Annulé"},
+    {'label': 'Pas confirmé', "value": "Pas confirmé"},
+    {'label': 'Préparé', "value": "Préparé"},
+    {'label': 'Expidié', "value": "Expidié"},
+    {'label': 'Encaisse', "value": "Encaisse"},
+    {'label': 'Retourné', "value": "Retourné"},
+  ];
+
+  List<Map<String, String>> statusListFinancier = [
+    {'label': 'Expidié', "value": "Expidié"},
+    {'label': 'Encaisse', "value": "Encaisse"},
+    {'label': 'Retourné', "value": "Retourné"},
+  ];
+
+  List<Map<String, String>> getStatusListBasedOnRole() {
+    switch (widget.role) {
+      case 'admin':
+        return statusListAdminstrator;
+      case 'pageAdmin':
+        return statusListPageAdmin;
+      case 'logistics':
+        return statusListLogistriques;
+      case 'financier':
+        return statusListFinancier;
+      default:
+        return [];
+    }
+  }
 
   Future<void> _updateStatus(String? newStatus) async {
     try {
@@ -56,6 +108,9 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
 
   @override
   Widget build(BuildContext context) {
+    bool isModificationAllowed = widget.role == "admin" ||
+        widget.role == "financier" ||
+        getStatusListBasedOnRole().contains(type);
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -133,14 +188,17 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 10,
             ),
-            containerButton("Modifier la commande"),
+            if (isModificationAllowed)
+              containerButton(
+                  "Modifier la commande",
+                  EditOrderPage(
+                    role: widget.role,
+                    command: widget.command,
+                  )),
             const SizedBox(
               height: 10,
             ),
-            // ElevatedButton(onPressed: () {
-            //   log(type.toString());
-            // }, child: Text("click me")),
-            containerButton("Générer une facture"),
+            containerButton("Générer une facture", NewFactorPage()),
             const SizedBox(
               height: 10,
             ),
@@ -267,6 +325,38 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             ],
           ),
         ),
+        Container(
+          child: Row(
+            children: [
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      const WidgetSpan(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: Icon(
+                            Icons.event_note,
+                            color: Colors.black,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                      TextSpan(
+                        text: command.noteClient,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF9F9F9F),
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        // Prix Soutraitant
         RichText(
           text: TextSpan(
             children: [
@@ -281,7 +371,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 ),
               ),
               TextSpan(
-                text: command.noteClient,
+                text: "prix Soutraitant  : ${command.prixSoutraitant}",
                 style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF9F9F9F),
@@ -322,6 +412,8 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
 
   Widget confirmationContainer(
       {required String? value, required void Function(String?) onChanged}) {
+    List<Map<String, String>> statusList = getStatusListBasedOnRole();
+
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Container(
@@ -354,7 +446,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
               iconEnabledColor: Colors.white,
               iconSize: 30,
               icon: const Icon(Icons.arrow_drop_down),
-              items: statusListAdmin.map<DropdownMenuItem<String>>((item) {
+              items: statusList.map<DropdownMenuItem<String>>((item) {
                 return DropdownMenuItem<String>(
                   value: item['value'],
                   child: Center(child: Text(item['label']!)),
@@ -367,7 +459,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     );
   }
 
-  Widget containerButton(String title) {
+  Widget containerButton(String title, Widget pushPage) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Container(
@@ -382,7 +474,13 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           ),
         ),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).push(
+              MaterialPageRoute(
+                builder: (_) => pushPage,
+              ),
+            );
+          },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),

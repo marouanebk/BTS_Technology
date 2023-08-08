@@ -9,8 +9,10 @@ class Command extends Equatable {
   final String? date;
   final String? user;
   final String? status;
+  final num? prixSoutraitant;
+  final String? livreur;
 
-  final String page;
+  final String? page;
   final String nomClient;
   final String adresse;
   final num phoneNumber;
@@ -25,11 +27,13 @@ class Command extends Equatable {
     this.date,
     this.user,
     this.status,
+    this.prixSoutraitant,
+    this.page,
+    this.livreur,
     required this.nomClient,
     required this.adresse,
     required this.phoneNumber,
     required this.sommePaid,
-    required this.page,
     required this.articleList,
   });
 
@@ -40,13 +44,15 @@ class Command extends Equatable {
         noteClient,
         articles,
         nomClient,
+        prixSoutraitant,
         user,
         adresse,
         phoneNumber,
         sommePaid,
         page,
         status,
-        articleList
+        articleList,
+        livreur
       ];
 }
 
@@ -68,8 +74,7 @@ class CommandArticle extends Equatable {
     this.taille,
     this.colour,
     this.family,
-     this.commandType,
-     
+    this.commandType,
     required this.articleId,
     required this.variantId,
     required this.quantity,

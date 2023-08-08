@@ -84,11 +84,12 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
                   ));
               log("response");
               if (response.statusCode == 200) {
+                // ignore: use_build_context_synchronously
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AccountManager(), // Replace MainPage with the actual widget class for your MainPage
+                        const AccountManager(), // Replace MainPage with the actual widget class for your MainPage
                   ),
                 );
               } else {
