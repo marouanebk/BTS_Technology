@@ -29,8 +29,9 @@ import 'package:bts_technologie/orders/data/Repository/commandes_repo_implem.dar
 import 'package:bts_technologie/orders/data/dataSource/commades_datasource.dart';
 import 'package:bts_technologie/orders/domaine/Repository/base_command_repo.dart';
 import 'package:bts_technologie/orders/domaine/UseCase/create_commande_usecase.dart';
+import 'package:bts_technologie/orders/domaine/UseCase/edit_command_usecase.dart';
 import 'package:bts_technologie/orders/domaine/UseCase/get_commandes_use_case.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bts_technologie/authentication/domaine/repository/user_repository.dart';
 
@@ -42,7 +43,7 @@ class ServiceLocator {
     sl.registerFactory(() => UserBloc(sl(), sl()));
     sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl()));
     sl.registerFactory(() => ArticleBloc(sl(), sl(), sl(), sl(), sl()));
-    sl.registerFactory(() => CommandBloc(sl(), sl()));
+    sl.registerFactory(() => CommandBloc(sl(), sl(),sl()));
     sl.registerFactory(() => FinanceBloc(sl()));
 
     //Articles usecase
@@ -68,8 +69,9 @@ class ServiceLocator {
     // Commandes
     sl.registerLazySingleton(() => GetCommandesUseCase(sl()));
     sl.registerLazySingleton(() => CreateCommandUseCase(sl()));
+    sl.registerLazySingleton(() => EditCommandUseCase(sl()));
 
-    //
+    // Finances
     sl.registerLazySingleton(() => GetFinancesUseCase(sl()));
 
     // Repository

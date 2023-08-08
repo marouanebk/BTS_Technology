@@ -12,9 +12,9 @@ class CommandesState extends Equatable {
   final RequestState getUnDoneTodoState;
   final String getUnDoneTodomessage;
 
-  // final ToDo addTodo;
-  final RequestState addTodoState;
-  final String addTodoMessage;
+  // final ToDo editCommand;
+  final RequestState editCommandState;
+  final String editCommandMessage;
 
   //
   final RequestState createCommandState;
@@ -29,8 +29,8 @@ class CommandesState extends Equatable {
     this.getUnDoneTodoState = RequestState.loading,
     this.getUnDoneTodomessage = "",
     //
-    this.addTodoState = RequestState.loading,
-    this.addTodoMessage = "",
+    this.editCommandState = RequestState.initial,
+    this.editCommandMessage = "",
     //
     this.createCommandState = RequestState.initial,
     this.createCommandMessage = "",
@@ -45,8 +45,8 @@ class CommandesState extends Equatable {
     RequestState? getUnDoneTodoState,
     String? getUnDoneTodomessage,
     //
-    RequestState? addTodoState,
-    String? addTodoMessage,
+    RequestState? editCommandState,
+    String? editCommandMessage,
     //
     RequestState? createCommandState,
     String? createCommandMessage,
@@ -60,8 +60,8 @@ class CommandesState extends Equatable {
       getUnDoneTodoState: getUnDoneTodoState ?? this.getUnDoneTodoState,
       getUnDoneTodomessage: getUnDoneTodomessage ?? this.getUnDoneTodomessage,
       //
-      addTodoState: addTodoState ?? this.addTodoState,
-      addTodoMessage: addTodoMessage ?? this.addTodoMessage,
+      editCommandState: editCommandState ?? this.editCommandState,
+      editCommandMessage: editCommandMessage ?? this.editCommandMessage,
 
       createCommandState: createCommandState ?? this.createCommandState,
       createCommandMessage: createCommandMessage ?? this.createCommandMessage,
@@ -79,8 +79,8 @@ class CommandesState extends Equatable {
         getUnDoneTodoState,
         getUnDoneTodomessage,
 
-        addTodoState,
-        addTodoMessage,
+        editCommandState,
+        editCommandMessage,
 
         //
         createCommandState,

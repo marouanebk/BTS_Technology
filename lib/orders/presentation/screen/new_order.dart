@@ -11,9 +11,9 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_event.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_state.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_event.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_state.dart';
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,9 +71,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
     if (fullnameController.text.isEmpty ||
         adresssController.text.isEmpty ||
         phonenumberController.text.isEmpty ||
-        sommePaidController.text.isEmpty ||
-        // noteClientController.text.isEmpty ||
-        selectedPage == null) {
+        sommePaidController.text.isEmpty ){
+        // noteClientController.text.isEmpty ) {
       hasEmptyFields = true;
       log(
         "74",
@@ -129,7 +128,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
       phoneNumber: int.parse(phonenumberController.text),
       noteClient: noteClientController.text,
       // page: article.page,
-      page: "dsdf",
+      // page: "dsdf",
       sommePaid: double.parse(sommePaidController.text),
       // articleList: article.articleList,
       articleList: variants.map((variant) {
@@ -202,6 +201,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     builder: (context) => OrdersPage(role: widget.role),
                   ),
                 );
+              } else if (state.createCommandState == RequestState.error){
+                log(state.createCommandMessage);
               }
             },
           ),

@@ -44,4 +44,28 @@ class CommandesRepository implements BaseCommandRepository {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> editCommand(Command command) async {
+    final CommandModel articleModel = CommandModel(
+      adresse: command.adresse,
+      nomClient: command.nomClient,
+      phoneNumber: command.phoneNumber,
+      noteClient: command.noteClient,
+      page: command.page,
+      prixSoutraitant: command.prixSoutraitant,
+      // page: article.page,
+      status: command.status,
+      sommePaid: command.sommePaid,
+      articleList: command.articleList,
+    );
+
+    try {
+      final result =
+          await baseCommandRemoteDatasource.editCommand(articleModel);
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    }
+  }
 }

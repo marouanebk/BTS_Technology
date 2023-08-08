@@ -11,9 +11,9 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_bloc.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_event.dart';
-import 'package:bts_technologie/orders/presentation/controller/todo_bloc/command_state.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_event.dart';
+import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_state.dart';
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,12 +37,75 @@ class _EditOrderPageState extends State<EditOrderPage> {
   TextEditingController noteClientController = TextEditingController();
   TextEditingController prixSoutraitantController = TextEditingController();
 
+  List<Article> articles = [];
+  List<Map<String, String>> articlesList = [];
+  List<Map<String, String>> variantsList = [];
+
   bool _formSubmitted = false;
 
   String? selectedPage;
 
   List<ArticleItem> variants = [];
   int count = 1;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   log("////////////////////////////////");
+  //   log(widget.command.articleList.toString());
+  //   log("////////////////////////////////");
+
+  //   // Initialize the list of variants and their controllers
+  //   // variants = widget.command.articleList.map((commandArticle) {
+  //   //   final variant = ArticleItem();
+
+  //   //   variant.article = commandArticle!.articleId;
+  //   //   variant.variant = commandArticle.variantId;
+  //   //   variant.type = commandArticle.commandType;
+  //   //   variant.prixController.text = commandArticle.unityPrice.toString();
+  //   //   variant.nbrArticlesController.text = commandArticle.quantity.toString();
+  //   //   log(articles.toString());
+
+  //   //   // Find the selected article in the articles list
+  //   //   // final selectedArticle = articles.firstWhere(
+  //   //   //   (item) => item.id == variant.article,
+  //   //   // );
+  //   //   // final selectedArticle = articles.firstWhere(
+  //   //   //   (item) => item.id == variant.article,
+  //   //   // );
+  //   //   // log("71");
+
+  //   //   // Update the variants list of the selected article
+  //   //   if (selectedArticle.variants != null) {
+  //   //     variant.variants = selectedArticle.variants.map((variant) {
+  //   //       return {
+  //   //         'label': variant?.family ?? "",
+  //   //         'value': variant?.id ?? "",
+  //   //       };
+  //   //     }).toList();
+  //   //   } else {
+  //   //     variant.variants.clear();
+  //   //   }
+
+  //   //   return variant;
+  //   // }).toList();
+
+  //   // articlesList = articles.map((article) {
+  //   //   return {
+  //   //     'label': article.name ?? "",
+  //   //     'value': article.id ?? "",
+  //   //   };
+  //   // }).toList();
+
+  //   // Initialize the controllers with command details
+  //   fullnameController.text = widget.command.nomClient;
+  //   adresssController.text = widget.command.adresse;
+  //   phonenumberController.text = widget.command.phoneNumber.toString();
+  //   sommePaidController.text = widget.command.sommePaid.toString();
+  //   noteClientController.text = widget.command.noteClient ?? "";
+  //   prixSoutraitantController.text = widget.command.prixSoutraitant.toString();
+  //   selectedPage = widget.command.page;
+  // }
 
   @override
   void dispose() {
@@ -61,10 +124,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
     {"label": "Gros personnalisé", "value": "Gros personnalisé"},
     {"label": "Gros détail", "value": "Gros détail"},
   ];
-
-  List<Article> articles = [];
-  List<Map<String, String>> articlesList = [];
-  List<Map<String, String>> variantsList = [];
 
   void _checkFormValidation(context) {
     bool hasEmptyFields = false;
@@ -154,19 +213,19 @@ class _EditOrderPageState extends State<EditOrderPage> {
       ],
       child: MultiBlocListener(
         listeners: [
-          BlocListener<ArticleBloc, ArticleState>(
-            listener: (context, state) {
-              if (state.getArticlesState == RequestState.loaded) {
-                articles = state.getArticles;
-                articlesList = articles.map((article) {
-                  return {
-                    'label': article.name ?? "",
-                    'value': article.id ?? "",
-                  };
-                }).toList();
-              }
-            },
-          ),
+          // BlocListener<ArticleBloc, ArticleState>(
+          //   listener: (context, state) {
+          // if (state.getArticlesState == RequestState.loaded) {
+          // articles = state.getArticles;
+          // articlesList = articles.map((article) {
+          //   return {
+          //     'label': article.name ?? "",
+          //     'value': article.id ?? "",
+          //   };
+          // }).toList();
+          //     }
+          //   },
+          // ),
           BlocListener<CommandBloc, CommandesState>(
             listener: (context, state) {
               if (state.createCommandState == RequestState.loaded) {
@@ -180,184 +239,257 @@ class _EditOrderPageState extends State<EditOrderPage> {
             },
           ),
         ],
-        child: Builder(builder: (context) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            appBar: const CustomAppBar(titleText: "Modifier la Commande"),
-            body: Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      buildInputField(
-                        label: "Nom complet",
-                        hintText: "Entrez le nom du client",
-                        errorText: "Vous devez entrer le nom",
-                        controller: fullnameController,
-                        formSubmitted: _formSubmitted,
-                      ),
-                      const SizedBox(height: 15),
-                      buildInputField(
-                        label: "Adresse",
-                        hintText: "Entrez l'adresse de livraison",
-                        errorText: "Vous devez entrer une adresse",
-                        controller: adresssController,
-                        formSubmitted: _formSubmitted,
-                      ),
-                      const SizedBox(height: 15),
-                      buildInputField(
-                        label: "Numéro de téléphone",
-                        hintText: "Entrez un numéro de téléphone",
-                        errorText: "Vous devez entrer un numéro de téléphone",
-                        controller: phonenumberController,
-                        formSubmitted: _formSubmitted,
-                        isNumeric: true,
-                      ),
-                      const SizedBox(height: 15),
-                      buildInputField(
-                        label: "Somme versée",
-                        hintText: "Entrez une somme versée",
-                        errorText: "Vous devez entrer une somme versée",
-                        controller: sommePaidController,
-                        formSubmitted: _formSubmitted,
-                        isNumeric: true,
-                        isMoney: true,
-                      ),
-                      const SizedBox(height: 15),
-                      buildInputField(
-                        label: "note Client",
-                        hintText: "Entrez la note du client",
-                        errorText: "",
-                        controller: noteClientController,
-                        formSubmitted: _formSubmitted,
-                        isNumeric: false,
-                        isMoney: false,
-                      ),
-                      if (widget.role == "admin" ||
-                          widget.role == "financier") ...[
-                        const SizedBox(height: 15),
-                        buildInputField(
-                          label: "Prix SousTraiant",
-                          hintText: "Entrer le prix de soutraitant",
-                          errorText: "",
-                          controller: prixSoutraitantController,
-                          formSubmitted: _formSubmitted,
-                          isNumeric: true,
-                          isMoney: true,
-                        ),
-                      ],
-                      const SizedBox(height: 15),
-                      if (widget.role == "pageAdmin") ...[
-                        buildSelectField(
-                          label: "Sélectionner une page",
-                          hintText: "- Sélectionnez une page -",
-                          errorText: "Vous devez entrer une page",
-                          value: selectedPage,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedPage = value;
-                            });
-                          },
-                          formSubmitted: _formSubmitted,
-                          items: [
-                            {"label": "1", "value": "1"},
-                            {"label": "1", "value": "2"},
-                          ],
-                        ),
-                      ],
-                      const SizedBox(height: 15),
-                      const Text(
-                        "Liste d'articles",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF9F9F9F)),
-                      ),
-                      const SizedBox(height: 10),
-                      _variantContainerList(),
-                      // articleContainer(),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      _addArticleItem(),
-                      const SizedBox(height: 80),
-                    ],
-                  ),
+        child: BlocBuilder<ArticleBloc, ArticleState>(
+          builder: (context, state) {
+            if (state.getArticlesState == RequestState.loading) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black,
                 ),
-                BlocBuilder<CommandBloc, CommandesState>(
-                    builder: (context, state) {
-                  if (state.createCommandState == RequestState.error) {
-                    return Text(
-                      state.createCommandMessage,
-                      style: const TextStyle(color: Colors.red),
-                    );
-                  }
-                  return Container();
-                }),
-                BlocBuilder<CommandBloc, CommandesState>(
-                  builder: (context, state) {
-                    if (state.createCommandState == RequestState.loading) {
-                      // Display the button style with the circular indicator
-                      return Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
+              );
+            } else if (state.getArticlesState == RequestState.error) {
+              return Container();
+            } else {
+              articles = state.getArticles;
+              articlesList = articles.map((article) {
+                return {
+                  'label': article.name ?? "",
+                  'value': article.id ?? "",
+                };
+              }).toList();
+
+              variants = widget.command.articleList.map((commandArticle) {
+                final variant = ArticleItem();
+
+                variant.article = commandArticle!.articleId;
+                variant.variant = commandArticle.variantId;
+                variant.type = commandArticle.commandType;
+                variant.prixController.text =
+                    commandArticle.unityPrice.toString();
+                variant.nbrArticlesController.text =
+                    commandArticle.quantity.toString();
+                    log("commandArticle"+ commandArticle.toString());
+
+                    log(variant.article.toString());
+                    log(articles.toString());
+
+                // Find the selected article in the articles list
+                final selectedArticle = articles.firstWhere(
+                  (item) => item.id == variant.article,
+                );
+                log("after selected article: " );
+
+                // Update the variants list of the selected article
+                if (selectedArticle.variants != null) {
+                  variant.variants = selectedArticle.variants.map((variant) {
+                    return {
+                      'label': variant?.family ?? "",
+                      'value': variant?.id ?? "",
+                    };
+                  }).toList();
+                } else {
+                  variant.variants.clear();
+                }
+
+                return variant;
+              }).toList();
+
+              // Initialize the list of articles for dropdown options
+              articlesList = articles.map((article) {
+                return {
+                  'label': article.name ?? "",
+                  'value': article.id ?? "",
+                };
+              }).toList();
+
+              return Builder(
+                builder: (context) {
+                  return Scaffold(
+                    backgroundColor: Colors.white,
+                    appBar:
+                        const CustomAppBar(titleText: "Modifier la Commande"),
+                    body: Stack(
+                      children: [
+                        SingleChildScrollView(
                           padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            height: 50,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.black,
-                            ),
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 20),
+                              buildInputField(
+                                label: "Nom complet",
+                                hintText: "Entrez le nom du client",
+                                errorText: "Vous devez entrer le nom",
+                                controller: fullnameController,
+                                formSubmitted: _formSubmitted,
                               ),
-                            ),
+                              const SizedBox(height: 15),
+                              buildInputField(
+                                label: "Adresse",
+                                hintText: "Entrez l'adresse de livraison",
+                                errorText: "Vous devez entrer une adresse",
+                                controller: adresssController,
+                                formSubmitted: _formSubmitted,
+                              ),
+                              const SizedBox(height: 15),
+                              buildInputField(
+                                label: "Numéro de téléphone",
+                                hintText: "Entrez un numéro de téléphone",
+                                errorText:
+                                    "Vous devez entrer un numéro de téléphone",
+                                controller: phonenumberController,
+                                formSubmitted: _formSubmitted,
+                                isNumeric: true,
+                              ),
+                              const SizedBox(height: 15),
+                              buildInputField(
+                                label: "Somme versée",
+                                hintText: "Entrez une somme versée",
+                                errorText: "Vous devez entrer une somme versée",
+                                controller: sommePaidController,
+                                formSubmitted: _formSubmitted,
+                                isNumeric: true,
+                                isMoney: true,
+                              ),
+                              const SizedBox(height: 15),
+                              buildInputField(
+                                label: "note Client",
+                                hintText: "Entrez la note du client",
+                                errorText: "",
+                                controller: noteClientController,
+                                formSubmitted: _formSubmitted,
+                                isNumeric: false,
+                                isMoney: false,
+                              ),
+                              if (widget.role == "admin" ||
+                                  widget.role == "financier") ...[
+                                const SizedBox(height: 15),
+                                buildInputField(
+                                  label: "Prix SousTraiant",
+                                  hintText: "Entrer le prix de soutraitant",
+                                  errorText: "",
+                                  controller: prixSoutraitantController,
+                                  formSubmitted: _formSubmitted,
+                                  isNumeric: true,
+                                  isMoney: true,
+                                ),
+                              ],
+                              const SizedBox(height: 15),
+                              if (widget.role == "pageAdmin") ...[
+                                buildSelectField(
+                                  label: "Sélectionner une page",
+                                  hintText: "- Sélectionnez une page -",
+                                  errorText: "Vous devez entrer une page",
+                                  value: selectedPage,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedPage = value;
+                                    });
+                                  },
+                                  formSubmitted: _formSubmitted,
+                                  items: [
+                                    {"label": "1", "value": "1"},
+                                    {"label": "1", "value": "2"},
+                                  ],
+                                ),
+                              ],
+                              const SizedBox(height: 15),
+                              const Text(
+                                "Liste d'articles",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF9F9F9F)),
+                              ),
+                              const SizedBox(height: 10),
+                              _variantContainerList(),
+                              // articleContainer(),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              _addArticleItem(),
+                              const SizedBox(height: 80),
+                            ],
                           ),
                         ),
-                      );
-                    }
-                    // When not in loading state, show the button
-                    return Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Container(
-                          height: 50,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5)),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _checkFormValidation(context);
-                            },
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.black),
-                            ),
-                            child: const Text(
-                              "Enregistrer la commande",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
+                        BlocBuilder<CommandBloc, CommandesState>(
+                            builder: (context, state) {
+                          if (state.createCommandState == RequestState.error) {
+                            return Text(
+                              state.createCommandMessage,
+                              style: const TextStyle(color: Colors.red),
+                            );
+                          }
+                          return Container();
+                        }),
+                        BlocBuilder<CommandBloc, CommandesState>(
+                          builder: (context, state) {
+                            if (state.createCommandState ==
+                                RequestState.loading) {
+                              // Display the button style with the circular indicator
+                              return Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Container(
+                                    height: 50,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.black,
+                                    ),
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            // When not in loading state, show the button
+                            return Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Container(
+                                  height: 50,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      _checkFormValidation(context);
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              Colors.black),
+                                    ),
+                                    child: const Text(
+                                      "Enregistrer la commande",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        }),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

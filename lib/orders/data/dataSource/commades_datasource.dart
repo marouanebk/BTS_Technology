@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class BaseCommandRemoteDatasource {
   Future<List<CommandModel>> getCommandes();
   Future<Unit> createCommand(CommandModel command);
+  Future<Unit> editCommand(CommandModel command);
 }
 
 class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
@@ -24,7 +25,6 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
             "Authorization": "Bearer $token",
           },
         ));
-    log("response");
     if (response.statusCode == 200) {
       // return List<CommandModel>.from(
       //     (response.data as List).map((e) => CommandModel.fromJson(e)));
@@ -42,8 +42,6 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
   Future<Unit> createCommand(CommandModel command) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    // log(command.toString());
-    log(command.toJson().toString());
     final response = await Dio().post(
       ApiConstance.createCommandes,
       data: command.toJson(),
@@ -57,7 +55,33 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
         },
       ),
     );
-    log(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      return Future.value(unit);
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              statusMessage: response.data['err']));
+    }
+  }
+
+  @override
+  Future<Unit> editCommand(CommandModel command) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final response = await Dio().post(
+      ApiConstance.createCommandes,
+      data: command.toJson(),
+      options: Options(
+        followRedirects: false,
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+        validateStatus: (status) {
+          return status! < 500;
+        },
+      ),
+    );
     if (response.statusCode == 200) {
       return Future.value(unit);
     } else {

@@ -63,7 +63,7 @@ class CommandArticle extends Equatable {
   final String? colour;
   final String? family;
   final String? commandType;
-  final String articleId;
+  final String? articleId;
   final String variantId;
   final int quantity;
   final num unityPrice;
@@ -75,7 +75,10 @@ class CommandArticle extends Equatable {
     this.colour,
     this.family,
     this.commandType,
-    required this.articleId,
+
+         this.articleId,
+
+    // required this.articleId,
     required this.variantId,
     required this.quantity,
     required this.unityPrice,

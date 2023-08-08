@@ -1,4 +1,3 @@
-
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 
@@ -20,6 +19,7 @@ class CommandModel extends Command {
     required String adresse,
     required num phoneNumber,
     required num sommePaid,
+
     //
     List<CommandArticle?> articleList = const [],
   }) : super(
@@ -54,7 +54,9 @@ class CommandModel extends Command {
         if (articleList != null) {
           variants = articleList.map((variantJson) {
             return CommandArticle(
-              articleId: variantJson['_id'],
+              // articleId: variantJson['_id'],
+              articleId: variantJson['articleId'],
+
               variantId: variantJson['variantID'],
               commandType: variantJson['commandType'],
               unityPrice: variantJson['unityPrice'],
@@ -66,6 +68,8 @@ class CommandModel extends Command {
             );
           }).toList();
         }
+        String? page;
+        if (data["page"] != null) page = data["page"]["name"];
         final commandModel = CommandModel(
           date: dateKey,
           id: data["_id"],
@@ -76,7 +80,7 @@ class CommandModel extends Command {
           user: data["user"]["username"],
           nomClient: data["nomClient"],
           adresse: data["adresse"],
-          page: data["page"]["name"],
+          page: page,
           phoneNumber: data["phoneNumber"],
           status: data["status"],
           articleList: variants,
@@ -110,16 +114,16 @@ class CommandModel extends Command {
 
   Map<String, dynamic> toJson() {
     List<Map<String, dynamic>> articles = [];
-      articles = articleList.map((variant) {
-        return {
-          'articleId': variant!.articleId,
-          'variantId': variant.variantId,
-          'commandType': variant.commandType,
-          'quantity': variant.quantity,
-          'unityPrice': variant.unityPrice,
-        };
-      }).toList();
-    
+    articles = articleList.map((variant) {
+      return {
+        'articleId': variant!.articleId,
+        'variantId': variant.variantId,
+        'commandType': variant.commandType,
+        'quantity': variant.quantity,
+        'unityPrice': variant.unityPrice,
+      };
+    }).toList();
+
     return {
       "sommePaid": sommePaid,
       "user": user,

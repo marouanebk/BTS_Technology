@@ -29,6 +29,14 @@ class CreateCommandEvent extends CommandEvent {
   List<Object> get props => [command];
 }
 
+class EditCommandEvent extends CommandEvent {
+  final Command command;
+  const EditCommandEvent({required this.command});
+
+  @override
+  List<Object> get props => [command];
+}
+
 class EditTodoEvent extends CommandEvent {}
 
 class DeleteTodoEvent extends CommandEvent {}

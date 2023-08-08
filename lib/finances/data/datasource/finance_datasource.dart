@@ -25,7 +25,6 @@ class FinanceRemoteDataSource extends BaseFinanceRemoteDateSource {
             "Authorization": "Bearer $token",
           },
         ));
-    log("response");
     if (response.statusCode == 200) {
       return FinanceModel.fromJsonList(response.data);
     } else {

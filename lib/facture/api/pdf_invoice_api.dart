@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
+import 'package:flutter/services.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -6,10 +8,14 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:developer';
 
-
 class PdfInvoiceApi {
   Future<File?> generate() async {
     final pdf = pw.Document();
+    final image = pw.MemoryImage(
+      (await rootBundle.load('assets/images/bts_tech_bg.jpg'))
+          .buffer
+          .asUint8List(),
+    );
 
     pdf.addPage(
       pw.Page(
@@ -18,7 +24,7 @@ class PdfInvoiceApi {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildHeader(),
+              buildHeader(image),
               pw.SizedBox(height: 2),
               // Small container in the middle
               buildFactureNumber(),
@@ -64,7 +70,7 @@ class PdfInvoiceApi {
     // // return PdfApi.saveDocument(name: 'my_invoice.pdf', pdf: pdf);
   }
 
-  pw.Widget buildHeader() {
+  pw.Widget buildHeader(image) {
     return pw.Container(
       // width: 1 * PdfPageFormat.cm,
       padding: const pw.EdgeInsets.all(16),
@@ -74,16 +80,44 @@ class PdfInvoiceApi {
       ),
       child: pw.Column(
         children: [
-          pw.Text(
-            'SARL BTS TECHNOLOGIES',
-            style: pw.TextStyle(
-              fontSize: 24,
-              fontWeight: pw.FontWeight.bold,
-              fontStyle: pw.FontStyle.italic, // Make the header text italic
-              decoration:
-                  pw.TextDecoration.underline, // Underline the header text
-            ),
+          pw.Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              pw.Container(
+                  width: 60,
+                  height: 60,
+                  color: PdfColors.grey,
+                  child: pw.Image(image)),
+              pw.Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: pw.Column(
+                  children: [
+                    pw.Text(
+                      'SARL BTS TECHNOLOGIES',
+                      style: pw.TextStyle(
+                        fontSize: 22,
+                        fontWeight: pw.FontWeight.bold,
+                        fontStyle:
+                            pw.FontStyle.italic, // Make the header text italic
+                        // decoration: pw.TextDecoration.underline,
+                      ),
+                    ),
+                    pw.Container(
+                        alignment: Alignment.center,
+                        width: 250,
+                        height: 1,
+                        color: PdfColors.black
+
+                        // endIndent: constraints.maxWidth - textSize.width,
+                        )
+                  ],
+                ),
+              ),
+              pw.Text(""),
+            ],
           ),
+
           pw.SizedBox(height: 8),
           // pw.Container(
           //   height: 2,
@@ -94,17 +128,7 @@ class PdfInvoiceApi {
           pw.Row(
             children: [
               // Company logo (you can replace this with your logo image)
-              pw.Container(
-                width: 60,
-                height: 60,
-                color: PdfColors.grey,
-                child: pw.Center(
-                  child: pw.Text(
-                    'Logo',
-                    style: const pw.TextStyle(color: PdfColors.white),
-                  ),
-                ),
-              ),
+
               pw.SizedBox(width: 16),
               pw.Expanded(
                 child: pw.Column(

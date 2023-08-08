@@ -1,7 +1,4 @@
-import 'dart:async';
-import 'dart:developer';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
-import 'package:bts_technologie/authentication/domaine/usecases/get_all_users_usecase.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +26,6 @@ class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
         emit(_eitherDoneMessageOrErrorState(
             result: failuerOrDoneMessage, message: "ADD_SUCCESS_MESSAGE"));
       } else if (event is LoginuserEvent) {
-        log("HEEEEEEEEEEregistered");
         final failuerOrDoneMessage = await loginUserCase(event.user);
         emit(_login(
             result: failuerOrDoneMessage, message: "UPDATE_SUCCESS_MESSAG"));

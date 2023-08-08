@@ -6,6 +6,7 @@ abstract class BaseCommandRepository {
   Future<Either<Failure, List<Command>>> getCommandes();
   // Future<Either<Failure, List<Article>>> getUnDoneArticle();
   Future<Either<Failure, Unit>> createCommand(Command command);
+  Future<Either<Failure, Unit>> editCommand(Command command);
 
   // Future<Either<Failure, Unit>> addArticle(Article article);
   // Future<Either<Failure, Unit>> deleteArticle(Article article);

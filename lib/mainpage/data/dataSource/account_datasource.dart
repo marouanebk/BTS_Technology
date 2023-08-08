@@ -29,7 +29,6 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
             "Authorization": "Bearer $token",
           },
         ));
-    log(response.statusCode.toString());
 
     if (response.statusCode == 200) {
       return List<PageModel>.from((response.data as List).map(
@@ -53,7 +52,6 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
             "Authorization": "Bearer $token",
           },
         ));
-    log("response");
     if (response.statusCode == 200) {
       return List<LivreurModel>.from((response.data as List).map(
         (e) => LivreurModel.fromJson(e),
@@ -104,7 +102,6 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
             "Authorization": "Bearer $token",
           },
         ));
-    log("response");
     if (response.statusCode == 200) {
       return List<CommandStatsModel>.from((response.data as List).map(
         (e) => CommandStatsModel.fromJson(e),

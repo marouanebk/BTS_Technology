@@ -1,10 +1,10 @@
-
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/facture/page/pdf_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
@@ -39,19 +39,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: title,
-        theme: ThemeData(primarySwatch: Colors.deepOrange),
-        home: (isLoggedIn == 1)
-            ? ((type == "admin")
-                ? const PageAdministratorBaseScreen()
-                : ((type == "PageAdministratorBaseScreen")
-                    ? const FinancesBaseScreen()
-                    : ((type == "pageAdmin")
-                        ? const AdminPageBaseScreen()
-                        : ((type == "logistics")
-                            ? const LogistiquesBaseScreen()
-                            : const LoginPage()))))
-            : const LoginPage());
+      debugShowCheckedModeBanner: false,
+      title: title,
+      theme: ThemeData(primarySwatch: Colors.deepOrange),
+      home: PdfPage(),
+      // home: (isLoggedIn == 1)
+      //     ? ((type == "admin")
+      //         ? const PageAdministratorBaseScreen()
+      //         : ((type == "PageAdministratorBaseScreen")
+      //             ? const FinancesBaseScreen()
+      //             : ((type == "pageAdmin")
+      //                 ? const AdminPageBaseScreen()
+      //                 : ((type == "logistics")
+      //                     ? const LogistiquesBaseScreen()
+      //                     : const LoginPage()))))
+      //     : const LoginPage(),
+    );
   }
 }

@@ -102,7 +102,6 @@ class _NewFinanceChargeState extends State<NewFinanceCharge> {
                       "Authorization": "Bearer $token",
                     },
                   ));
-              log("response");
               if (response.statusCode == 200) {
                 // Navigator.pushAndRemoveUntil(
                 //   context,

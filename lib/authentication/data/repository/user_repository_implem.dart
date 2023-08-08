@@ -24,7 +24,6 @@ class UserRepository extends BaseUserRepository {
       pages: user.pages,
       commandeTypes: user.commandeTypes,
     );
-    log(userModel.toString());
 
     try {
       final result = await baseUserRemoteDateSource.createUser(userModel);

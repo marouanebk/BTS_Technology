@@ -196,7 +196,6 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                               "Authorization": "Bearer $token",
                             },
                           ));
-                  log("response");
                   if (response.statusCode == 200) {
                     Navigator.pushReplacement(
                       context,

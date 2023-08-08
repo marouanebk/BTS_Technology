@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
@@ -66,7 +65,6 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
         headers: requestHeaders,
       ),
     );
-    log(response.statusCode.toString());
 
     if (response.statusCode == 200) {
       final prefs = await SharedPreferences.getInstance();
@@ -100,7 +98,6 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
   Future<List<UserModel>> getAllUsers() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    log("response");
     final response = await Dio().get(ApiConstance.getAllUsers,
         options: Options(
           headers: {
@@ -108,7 +105,6 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
           },
         ));
     if (response.statusCode == 200) {
-      // log(response.data.toString());
       return List<UserModel>.from((response.data as List).map(
         (e) => UserModel.fromJson(e),
       ));

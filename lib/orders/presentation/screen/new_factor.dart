@@ -1,14 +1,80 @@
+import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
+import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_container.dart';
 import 'package:flutter/material.dart';
+import 'package:bts_technologie/facture/api/pdf_invoice_api.dart';
 
 class NewFactorPage extends StatefulWidget {
-  const NewFactorPage({super.key});
+  final Command command;
+  const NewFactorPage({required this.command, super.key});
 
   @override
   State<NewFactorPage> createState() => _NewFactorPageState();
 }
 
 class _NewFactorPageState extends State<NewFactorPage> {
+  final pdfApi = PdfInvoiceApi();
+
+  TextEditingController rcController = TextEditingController();
+  TextEditingController nisController = TextEditingController();
+  TextEditingController naiController = TextEditingController();
+  TextEditingController nifController = TextEditingController();
+  bool _formSubmitted = false;
+
+  @override
+  void dispose() {
+    rcController.dispose();
+    nisController.dispose();
+    naiController.dispose();
+    nifController.dispose();
+
+    super.dispose();
+  }
+
+  void _checkFormValidation(context) {
+    bool hasEmptyFields = false;
+
+    // Check if any of the input fields are empty
+    if (rcController.text.isEmpty ||
+        nisController.text.isEmpty ||
+        nifController.text.isEmpty ||
+        naiController.text.isEmpty) {
+      hasEmptyFields = true;
+    }
+
+    if (hasEmptyFields) {
+      setState(() {
+        _formSubmitted = true;
+      });
+      return;
+    }
+
+    // If all fields are filled, proceed with the submission
+    setState(() {
+      _formSubmitted = true;
+    });
+    _submitForm(context);
+  }
+
+  void _submitForm(context) {
+    Future<void> createAndOpenPdf() async {
+      // final File? pdfFile =
+      // await pdfApi.generate(widget.command);
+    }
+    // UserModel userModel = UserModel(
+    //   username: usernameController.text,
+    //   password: passwordController.text,
+    //   fullname: fullnameController.text,
+    //   role: type,
+    // );
+    // BlocProvider.of<UserBloc>(context).add(
+    //   CreateUserEvent(
+    //     user: userModel,
+    //   ),
+    // );
+  }
+
   String? nomClient = '';
   String? rc = '';
   String? nis = '';
@@ -18,22 +84,8 @@ class _NewFactorPageState extends State<NewFactorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true, // Align the title to the center
-
-        title: const Text(
-          "Générer une facture ",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        // backgroundColor:
-        //     Colors.blue.withOpacity(0.3), //You can make this transparent
-        elevation: 0.0,
+      appBar: const CustomAppBar(
+        titleText: "Générer une facture",
       ),
       body: Stack(
         children: [
@@ -44,48 +96,33 @@ class _NewFactorPageState extends State<NewFactorPage> {
               children: [
                 factorContainer(),
                 const SizedBox(height: 30),
-                _buildInputField(
-                  label: "Nom du client",
-                  hintText: "Entrez le nom complet du client",
-                  value: nomClient,
-                  onChanged: (value) {
-                    setState(() {
-                      nomClient = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 30),
-                _buildInputField(
+                buildInputField(
                   label: "R.C",
                   hintText: "Numéro de registre de commerce",
-                  value: rc,
-                  onChanged: (value) {
-                    setState(() {
-                      rc = value;
-                    });
-                  },
+                  errorText: "Vous devez entrer le nom de l'entreprise",
+                  controller: rcController,
+                  formSubmitted: _formSubmitted,
                 ),
-                const SizedBox(height: 30),
-                _buildInputField(
+                buildInputField(
                   label: "NIS",
                   hintText: "Numéro d'identifiant statistique",
-                  value: nis,
-                  onChanged: (value) {
-                    setState(() {
-                      nis = value;
-                    });
-                  },
+                  errorText: "Vous devez entrer le nom de l'entreprise",
+                  controller: rcController,
+                  formSubmitted: _formSubmitted,
                 ),
-                const SizedBox(height: 30),
-                _buildInputField(
+                buildInputField(
                   label: "NIF",
                   hintText: "Numéro d'identifiant fiscale",
-                  value: nif,
-                  onChanged: (value) {
-                    setState(() {
-                      nif = value;
-                    });
-                  },
+                  errorText: "Vous devez entrer le nom de l'entreprise",
+                  controller: rcController,
+                  formSubmitted: _formSubmitted,
+                ),
+                buildInputField(
+                  label: "N° AI",
+                  hintText: "Numero d'article d'imposition",
+                  errorText: "Vous devez entrer le nom de l'entreprise",
+                  controller: rcController,
+                  formSubmitted: _formSubmitted,
                 ),
                 const SizedBox(height: 50),
               ],
@@ -101,12 +138,14 @@ class _NewFactorPageState extends State<NewFactorPage> {
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(5)),
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => const NewFactorPage(),
-                      ),
-                    );
+                  onPressed: () async {
+                    // _submitForm(context);
+                    // await pdfApi.generate(widget.command);
+                    // Navigator.of(context, rootNavigator: true).push(
+                    //   MaterialPageRoute(
+                    //     builder: (_) => const NewFactorPage(),
+                    //   ),
+                    // );
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.black),
@@ -125,49 +164,6 @@ class _NewFactorPageState extends State<NewFactorPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildInputField({
-    String? label,
-    String? hintText,
-    String? value,
-    void Function(String)? onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label!,
-          style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF9F9F9F)),
-        ),
-        const SizedBox(height: 4), // Smaller gap here
-        TextField(
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF9F9F9F)),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 8), // Smaller padding here
-            border: const UnderlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 2), // Smaller gap here
-        // Align(
-        //   alignment: Alignment.centerRight,
-        //   child: Text(
-        //     errorText!,
-        //     style: const TextStyle(color: Colors.red),
-        //     textAlign: TextAlign.right,
-        //   ),
-        // ),
-      ],
     );
   }
 }

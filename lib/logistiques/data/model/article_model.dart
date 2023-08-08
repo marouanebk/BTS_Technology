@@ -49,7 +49,6 @@ class ArticleModel extends Article {
   }
   Map<String, dynamic> toJson() {
     List<Map<String, dynamic>> variantList = [];
-      log(variants.toString());
       variantList = variants.map((variant) {
         return {
           'colour': variant!.colour,

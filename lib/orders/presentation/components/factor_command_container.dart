@@ -25,7 +25,6 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   void initState() {
     super.initState();
     type = widget.command.status;
-    log(widget.command.articleList.toString());
     // type = "Pas confirmé";
   }
 
@@ -198,7 +197,12 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 10,
             ),
-            containerButton("Générer une facture", NewFactorPage()),
+            //add the generate factor
+            containerButton(
+                "Générer une facture",
+                NewFactorPage(
+                  command: widget.command,
+                )),
             const SizedBox(
               height: 10,
             ),

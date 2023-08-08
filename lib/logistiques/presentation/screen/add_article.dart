@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -108,7 +107,6 @@ class _NewArticleState extends State<NewArticle> {
       }).toList(),
     );
 
-    log(articleModel.toJson().toString());
 
     BlocProvider.of<ArticleBloc>(context).add(
       CreateArticleEvent(
