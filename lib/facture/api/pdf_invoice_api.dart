@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:bts_technologie/mainpage/domaine/Entities/entreprise_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -9,7 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:developer';
 
 class PdfInvoiceApi {
-  Future<File?> generate() async {
+  Future<File?> generate(Command command, Entreprise? entreprise, String? rc,
+      String? nis, String? nif, String? nai) async {
     final pdf = pw.Document();
     final image = pw.MemoryImage(
       (await rootBundle.load('assets/images/bts_tech_bg.jpg'))
@@ -24,14 +27,18 @@ class PdfInvoiceApi {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildHeader(image),
+              buildHeader(
+                image,
+                entreprise!,
+              ),
               pw.SizedBox(height: 2),
               // Small container in the middle
-              buildFactureNumber(),
-              buildRens(),
+              buildFactureNumber(command.comNumber!.toInt()),
+              buildRens(command, rc, nis, nif, nai),
               pw.SizedBox(height: 8),
 
-              buildTable(),
+              buildTable(command),
+              pw.Spacer(),
               buildFooter(),
               pw.Container(
                 child: pw.Column(
@@ -51,12 +58,13 @@ class PdfInvoiceApi {
                   ],
                 ),
               ),
+              pw.SizedBox(height: 50),
             ]),
       ),
     );
 
     final output = await getTemporaryDirectory();
-    final pdfPath = "${output.path}/example.pdf";
+    final pdfPath = "${output.path}/facture_N°${command.comNumber}.pdf";
     final file = File(pdfPath);
     final result = await file.writeAsBytes(await pdf.save());
     // ignore: unnecessary_null_comparison
@@ -70,7 +78,7 @@ class PdfInvoiceApi {
     // // return PdfApi.saveDocument(name: 'my_invoice.pdf', pdf: pdf);
   }
 
-  pw.Widget buildHeader(image) {
+  pw.Widget buildHeader(image, Entreprise entreprise) {
     return pw.Container(
       // width: 1 * PdfPageFormat.cm,
       padding: const pw.EdgeInsets.all(16),
@@ -90,7 +98,7 @@ class PdfInvoiceApi {
                   color: PdfColors.grey,
                   child: pw.Image(image)),
               pw.Padding(
-                padding: EdgeInsets.only(right: 20),
+                padding: const EdgeInsets.only(right: 20),
                 child: pw.Column(
                   children: [
                     pw.Text(
@@ -134,11 +142,12 @@ class PdfInvoiceApi {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildDataRow('N° RC : ', '1234567890'),
+                    buildDataRow('N° RC : ', entreprise.numberRC.toString()),
                     pw.SizedBox(height: 7),
-                    buildDataRow('N° IF : ', '0987654321'),
+                    buildDataRow('N° IF : ', entreprise.numberIF.toString()),
                     pw.SizedBox(height: 7),
-                    buildDataRow('N° tel : ', '0123456789'),
+                    buildDataRow(
+                        'N° tel : ', entreprise.phoneNumber.toString()),
                   ],
                 ),
               ),
@@ -146,11 +155,11 @@ class PdfInvoiceApi {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildDataRow('Adress : ', 'Your Address'),
+                    buildDataRow('Adress : ', entreprise.adresse.toString()),
                     pw.SizedBox(height: 7),
-                    buildDataRow('N° Art : ', '9876543210'),
+                    buildDataRow('N° Art : ', entreprise.numberART.toString()),
                     pw.SizedBox(height: 7),
-                    buildDataRow('N° RIB : ', '0123456789'),
+                    buildDataRow('N° RIB : ', entreprise.numberRIB.toString()),
                   ],
                 ),
               ),
@@ -161,7 +170,7 @@ class PdfInvoiceApi {
     );
   }
 
-  pw.Widget buildFactureNumber() {
+  pw.Widget buildFactureNumber(int number) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.center,
       children: [
@@ -183,7 +192,7 @@ class PdfInvoiceApi {
                     fontWeight: pw.FontWeight.bold), // Make the label bold
               ),
               pw.Text(
-                '190 / 2023',
+                '$number / 2023',
                 style: pw.TextStyle(
                     fontWeight:
                         pw.FontWeight.normal), // Make the number not bold
@@ -191,9 +200,9 @@ class PdfInvoiceApi {
             ],
           ),
         ),
-        pw.SizedBox(width: 16),
+        // pw.SizedBox(width: 16),
         pw.Text(
-          'Le : 26/07/2023',
+          'Le : Date: ${DateFormat('dd/MM/yyyy').format(DateTime.now())}',
           style: pw.TextStyle(
               fontWeight: pw.FontWeight.normal), // Make the date not bold
         ),
@@ -201,7 +210,7 @@ class PdfInvoiceApi {
     );
   }
 
-  pw.Widget buildRens() {
+  pw.Widget buildRens(Command command, rc, nis, nif, nai) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(16),
       decoration: pw.BoxDecoration(
@@ -222,11 +231,11 @@ class PdfInvoiceApi {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildDataRow('Client :', 'Mohamed Farch'),
+                    buildDataRow('Client :', command.nomClient),
                     pw.SizedBox(height: 7),
-                    buildDataRow('R.C :', ''),
+                    buildDataRow('R.C :', rc ?? ""),
                     pw.SizedBox(height: 7),
-                    buildDataRow('N° AI : ', ''),
+                    buildDataRow('N° AI : ', nai ?? ""),
                   ],
                 ),
               ),
@@ -234,8 +243,9 @@ class PdfInvoiceApi {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildDataRow('Adress', 'El Oued'),
-                    buildDataRow('NIS', ''),
+                    buildDataRow('Adress : ', command.adresse),
+                    pw.SizedBox(height: 7),
+                    buildDataRow('NIS : ', nis ?? ""),
                   ],
                 ),
               ),
@@ -243,7 +253,7 @@ class PdfInvoiceApi {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    buildDataRow('NIF', ''),
+                    buildDataRow('NIF : ', nif ?? ""),
                   ],
                 ),
               ),
@@ -254,7 +264,9 @@ class PdfInvoiceApi {
     );
   }
 
-  pw.Widget buildTable() {
+  pw.Widget buildTable(Command command) {
+    int index = 0;
+
     return pw.Container(
       child: pw.Table(
         border: pw.TableBorder.all(width: 1, color: PdfColors.black),
@@ -264,9 +276,9 @@ class PdfInvoiceApi {
             children: [
               pw.Container(
                   padding: const pw.EdgeInsets.all(5), child: pw.Text('N')),
-              pw.Container(
-                  padding: const pw.EdgeInsets.all(5),
-                  child: pw.Text('Reference')),
+              // pw.Container(
+              //     padding: const pw.EdgeInsets.all(5),
+              //     child: pw.Text('Reference')),
               pw.Container(
                   padding: const pw.EdgeInsets.all(5),
                   child: pw.Text('Designation')),
@@ -284,24 +296,31 @@ class PdfInvoiceApi {
             ],
           ),
           // Table data
-          for (int i = 1; i <= 12; i++)
+          for (var i = 0; i < command.articleList.length; i++)
             pw.TableRow(
               children: [
                 pw.Container(
                     padding: const pw.EdgeInsets.all(5), child: pw.Text('$i')),
+                // pw.Container(
+                //     padding: const pw.EdgeInsets.all(5),
+                //     child: pw.Text('P00170')),
                 pw.Container(
-                    padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('P00170')),
-                pw.Container(
-                    padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('Tshirt Oversiez Noir M')),
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(command.articleList[i]!.articleName!),
+                ),
+
                 pw.Container(
                     padding: const pw.EdgeInsets.all(5), child: pw.Text('1')),
                 pw.Container(
-                    padding: const pw.EdgeInsets.all(5), child: pw.Text('1')),
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Text(
+                    command.articleList[i]!.quantity.toString(),
+                  ),
+                ),
                 pw.Container(
                     padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('850.00')),
+                    child:
+                        pw.Text(command.articleList[i]!.unityPrice.toString())),
                 pw.Container(
                     padding: const pw.EdgeInsets.all(5),
                     child: pw.Text('0.00')),

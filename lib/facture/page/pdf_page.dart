@@ -13,7 +13,7 @@ class _PdfPageState extends State<PdfPage> {
 
   Future<void> createAndOpenPdf() async {
     // final File? pdfFile =
-        await pdfApi.generate(/* pass your Invoice object here */);
+        // await pdfApi.generate(/* pass your Invoice object here */);
   }
 
   @override
