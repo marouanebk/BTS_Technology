@@ -13,16 +13,16 @@ import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/a
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditUsePage extends StatefulWidget {
+class EditUserPage extends StatefulWidget {
   final User user;
   final List<FacePage> pages;
-  const EditUsePage({required this.user, required this.pages, super.key});
+  const EditUserPage({required this.user, required this.pages, super.key});
 
   @override
-  State<EditUsePage> createState() => _EditUsePageState();
+  State<EditUserPage> createState() => _EditUserPageState();
 }
 
-class _EditUsePageState extends State<EditUsePage> {
+class _EditUserPageState extends State<EditUserPage> {
   TextEditingController fullnameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -32,6 +32,19 @@ class _EditUsePageState extends State<EditUsePage> {
   List<int> _selectedPages = [];
   List<int> _selectedCommandeTypes = [];
   String error = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the controllers with existing user data if provided
+    fullnameController.text = widget.user.fullname!;
+    usernameController.text = widget.user.username;
+
+
+    // Optionally, you can set initial values for other fields if needed
+    widget.user.role;
+  }
 
   @override
   void dispose() {

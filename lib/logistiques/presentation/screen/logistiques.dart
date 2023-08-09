@@ -106,108 +106,55 @@ class _LogistiquesState extends State<Logistiques> {
           isDropDownVisibleList[index] = !isDropDownVisibleList[index];
         });
       },
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 70,
-            padding:
-                const EdgeInsets.only(left: 15, right: 20, top: 8, bottom: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(
-                top: const Radius.circular(5),
-                bottom: isDropDownVisibleList[index]
-                    ? const Radius.circular(
-                        0) // Remove bottom-left and bottom-right radius
-                    : const Radius.circular(
-                        5), // Keep radius when dropdown is not visible
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.white,
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.15),
+              blurRadius: 12,
+              spreadRadius: 0,
+              offset: Offset(0, 0), // Add shadows to all sides
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 70,
+              padding: const EdgeInsets.only(
+                  left: 15, right: 20, top: 8, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${article.name} x $totalQuantity",
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                  ),
+                  SizedBox(
+                    width: 40,
+                    height: 52,
+                    child: Image.asset(
+                        "assets/images/logistiques/sweat_oversize.png"),
+                  ),
+                ],
               ),
-              color: Colors.white,
-              boxShadow: isDropDownVisibleList[index]
-                  ? [
-                      const BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                        offset: Offset(-5, -5), // Add shadows to top-left
-                      ),
-                      const BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                        offset: Offset(5, -5), // Add shadows to top-right
-                      ),
-                      const BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                        offset: Offset(0, -5), // Add shadow to top
-                      ),
-                    ]
-                  : [
-                      const BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                        offset: Offset(0, 0), // Add shadows to all sides
-                      ),
-                    ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${article.name} x $totalQuantity",
-                  style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                ),
-                SizedBox(
-                  width: 40,
-                  height: 52,
-                  child: Image.asset(
-                      "assets/images/logistiques/sweat_oversize.png"),
-                ),
-              ],
-            ),
-          ),
-          if (isDropDownVisibleList[index]) articleDropDown(article),
-        ],
+            if (isDropDownVisibleList[index]) articleDropDown(article),
+          ],
+        ),
       ),
     );
   }
 
   Widget articleDropDown(article) {
-    return Container(
-      width: double.infinity,
+    return Padding(
       padding: const EdgeInsets.only(left: 15),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(5), // Remove top-left and top-right radius
-        ),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.15),
-            blurRadius: 12,
-            spreadRadius: 0,
-            offset: Offset(-5, 5), // Add shadows to bottom-left
-          ),
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.15),
-            blurRadius: 12,
-            spreadRadius: 0,
-            offset: Offset(5, 5), // Add shadows to bottom-right
-          ),
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.15),
-            blurRadius: 12,
-            spreadRadius: 0,
-            offset: Offset(0, 5), // Add shadow to bottom
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

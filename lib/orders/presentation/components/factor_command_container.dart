@@ -110,143 +110,127 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     bool isModificationAllowed = widget.role == "admin" ||
         widget.role == "financier" ||
         getStatusListBasedOnRole().contains(type);
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(5),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.15),
-            offset: Offset(0, 0),
-            blurRadius: 12,
-            spreadRadius: 0,
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: double.infinity,
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: Color(0xFFECECEC),
+            ),
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16.0, top: 24, bottom: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              width: double.infinity,
-              child: Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFECECEC),
-              ),
+          const SizedBox(height: 5,),
+          for (var item in widget.command.articleList) productDetail(item!),
+          const SizedBox(
+            width: double.infinity,
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: Color(0xFFECECEC),
             ),
-            for (var item in widget.command.articleList) productDetail(item!),
-            const SizedBox(
-              width: double.infinity,
-              child: Divider(
-                height: 1,
-                thickness: 1,
-                color: Color(0xFFECECEC),
-              ),
-            ),
-            clientInfo(widget.command),
-            const SizedBox(
-              height: 16,
-            ),
-            Wrap(
-              spacing: 8.0, // Adjust spacing between images
-              runSpacing: 8.0, // Adjust spacing between lines
-              children: [
-                ...List.generate(
-                  5,
-                  (index) => InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        _createRoute("assets/images/tshirt_${index + 1}.png"),
-                      );
-                    },
-                    child: Container(
-                      height: 72,
-                      width: 72,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: const Color(0xFFECECEC),
-                          width: 1,
-                        ),
+          ),
+          clientInfo(widget.command),
+          const SizedBox(
+            height: 16,
+          ),
+          Wrap(
+            spacing: 8.0, // Adjust spacing between images
+            runSpacing: 8.0, // Adjust spacing between lines
+            children: [
+              ...List.generate(
+                5,
+                (index) => InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      _createRoute("assets/images/tshirt_${index + 1}.png"),
+                    );
+                  },
+                  child: Container(
+                    height: 72,
+                    width: 72,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: const Color(0xFFECECEC),
+                        width: 1,
                       ),
-                      child: Image.asset(
-                        "assets/images/tshirt_2.png",
-                        fit: BoxFit.cover,
-                      ),
+                    ),
+                    child: Image.asset(
+                      "assets/images/tshirt_2.png",
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            if (isModificationAllowed)
-              containerButton(
-                  "Modifier la commande",
-                  EditOrderPage(
-                    role: widget.role,
-                    command: widget.command,
-                  )),
-            const SizedBox(
-              height: 10,
-            ),
-            //add the generate factor
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          if (isModificationAllowed)
             containerButton(
-                "Générer une facture",
-                NewFactorPage(
+                "Modifier la commande",
+                EditOrderPage(
+                  role: widget.role,
                   command: widget.command,
                 )),
-            const SizedBox(
-              height: 10,
-            ),
-            confirmationContainer(
-              value: type,
-              onChanged: (value) {
-                setState(() {
-                  _updateStatus(value);
+          const SizedBox(
+            height: 10,
+          ),
+          //add the generate factor
+          containerButton(
+              "Générer une facture",
+              NewFactorPage(
+                command: widget.command,
+              )),
+          const SizedBox(
+            height: 10,
+          ),
+          confirmationContainer(
+            value: type,
+            onChanged: (value) {
+              setState(() {
+                _updateStatus(value);
 
-                  type = value;
-                });
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Center(
-              child: Text(
-                "Saisie par @${widget.command.user}",
-                style: const TextStyle(
-                  color: Color(0xFF9F9F9F),
-                  fontFamily: "Inter",
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w400,
-                ),
-                textAlign: TextAlign.center,
+                type = value;
+              });
+            },
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Text(
+              "Saisie par @${widget.command.user}",
+              style: const TextStyle(
+                color: Color(0xFF9F9F9F),
+                fontFamily: "Inter",
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
               ),
+              textAlign: TextAlign.center,
             ),
-            const Center(
-              child: Text(
-                "Livré par Yalidine",
-                style: TextStyle(
-                  color: Color(0xFF9F9F9F),
-                  fontFamily: "Inter",
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w400,
-                ),
-                textAlign: TextAlign.center,
+          ),
+          const Center(
+            child: Text(
+              "Livré par Yalidine",
+              style: TextStyle(
+                color: Color(0xFF9F9F9F),
+                fontFamily: "Inter",
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
               ),
+              textAlign: TextAlign.center,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

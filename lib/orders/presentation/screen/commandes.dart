@@ -42,16 +42,12 @@ class _OrdersPageState extends State<OrdersPage> {
     'Retourné',
   ];
 
-   List<String> financierStatusList = [
+  List<String> financierStatusList = [
     'Tous',
     'Expidié',
     'Encaisse',
     'Retourné',
   ];
-
-  
-
-
 
   @override
   void dispose() {
@@ -92,10 +88,12 @@ class _OrdersPageState extends State<OrdersPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Row(
-                      children: List.generate(statusListAdministrator.length, (index) {
+                      children: List.generate(statusListAdministrator.length,
+                          (index) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 10.0),
-                          child: statusFilter(index, statusListAdministrator[index]),
+                          child: statusFilter(
+                              index, statusListAdministrator[index]),
                         );
                       }),
                     ),
@@ -249,62 +247,59 @@ class _OrdersPageState extends State<OrdersPage> {
           isDropDownVisibleList[index] = !isDropDownVisibleList[index];
         });
       },
-      child: Column(
-        children: [
-          Container(
-            height: 61,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(
-                top: const Radius.circular(5),
-                bottom: isDropDownVisibleList[index]
-                    ? const Radius.circular(0)
-                    : const Radius.circular(5),
-              ),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                  offset: Offset(0, 0),
-                  blurRadius: 12,
-                  spreadRadius: 0,
-                ),
-              ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.15),
+              offset: Offset(0, 0),
+              blurRadius: 12,
+              spreadRadius: 0,
             ),
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Com N° ${command.comNumber}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Container(
-                    color: bgColor,
-                    padding: const EdgeInsets.all(5),
-                    child: Text(
-                      command.status!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: statusColor,
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 61,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Com N° ${command.comNumber}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
-                ],
+                    Container(
+                      color: bgColor,
+                      padding: const EdgeInsets.all(5),
+                      child: Text(
+                        command.status!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: statusColor,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-          if (isDropDownVisibleList[index])
-            FactorCommandContainer(
-              role: widget.role,
-              command: command,
-            ),
-        ],
+            if (isDropDownVisibleList[index])
+              FactorCommandContainer(
+                role: widget.role,
+                command: command,
+              ),
+          ],
+        ),
       ),
     );
   }
