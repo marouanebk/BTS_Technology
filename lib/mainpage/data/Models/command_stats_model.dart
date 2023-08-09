@@ -4,9 +4,12 @@ class CommandStatsModel extends CommandStatsEntity {
   const CommandStatsModel({
     required int totalCommandes,
     required List<StatsItem> status,
+
+    required int month,
   }) : super(
           totalCommandes: totalCommandes,
           status: status,
+          month: month
         );
 
   factory CommandStatsModel.fromJson(Map<String, dynamic> json) {
@@ -24,7 +27,8 @@ class CommandStatsModel extends CommandStatsEntity {
     }
 
     return CommandStatsModel(
-      totalCommandes: json['totalCommandes'],
+      totalCommandes: json['totalCommands'],
+      month: json['month'],
       status: stats,
     );
   }

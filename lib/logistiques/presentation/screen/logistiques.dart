@@ -4,6 +4,7 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
+import 'package:bts_technologie/logistiques/presentation/screen/edit_article.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,6 +62,9 @@ class _LogistiquesState extends State<Logistiques> {
                           return logiItem(state.getArticles[index], index);
                         },
                       ),
+                    const SizedBox(
+                      height: 30,
+                    ),
                   ],
                 ),
               ),
@@ -196,11 +200,11 @@ class _LogistiquesState extends State<Logistiques> {
           const SizedBox(
             height: 15,
           ),
-          modifyButton(),
+          modifyButton(context, article),
           const SizedBox(
             height: 5,
           ),
-          deleteButton(),
+          deleteButton(context),
           const SizedBox(
             height: 20,
           ),
@@ -209,7 +213,7 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget deleteButton() {
+  Widget deleteButton(context) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Container(
@@ -236,7 +240,7 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget modifyButton() {
+  Widget modifyButton(context, article) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Container(
@@ -251,7 +255,13 @@ class _LogistiquesState extends State<Logistiques> {
           ),
         ),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).push(
+              MaterialPageRoute(
+                builder: (_) => EditArticle(article: article),
+              ),
+            );
+          },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),

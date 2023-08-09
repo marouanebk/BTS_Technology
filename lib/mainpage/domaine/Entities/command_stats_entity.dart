@@ -2,11 +2,13 @@ import 'package:equatable/equatable.dart';
 
 class CommandStatsEntity extends Equatable {
   final int totalCommandes;
+  final int month;
   final List<StatsItem> status;
 
   const CommandStatsEntity({
     required this.totalCommandes,
     required this.status,
+    required this.month,
   });
 
   @override

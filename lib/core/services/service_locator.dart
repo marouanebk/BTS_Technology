@@ -22,6 +22,7 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/mainpage/data/Repository/account_repo_emplem.dart';
 import 'package:bts_technologie/mainpage/data/dataSource/account_datasource.dart';
 import 'package:bts_technologie/mainpage/domaine/Repository/base_accounts_repo.dart';
+import 'package:bts_technologie/mainpage/domaine/UseCase/get_commands_stats_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_entreprise_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
@@ -43,7 +44,7 @@ class ServiceLocator {
   Future<void> init() async {
     // Bloc
     sl.registerFactory(() => UserBloc(sl(), sl()));
-    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl(),sl()));
+    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl(),sl() ,sl()));
     sl.registerFactory(() => ArticleBloc(sl(), sl(), sl(), sl(), sl()));
     sl.registerFactory(() => CommandBloc(sl(), sl(), sl()));
     sl.registerFactory(() => FinanceBloc(sl(), sl()));
@@ -68,6 +69,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => GetLivreurUseCase(sl()));
     sl.registerLazySingleton(() => GetEntrepriseInfoUsecase(sl()));
     sl.registerLazySingleton(() => GetAdminUserStatsUseCase(sl()));
+    sl.registerLazySingleton(() => GetCommandsStatsUseCase(sl()));
     
 
     // Commandes

@@ -17,9 +17,8 @@ class ApiConstance {
   static const String createLivreur = "$baseUrl/api/livreur/add";
 
   static const String getLivreurSold = "$baseUrl/api/livreur/get";
-  static const String getAdminUserStats = "$baseUrl/api/command/pageadmin/stats";
-
-  
+  static const String getAdminUserStats =
+      "$baseUrl/api/command/pageadmin/stats";
 
   static String deletePage(String id) => '$baseUrl/api/page/delete/$id';
   static String deleteLivreur(String id) => '$baseUrl/api/livreur/delete/$id';
@@ -33,6 +32,7 @@ class ApiConstance {
   static const String articleApi = "/api/article";
   static const String getArticles = "$baseUrl$articleApi/get";
   static const String createArticle = "$baseUrl$articleApi/create";
+  static String editArticle(String id) => '$baseUrl$articleApi/update/$id';
 
   static const String getCommandes = "$baseUrl$commandApi/get";
   static const String createCommandes = "$baseUrl$commandApi/create";

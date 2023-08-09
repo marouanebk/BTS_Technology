@@ -13,4 +13,6 @@ class GetLivreursEvent extends AccountEvent {}
 class GetAdminUserStatsEvent extends AccountEvent {}
 
 class GetEntrepriseInfoEvent extends AccountEvent {}
+class GetCommandsStatsEvent extends AccountEvent {}
+
 

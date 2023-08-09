@@ -8,7 +8,7 @@ class GetCommandsStatsUseCase {
 
   GetCommandsStatsUseCase(this.repository);
 
-  Future<Either<Failure, List<CommandStatsEntity>>> call(int? month , int year) async {
+  Future<Either<Failure, List<CommandStatsEntity>>> call() async {
     return await repository.getCommandStats();
   }
 }

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/command_stats_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
@@ -26,6 +27,21 @@ class _MainPageState extends State<MainPage> {
   final controller = PageController(initialPage: 0);
   int pageindex = 0;
 
+  Map<int, String> frenchMonthAbbreviations = {
+    1: 'jan',
+    2: 'fév',
+    3: 'mar',
+    4: 'avr',
+    5: 'mai',
+    6: 'jun',
+    7: 'jui',
+    8: 'aoû',
+    9: 'sep',
+    10: 'oct',
+    11: 'nov',
+    12: 'déc',
+  };
+
   @override
   void dispose() {
     controller.dispose();
@@ -35,7 +51,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<AccountBloc>()..add(GetAdminUserStatsEvent()),
+      create: (context) => sl<AccountBloc>()
+        ..add(GetAdminUserStatsEvent())
+        ..add(GetCommandsStatsEvent()),
       child: Builder(
         builder: (context) {
           return Builder(builder: (context) {
@@ -61,29 +79,38 @@ class _MainPageState extends State<MainPage> {
                             ),
                           ),
                         ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              dateFilter(0, "Avr 23"),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              dateFilter(1, "Mai 23"),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              dateFilter(2, "Jui 23"),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              dateFilter(3, "Jui 23"),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                            ],
+                        if (state.getCommandsStatsState == RequestState.loading)
+                          const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
+                        if (state.getCommandsStatsState == RequestState.error)
+                          Text(
+                            state.getAdminUserStatsmessage,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        if (state.getCommandsStatsState ==
+                            RequestState.loaded) ...[
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                for (var i = 0;
+                                    i < state.getCommandsStats.length;
+                                    i++) ...[
+                                  dateFilter(
+                                      i,
+                                      frenchMonthAbbreviations[
+                                          state.getCommandsStats[i].month]),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Column(
@@ -105,8 +132,12 @@ class _MainPageState extends State<MainPage> {
                                   },
                                   physics: const NeverScrollableScrollPhysics(),
                                   children: [
-                                    _commandsStats(),
-                                    const SizedBox(height: 24),
+                                    for (var i = 0;
+                                        i < state.getCommandsStats.length;
+                                        i++) ...[
+                                      _commandsStats(state.getCommandsStats[i]),
+                                      // const SizedBox(height: 24),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -399,7 +430,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _commandsStats() {
+  Widget _commandsStats(CommandStatsEntity command) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
       child: Align(
@@ -428,9 +459,9 @@ class _MainPageState extends State<MainPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "342 Commandes",
-                    style: TextStyle(
+                  Text(
+                    "${command.totalCommandes} Commandes",
+                    style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w500),
@@ -460,16 +491,18 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(
                 height: 10,
               ),
-              _progressItem("Téléphone éteint", 15),
-              _progressItem("Ne répond pas", 15),
-              _progressItem("Numero erroné", 15),
-              _progressItem("Annulé", 15),
-              _progressItem("Pas confirmé", 15),
-              _progressItem("Confirmé", 15),
-              _progressItem("Préparé", 15),
-              _progressItem("Expidié", 15),
-              _progressItem("Encaissé", 15),
-              _progressItem("Retourné", 15),
+              for (var i = 0; i < command.status.length; i++)
+                _progressItem(command.status[i].name, command.status[i].count,
+                    command.status[i].percentage.toInt()),
+              // _progressItem("Ne répond pas", 15),
+              // _progressItem("Numero erroné", 15),
+              // _progressItem("Annulé", 15),
+              // _progressItem("Pas confirmé", 15),
+              // _progressItem("Confirmé", 15),
+              // _progressItem("Préparé", 15),
+              // _progressItem("Expidié", 15),
+              // _progressItem("Encaissé", 15),
+              // _progressItem("Retourné", 15),
             ],
           ),
         ),
@@ -477,11 +510,11 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _progressItem(String label, int progress) {
+  Widget _progressItem(String label, int number, int progress) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
             child: Text(
@@ -504,13 +537,26 @@ class _MainPageState extends State<MainPage> {
             progressColor: Colors.black,
           ),
           const SizedBox(width: 8),
-          Text(
-            '$progress%',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+          Container(
+            width: 50, // adjust this value to your needs
+            child: Text(
+              '$number - $progress%',
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF9F9F9F),
+                  fontFamily: 'Inter'),
             ),
           ),
+          // const SizedBox(width: 8),
+          // Text(
+          //   '$number - $progress%',
+          //   style: const TextStyle(
+          //       fontSize: 12,
+          //       fontWeight: FontWeight.w400,
+          //       color: Color(0xFF9F9F9F),
+          //       fontFamily: 'Inter'),
+          // ),
         ],
       ),
     );

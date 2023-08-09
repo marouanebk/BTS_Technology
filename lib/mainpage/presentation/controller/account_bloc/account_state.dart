@@ -1,5 +1,6 @@
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/command_stats_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/entreprise_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
@@ -18,6 +19,10 @@ class AccountState extends Equatable {
   final List<Livreur> getLivreurs;
   final RequestState getLivreursState;
   final String getLivreursmessage;
+
+  final List<CommandStatsEntity> getCommandsStats;
+  final RequestState getCommandsStatsState;
+  final String getCommandsStatsmessage;
 
   final Entreprise? getEntrepriseInfo;
   final RequestState getEntrepriseInfoState;
@@ -43,6 +48,10 @@ class AccountState extends Equatable {
     this.getLivreurs = const [],
     this.getLivreursState = RequestState.loading,
     this.getLivreursmessage = "",
+    //
+    this.getCommandsStats = const [],
+    this.getCommandsStatsState = RequestState.loading,
+    this.getCommandsStatsmessage = "",
     //
     this.createArticleState = RequestState.loading,
     this.createArticleMessage = "",
@@ -70,6 +79,10 @@ class AccountState extends Equatable {
     RequestState? getLivreursState,
     String? getLivreursmessage,
 
+    //
+    List<CommandStatsEntity>? getCommandsStats,
+    RequestState? getCommandsStatsState,
+    String? getCommandsStatsmessage,
     //
     Entreprise? getEntrepriseInfo,
     RequestState? getEntrepriseInfoState,
@@ -110,6 +123,12 @@ class AccountState extends Equatable {
           getAdminUserStatsState ?? this.getAdminUserStatsState,
       getAdminUserStatsmessage:
           getAdminUserStatsmessage ?? this.getAdminUserStatsmessage,
+      //
+      getCommandsStats: getCommandsStats ?? this.getCommandsStats,
+      getCommandsStatsState:
+          getCommandsStatsState ?? this.getCommandsStatsState,
+      getCommandsStatsmessage:
+          getCommandsStatsmessage ?? this.getCommandsStatsmessage,
     );
     //
   }
@@ -137,5 +156,9 @@ class AccountState extends Equatable {
         getAdminUserStats,
         getAdminUserStatsState,
         getAdminUserStatsmessage,
+        //
+        getCommandsStats,
+        getCommandsStatsState,
+        getCommandsStatsmessage,
       ];
 }
