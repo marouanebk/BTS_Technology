@@ -1,7 +1,8 @@
-import 'dart:math';
+import 'dart:developer';
 
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/finances/domaine/entities/cashflow_entity.dart';
 import 'package:bts_technologie/finances/domaine/entities/finance_entity.dart';
 import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_bloc.dart';
 import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_event.dart';
@@ -23,6 +24,7 @@ class FinancesPage extends StatefulWidget {
 class _FinancesPageState extends State<FinancesPage> {
   late List<_ChartData> data;
   late TooltipBehavior _tooltip;
+  String _selectedPeriod = 'Par mois';
 
   @override
   void initState() {
@@ -40,7 +42,9 @@ class _FinancesPageState extends State<FinancesPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<FinanceBloc>()..add(GetFinancesEvent()),
+      create: (context) => sl<FinanceBloc>()
+        ..add(GetFinancesEvent())
+        ..add(GetCashFlowEvent()),
       child: Builder(builder: (context) {
         return SafeArea(
           child: Scaffold(
@@ -63,7 +67,28 @@ class _FinancesPageState extends State<FinancesPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    _cashflow(),
+                    BlocBuilder<FinanceBloc, FinancesState>(
+                      builder: (context, state) {
+                        if (state.getCashFlowState == RequestState.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.red,
+                            ),
+                          );
+                        }
+                        if (state.getCashFlowState == RequestState.error) {
+                          return Text(
+                            state.getFinancesmessage,
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
+                        if (state.getCashFlowState == RequestState.loaded) {
+                          return _cashflow(state.getCashFlow!);
+                        }
+
+                        return Container();
+                      },
+                    ),
                     const SizedBox(
                       height: 24,
                     ),
@@ -78,13 +103,13 @@ class _FinancesPageState extends State<FinancesPage> {
                           xValueMapper: (_ChartData data, _) => data.x,
                           yValueMapper: (_ChartData data, _) => data.y,
                           name: 'Gold',
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                          borderRadius:const  BorderRadius.all(Radius.circular(25)),
                           color: const Color(0xFFECECEC),
                           selectionBehavior: SelectionBehavior(
                             enable: true,
                             unselectedOpacity: 1.0,
                             selectedColor: Colors.black,
-                            unselectedColor: Color(0xFFECECEC),
+                            unselectedColor: const Color(0xFFECECEC),
                           ),
                         )
                         // color: Color.fromRGBO(8, 142, 255, 1))
@@ -294,16 +319,16 @@ class _FinancesPageState extends State<FinancesPage> {
     );
   }
 
-  Widget _cashflow() {
+  Widget _cashflow(CashFlow cashflow) {
     return Column(
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Analytiques du cashflow",
                   style: TextStyle(
                     color: Color(0xFF9F9F9F),
@@ -314,12 +339,17 @@ class _FinancesPageState extends State<FinancesPage> {
                     height: 1.0,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  "325,500 DA",
-                  style: TextStyle(
+                  _selectedPeriod == 'Par mois'
+                      ? '${cashflow.month} DA'
+                      : _selectedPeriod == 'Par jour'
+                          ? '${cashflow.day} DA'
+                          : '${cashflow.year} DA',
+                          
+                  style: const TextStyle(
                     color: Colors.black,
                     fontFamily: "Inter",
                     fontSize: 20,
@@ -330,20 +360,61 @@ class _FinancesPageState extends State<FinancesPage> {
                 ),
               ],
             ),
-            Text(
-              "Par mois",
-              style: TextStyle(
-                color: Color(0xFF9F9F9F),
-                fontFamily: "Inter",
-                fontSize: 12,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0,
-              ),
-            ),
+            DropdownButton<String>(
+              value: _selectedPeriod,
+              items: const [
+                DropdownMenuItem(
+                  value: 'Par mois',
+                  child: Text(
+                    'Par mois',
+                    style: TextStyle(
+                      color: Color(0xFF9F9F9F),
+                      fontFamily: "Inter",
+                      fontSize: 12,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+                DropdownMenuItem(
+                  value: 'Par jour',
+                  child: Text(
+                    'Par jour',
+                    style: TextStyle(
+                      color: Color(0xFF9F9F9F),
+                      fontFamily: "Inter",
+                      fontSize: 12,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+                DropdownMenuItem(
+                  value: 'Par année',
+                  child: Text(
+                    'Par année',
+                    style: TextStyle(
+                      color: Color(0xFF9F9F9F),
+                      fontFamily: "Inter",
+                      fontSize: 12,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+              ],
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedPeriod = newValue!;
+                });
+                log(_selectedPeriod);
+              },
+            )
           ],
         ),
-        Container(),
       ],
     );
   }

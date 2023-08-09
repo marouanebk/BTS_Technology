@@ -69,8 +69,10 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
   Future<Unit> editCommand(CommandModel command) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    final response = await Dio().post(
-      ApiConstance.createCommandes,
+    log("in data source for");
+    log(command.id.toString());
+    final response = await Dio().patch(
+      ApiConstance.updateCommand(command.id!),
       data: command.toJson(),
       options: Options(
         followRedirects: false,

@@ -16,6 +16,11 @@ class ApiConstance {
   static const String createPage = "$baseUrl/api/page/add";
   static const String createLivreur = "$baseUrl/api/livreur/add";
 
+  static const String getLivreurSold = "$baseUrl/api/livreur/get";
+  static const String getAdminUserStats = "$baseUrl/api/command/pageadmin/stats";
+
+  
+
   static String deletePage(String id) => '$baseUrl/api/page/delete/$id';
   static String deleteLivreur(String id) => '$baseUrl/api/livreur/delete/$id';
   static String deleteUser(String id) => '$baseUrl$accountApi/delete/$id';
@@ -23,6 +28,7 @@ class ApiConstance {
   static String editUser(String id) => '$baseUrl$accountApi/update/$id';
 
   static const String getEntrepriseApi = "$baseUrl/api/entreprise/";
+  static const String updateEntrepriseApi = "$baseUrl/api/entreprise/update";
 
   static const String articleApi = "/api/article";
   static const String getArticles = "$baseUrl$articleApi/get";
@@ -32,14 +38,15 @@ class ApiConstance {
   static const String createCommandes = "$baseUrl$commandApi/create";
   // static const String updateCommandStatus = "$baseUrl$commandApi/create";
   static const String editCommand = "$baseUrl$commandApi/create";
+  static String updateCommand(String id) => '$baseUrl$commandApi/update/$id';
   static String updateCommandStatus(String id) =>
       '$baseUrl$commandApi/status/update/$id';
 
-  static const String getCommandesStatsForAdmin = "$baseUrl$commandApi/status/stats";
+  static const String getCommandesStatsForAdmin =
+      "$baseUrl$commandApi/status/stats";
 
   //finances
-    static const String getFinancesApi = "$baseUrl$financeApi/";
-    static const String createFinanceChargeApi = "$baseUrl$financeApi/add";
-
-
+  static const String getFinancesApi = "$baseUrl$financeApi/";
+  static const String getCashFlowApi = "$baseUrl$financeApi/cashflow";
+  static const String createFinanceChargeApi = "$baseUrl$financeApi/add";
 }

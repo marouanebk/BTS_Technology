@@ -9,6 +9,7 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
@@ -71,8 +72,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
     if (fullnameController.text.isEmpty ||
         adresssController.text.isEmpty ||
         phonenumberController.text.isEmpty ||
-        sommePaidController.text.isEmpty ){
-        // noteClientController.text.isEmpty ) {
+        sommePaidController.text.isEmpty) {
+      // noteClientController.text.isEmpty ) {
       hasEmptyFields = true;
       log(
         "74",
@@ -110,18 +111,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   void _submitForm(context) {
-    // log(fullnameController.toString());
-    // log('fullnameController: ${fullnameController.text}');
-    // log('adresssController: ${adresssController.text}');
-    // log('phonenumberController: ${phonenumberController.text}');
-    // log('sommePaidController: ${sommePaidController.text}');
-    // log('noteClientController: ${noteClientController.text}');
-
-    // for (var variant in variants) {
-    //   log('variant.prixController: ${variant.prixController.text}');
-    //   log('variant.nbrArticlesController: ${variant.nbrArticlesController.text}');
-    // }
-
     final commandModel = CommandModel(
       adresse: adresssController.text,
       nomClient: fullnameController.text,
@@ -137,13 +126,10 @@ class _AddOrderPageState extends State<AddOrderPage> {
           articleId: variant.article!,
           unityPrice: double.parse(variant.prixController.text),
           commandType: variant.type!,
-          variantId:
-              variant.variant!, // Note: this should be a String, not int.parse
+          variantId: variant.variant!,
         );
       }).toList(),
     );
-
-    log(commandModel.toJson().toString());
 
     BlocProvider.of<CommandBloc>(context).add(
       CreateCommandEvent(
@@ -175,34 +161,18 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     'value': article.id ?? "",
                   };
                 }).toList();
-
-                //   articlesList = state.getArticles.map((article) {
-                //     return {
-                //       'label': article.name ?? "",
-                //       'value': article.id ?? "",
-                //       'variants': article.variants.map((variant) {
-                //         return {
-                //           'label': variant.name ?? "",
-                //           'value': variant.id ?? "",
-                //         };
-                //       }).toList(),
-                //     };
-                //   }).toList();
-                // }
               }
             },
           ),
           BlocListener<CommandBloc, CommandesState>(
             listener: (context, state) {
               if (state.createCommandState == RequestState.loaded) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrdersPage(role: widget.role),
-                  ),
-                );
-              } else if (state.createCommandState == RequestState.error){
-                log(state.createCommandMessage);
+                Navigator.of(context).pop();
+                CustomStyledSnackBar(
+                    message: "Commande enregistré", success: true);
+              } else if (state.createCommandState == RequestState.error) {
+                CustomStyledSnackBar(
+                    message: state.createCommandMessage, success: false);
               }
             },
           ),

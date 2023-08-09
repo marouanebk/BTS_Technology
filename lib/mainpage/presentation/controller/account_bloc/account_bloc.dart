@@ -5,6 +5,7 @@ import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_entreprise_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
+import 'package:bts_technologie/mainpage/domaine/UseCase/get_usestats_usecase.dart';
 
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
@@ -15,17 +16,20 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final GetPagesUseCase getPagesUseCase;
   final GetLivreurUseCase getLivreurUseCase;
   final GetEntrepriseInfoUsecase getEntrepriseInfoUsecase;
+  final GetAdminUserStatsUseCase getAdminUserStatsUseCase;
 
   AccountBloc(
     this.getAllUsersUseCase,
     this.getLivreurUseCase,
     this.getPagesUseCase,
     this.getEntrepriseInfoUsecase,
+    this.getAdminUserStatsUseCase,
   ) : super(const AccountState()) {
     on<GetAllAccountsEvent>(_getAccountEvent);
     on<GetPagesEvent>(_getPagesEvent);
     on<GetLivreursEvent>(_getLivreursEvent);
     on<GetEntrepriseInfoEvent>(_getEntrepriseInfoEvent);
+    on<GetAdminUserStatsEvent>(_getAdminUsersStatsEvent);
   }
   FutureOr<void> _getEntrepriseInfoEvent(
       GetEntrepriseInfoEvent event, Emitter<AccountState> emit) async {
@@ -57,6 +61,18 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
             getPagesState: RequestState.error, getPagesmessage: l.message)),
         (r) => emit(
             state.copyWith(getPages: r, getPagesState: RequestState.loaded)));
+  }
+
+  FutureOr<void> _getAdminUsersStatsEvent(
+      GetAdminUserStatsEvent event, Emitter<AccountState> emit) async {
+    final result = await getAdminUserStatsUseCase();
+    result.fold(
+        (l) => emit(state.copyWith(
+            getAdminUserStatsState: RequestState.error,
+            getAdminUserStatsmessage: l.message)),
+        (r) => emit(state.copyWith(
+            getAdminUserStats: r,
+            getAdminUserStatsState: RequestState.loaded)));
   }
 
   FutureOr<void> _getLivreursEvent(

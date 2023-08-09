@@ -42,18 +42,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       theme: ThemeData(primarySwatch: Colors.deepOrange),
-      home: PdfPage(),
-      // home: (isLoggedIn == 1)
-      //     ? ((type == "admin")
-      //         ? const PageAdministratorBaseScreen()
-      //         : ((type == "PageAdministratorBaseScreen")
-      //             ? const FinancesBaseScreen()
-      //             : ((type == "pageAdmin")
-      //                 ? const AdminPageBaseScreen()
-      //                 : ((type == "logistics")
-      //                     ? const LogistiquesBaseScreen()
-      //                     : const LoginPage()))))
-      //     : const LoginPage(),
+      // home: PdfPage(),
+      home: (isLoggedIn == 1)
+          ? ((type == "admin")
+              ? const PageAdministratorBaseScreen()
+              : ((type == "PageAdministratorBaseScreen")
+                  ? const FinancesBaseScreen()
+                  : ((type == "pageAdmin")
+                      ? const AdminPageBaseScreen()
+                      : ((type == "logistics")
+                          ? const LogistiquesBaseScreen()
+                          : const LoginPage()))))
+          : const LoginPage(),
     );
   }
 }

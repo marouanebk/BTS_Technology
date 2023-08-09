@@ -3,6 +3,7 @@ import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/entreprise_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/user_stat_entity.dart';
 import 'package:equatable/equatable.dart';
 
 class AccountState extends Equatable {
@@ -22,27 +23,38 @@ class AccountState extends Equatable {
   final RequestState getEntrepriseInfoState;
   final String getEntrepriseInfomessage;
 
+  final List<UserStatEntity> getAdminUserStats;
+  final RequestState getAdminUserStatsState;
+  final String getAdminUserStatsmessage;
+
   // final ToDo createArticle;
   final RequestState createArticleState;
   final String createArticleMessage;
 
-  const AccountState(
-      {this.getAccount = const [],
-      this.getAccountState = RequestState.loading,
-      this.getAccountmessage = "",
-      //
-      this.getPages = const [],
-      this.getPagesState = RequestState.loading,
-      this.getPagesmessage = "",
-      this.getLivreurs = const [],
-      this.getLivreursState = RequestState.loading,
-      this.getLivreursmessage = "",
-      //
-      this.createArticleState = RequestState.loading,
-      this.createArticleMessage = "",
-      this.getEntrepriseInfo = null,
-      this.getEntrepriseInfoState = RequestState.loading,
-      this.getEntrepriseInfomessage = ""});
+  const AccountState({
+    this.getAccount = const [],
+    this.getAccountState = RequestState.loading,
+    this.getAccountmessage = "",
+    //
+    this.getPages = const [],
+    this.getPagesState = RequestState.loading,
+    this.getPagesmessage = "",
+    //
+    this.getLivreurs = const [],
+    this.getLivreursState = RequestState.loading,
+    this.getLivreursmessage = "",
+    //
+    this.createArticleState = RequestState.loading,
+    this.createArticleMessage = "",
+    //
+    this.getEntrepriseInfo = null,
+    this.getEntrepriseInfoState = RequestState.loading,
+    this.getEntrepriseInfomessage = "",
+    //
+    this.getAdminUserStats = const [],
+    this.getAdminUserStatsState = RequestState.loading,
+    this.getAdminUserStatsmessage = "",
+  });
 
   AccountState copyWith({
     List<User>? getAccount,
@@ -65,6 +77,10 @@ class AccountState extends Equatable {
     //
     RequestState? createArticleState,
     String? createArticleMessage,
+    //
+    List<UserStatEntity>? getAdminUserStats,
+    RequestState? getAdminUserStatsState,
+    String? getAdminUserStatsmessage,
   }) {
     return AccountState(
       getAccount: getAccount ?? this.getAccount,
@@ -88,6 +104,12 @@ class AccountState extends Equatable {
           getEntrepriseInfomessage ?? this.getEntrepriseInfomessage,
       createArticleState: createArticleState ?? this.createArticleState,
       createArticleMessage: createArticleMessage ?? this.createArticleMessage,
+      /////////
+      getAdminUserStats: getAdminUserStats ?? this.getAdminUserStats,
+      getAdminUserStatsState:
+          getAdminUserStatsState ?? this.getAdminUserStatsState,
+      getAdminUserStatsmessage:
+          getAdminUserStatsmessage ?? this.getAdminUserStatsmessage,
     );
     //
   }
@@ -112,5 +134,8 @@ class AccountState extends Equatable {
         createArticleState,
         createArticleMessage,
         //
+        getAdminUserStats,
+        getAdminUserStatsState,
+        getAdminUserStatsmessage,
       ];
 }

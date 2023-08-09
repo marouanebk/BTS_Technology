@@ -1,12 +1,17 @@
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CompanyInformations extends StatefulWidget {
   const CompanyInformations({super.key});
@@ -66,18 +71,36 @@ class _CompanyInformationsState extends State<CompanyInformations> {
     _submitForm(context);
   }
 
-  void _submitForm(context) {
-    // UserModel userModel = UserModel(
-    //   username: usernameController.text,
-    //   password: passwordController.text,
-    //   fullname: fullnameController.text,
-    //   role: type,
-    // );
-    // BlocProvider.of<UserBloc>(context).add(
-    //   CreateUserEvent(
-    //     user: userModel,
-    //   ),
-    // );
+  void _submitForm(context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final response = await Dio().post(ApiConstance.updateEntrepriseApi,
+        data: {
+          "name": nameController.text,
+          "numberRC": int.parse(numberRCController.text),
+          "numberIF": int.parse(numberIFController.text),
+          "numberART": int.parse(numberARTController.text),
+          "numberRIB": int.parse(numberRIBController.text),
+          "adresse": adresseController.text,
+          "phoneNumber": int.parse(phoneNumberController.text),
+        },
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ));
+    if (response.statusCode == 200) {
+      CustomStyledSnackBar(message: "Modification enregistré", success: true);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const AdminParams(), // Replace MainPage with the actual widget class for your MainPage
+        ),
+      );
+    } else {
+      CustomStyledSnackBar(message: response.data['err'], success: false);
+    }
   }
 
   @override
@@ -91,13 +114,28 @@ class _CompanyInformationsState extends State<CompanyInformations> {
             builder: (context, state) {
               if (state.getEntrepriseInfoState == RequestState.loaded) {
                 nameController.text = state.getEntrepriseInfo?.name ?? '';
-                // numberRCController.text = state.getEntrepriseInfo?.numberRC ?? 0;
-                // numberIFController.text = state.getEntrepriseInfo?.numberIF ?? 0;
-                // numberARTController.text = state.getEntrepriseInfo?.numberART ?? 0;
-                // numberRIBController.text = state.getEntrepriseInfo?.numberRIB ?? 0.toString();
+                if (state.getEntrepriseInfo!.numberRC != null) {
+                  numberRCController.text =
+                      state.getEntrepriseInfo!.numberRC.toString();
+                }
+                if (state.getEntrepriseInfo!.numberART != null) {
+                  numberARTController.text =
+                      state.getEntrepriseInfo!.numberART.toString();
+                }
+                if (state.getEntrepriseInfo!.numberRIB != null) {
+                  numberRIBController.text =
+                      state.getEntrepriseInfo!.numberRIB.toString();
+                }
+                if (state.getEntrepriseInfo!.numberIF != null) {
+                  numberIFController.text =
+                      state.getEntrepriseInfo!.numberIF.toString();
+                }
+                if (state.getEntrepriseInfo!.phoneNumber != null) {
+                  phoneNumberController.text =
+                      state.getEntrepriseInfo!.phoneNumber.toString();
+                }
+
                 adresseController.text = state.getEntrepriseInfo?.adresse ?? "";
-                // phoneNumberController.text =
-                //     state.getEntrepriseInfo.phoneNumber;
 
                 return SingleChildScrollView(
                   child: Padding(
@@ -167,7 +205,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
                         const SizedBox(
                           height: 30,
                         ),
-                        registerButton(),
+                        registerButton(context),
                         const SizedBox(
                           height: 30,
                         ),
@@ -191,7 +229,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
     );
   }
 
-  Widget registerButton() {
+  Widget registerButton(context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -202,11 +240,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
           child: ElevatedButton(
             onPressed: () {
-              // Navigator.of(context, rootNavigator: true).push(
-              //   MaterialPageRoute(
-              //     builder: (_) => const NewFactorPage(),
-              //   ),
-              // );
+              _checkFormValidation(context);
             },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.black),

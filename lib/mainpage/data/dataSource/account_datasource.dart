@@ -5,6 +5,7 @@ import 'package:bts_technologie/mainpage/data/Models/command_stats_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/entreprise_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/livreur_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/page_model.dart';
+import 'package:bts_technologie/mainpage/data/Models/user_stat_model.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:dio/dio.dart';
 import 'package:bts_technologie/core/error/exceptions.dart';
@@ -16,6 +17,7 @@ abstract class BaseAccountRemoteDateSource {
   Future<List<LivreurModel>> getLivreurs();
   Future<List<CommandStatsModel>> getCommandStats();
   Future<EntrepriseModel> getEntrepriseInfo();
+  Future<List<UserStatModel>> getUsersStats();
 }
 
 class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
@@ -105,6 +107,28 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
     if (response.statusCode == 200) {
       return List<CommandStatsModel>.from((response.data as List).map(
         (e) => CommandStatsModel.fromJson(e),
+      ));
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              statusMessage: response.data['message']));
+    }
+  }
+
+  @override
+  Future<List<UserStatModel>> getUsersStats() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final response = await Dio().get(ApiConstance.getAdminUserStats,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ));
+    if (response.statusCode == 200) {
+      return List<UserStatModel>.from((response.data as List).map(
+        (e) => UserStatModel.fromJson(e),
       ));
     } else {
       throw ServerException(

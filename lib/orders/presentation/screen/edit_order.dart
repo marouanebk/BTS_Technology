@@ -9,6 +9,7 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
@@ -48,64 +49,23 @@ class _EditOrderPageState extends State<EditOrderPage> {
   List<ArticleItem> variants = [];
   int count = 1;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   log("////////////////////////////////");
-  //   log(widget.command.articleList.toString());
-  //   log("////////////////////////////////");
-
-  //   // Initialize the list of variants and their controllers
-  //   // variants = widget.command.articleList.map((commandArticle) {
-  //   //   final variant = ArticleItem();
-
-  //   //   variant.article = commandArticle!.articleId;
-  //   //   variant.variant = commandArticle.variantId;
-  //   //   variant.type = commandArticle.commandType;
-  //   //   variant.prixController.text = commandArticle.unityPrice.toString();
-  //   //   variant.nbrArticlesController.text = commandArticle.quantity.toString();
-  //   //   log(articles.toString());
-
-  //   //   // Find the selected article in the articles list
-  //   //   // final selectedArticle = articles.firstWhere(
-  //   //   //   (item) => item.id == variant.article,
-  //   //   // );
-  //   //   // final selectedArticle = articles.firstWhere(
-  //   //   //   (item) => item.id == variant.article,
-  //   //   // );
-  //   //   // log("71");
-
-  //   //   // Update the variants list of the selected article
-  //   //   if (selectedArticle.variants != null) {
-  //   //     variant.variants = selectedArticle.variants.map((variant) {
-  //   //       return {
-  //   //         'label': variant?.family ?? "",
-  //   //         'value': variant?.id ?? "",
-  //   //       };
-  //   //     }).toList();
-  //   //   } else {
-  //   //     variant.variants.clear();
-  //   //   }
-
-  //   //   return variant;
-  //   // }).toList();
-
-  //   // articlesList = articles.map((article) {
-  //   //   return {
-  //   //     'label': article.name ?? "",
-  //   //     'value': article.id ?? "",
-  //   //   };
-  //   // }).toList();
-
-  //   // Initialize the controllers with command details
-  //   fullnameController.text = widget.command.nomClient;
-  //   adresssController.text = widget.command.adresse;
-  //   phonenumberController.text = widget.command.phoneNumber.toString();
-  //   sommePaidController.text = widget.command.sommePaid.toString();
-  //   noteClientController.text = widget.command.noteClient ?? "";
-  //   prixSoutraitantController.text = widget.command.prixSoutraitant.toString();
-  //   selectedPage = widget.command.page;
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the controllers with command details
+    fullnameController.text = widget.command.nomClient;
+    adresssController.text = widget.command.adresse;
+    phonenumberController.text = widget.command.phoneNumber.toString();
+    sommePaidController.text = widget.command.sommePaid.toString();
+    noteClientController.text = widget.command.noteClient ?? "";
+    if (widget.command.prixSoutraitant != null) {
+      prixSoutraitantController.text =
+          widget.command.prixSoutraitant.toString();
+    } else {
+       prixSoutraitantController.text = "0";
+    }
+    selectedPage = widget.command.page;
+  }
 
   @override
   void dispose() {
@@ -130,11 +90,13 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
     // Check if any of the input fields are empty
     if (fullnameController.text.isEmpty ||
-        adresssController.text.isEmpty ||
-        phonenumberController.text.isEmpty ||
-        sommePaidController.text.isEmpty ||
+            adresssController.text.isEmpty ||
+            phonenumberController.text.isEmpty ||
+            sommePaidController.text.isEmpty
         // noteClientController.text.isEmpty ||
-        selectedPage == null) {
+        // selectedPage == null
+
+        ) {
       hasEmptyFields = true;
       log(
         "74",
@@ -171,12 +133,13 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
   void _submitForm(context) {
     final commandModel = CommandModel(
+      id: widget.command.id,
       adresse: adresssController.text,
       nomClient: fullnameController.text,
       phoneNumber: int.parse(phonenumberController.text),
       noteClient: noteClientController.text,
+      prixSoutraitant: num.parse(prixSoutraitantController.text),
       // page: article.page,
-      page: "dsdf",
       sommePaid: double.parse(sommePaidController.text),
       // articleList: article.articleList,
       articleList: variants.map((variant) {
@@ -191,10 +154,12 @@ class _EditOrderPageState extends State<EditOrderPage> {
       }).toList(),
     );
 
-    log(commandModel.toJson().toString());
+    // log(commandModel.toJson().toString());
+    log("in edit page");
+    log(commandModel.id!);
 
     BlocProvider.of<CommandBloc>(context).add(
-      CreateCommandEvent(
+      EditCommandEvent(
         command: commandModel,
       ),
     );
@@ -213,28 +178,16 @@ class _EditOrderPageState extends State<EditOrderPage> {
       ],
       child: MultiBlocListener(
         listeners: [
-          // BlocListener<ArticleBloc, ArticleState>(
-          //   listener: (context, state) {
-          // if (state.getArticlesState == RequestState.loaded) {
-          // articles = state.getArticles;
-          // articlesList = articles.map((article) {
-          //   return {
-          //     'label': article.name ?? "",
-          //     'value': article.id ?? "",
-          //   };
-          // }).toList();
-          //     }
-          //   },
-          // ),
           BlocListener<CommandBloc, CommandesState>(
             listener: (context, state) {
-              if (state.createCommandState == RequestState.loaded) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrdersPage(role: widget.role),
-                  ),
-                );
+              if (state.editCommandState == RequestState.loaded) {
+                Navigator.of(context).pop();
+                CustomStyledSnackBar(
+                    message: "Modification enregistré", success: true);
+              } else if (state.editCommandState == RequestState.error) {
+                Navigator.of(context).pop();
+                CustomStyledSnackBar(
+                    message: state.editCommandMessage, success: false);
               }
             },
           ),
@@ -268,16 +221,14 @@ class _EditOrderPageState extends State<EditOrderPage> {
                     commandArticle.unityPrice.toString();
                 variant.nbrArticlesController.text =
                     commandArticle.quantity.toString();
-                    log("commandArticle"+ commandArticle.toString());
 
-                    log(variant.article.toString());
-                    log(articles.toString());
+                // log(variant.article.toString());
+                // log(articles.toString());
 
                 // Find the selected article in the articles list
                 final selectedArticle = articles.firstWhere(
                   (item) => item.id == variant.article,
                 );
-                log("after selected article: " );
 
                 // Update the variants list of the selected article
                 if (selectedArticle.variants != null) {

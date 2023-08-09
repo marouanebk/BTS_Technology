@@ -48,6 +48,7 @@ class CommandesRepository implements BaseCommandRepository {
   @override
   Future<Either<Failure, Unit>> editCommand(Command command) async {
     final CommandModel articleModel = CommandModel(
+      id: command.id,
       adresse: command.adresse,
       nomClient: command.nomClient,
       phoneNumber: command.phoneNumber,

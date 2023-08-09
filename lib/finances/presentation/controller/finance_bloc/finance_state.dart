@@ -1,4 +1,5 @@
 import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/finances/domaine/entities/cashflow_entity.dart';
 import 'package:bts_technologie/finances/domaine/entities/finance_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
@@ -8,6 +9,9 @@ class FinancesState extends Equatable {
   final RequestState getFinancesState;
   final String getFinancesmessage;
   //
+  final CashFlow? getCashFlow;
+  final RequestState getCashFlowState;
+  final String getCashFlowmessage;
 
   // final ToDo createArticle;
   final RequestState createArticleState;
@@ -18,6 +22,9 @@ class FinancesState extends Equatable {
     this.getFinancesState = RequestState.loading,
     this.getFinancesmessage = "",
     //
+    this.getCashFlow = null,
+    this.getCashFlowState = RequestState.loading,
+    this.getCashFlowmessage = "",
 
     //
     this.createArticleState = RequestState.loading,
@@ -29,6 +36,9 @@ class FinancesState extends Equatable {
     RequestState? getFinancesState,
     String? getFinancesmessage,
     //
+    CashFlow? getCashFlow,
+    RequestState? getCashFlowState,
+    String? getCashFlowmessage,
 
     //
     RequestState? createArticleState,
@@ -39,6 +49,9 @@ class FinancesState extends Equatable {
       getFinancesState: getFinancesState ?? this.getFinancesState,
       getFinancesmessage: getFinancesmessage ?? this.getFinancesmessage,
       //
+      getCashFlow: getCashFlow ?? this.getCashFlow,
+      getCashFlowState: getCashFlowState ?? this.getCashFlowState,
+      getCashFlowmessage: getCashFlowmessage ?? this.getCashFlowmessage,
 
       //
       createArticleState: createArticleState ?? this.createArticleState,
@@ -53,6 +66,10 @@ class FinancesState extends Equatable {
         getFinancesState,
         getFinancesmessage,
 
+        getCashFlow,
+        getCashFlowState,
+        getCashFlowmessage,
+        //
         createArticleState,
         createArticleMessage,
         //

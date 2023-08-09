@@ -9,6 +9,7 @@ abstract class FinanceEvent extends Equatable {
 }
 
 class GetFinancesEvent extends FinanceEvent {}
+class GetCashFlowEvent extends FinanceEvent {}
 
 
 class CreateArticleEvent extends FinanceEvent {

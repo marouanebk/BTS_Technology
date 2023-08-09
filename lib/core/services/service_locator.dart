@@ -7,6 +7,7 @@ import 'package:bts_technologie/authentication/presentation/controller/authentic
 import 'package:bts_technologie/finances/data/datasource/finance_datasource.dart';
 import 'package:bts_technologie/finances/data/repository/finance_repo_emplem.dart';
 import 'package:bts_technologie/finances/domaine/repository/base_finance_repo.dart';
+import 'package:bts_technologie/finances/domaine/usecases/get_cashflow_usecase.dart';
 import 'package:bts_technologie/finances/domaine/usecases/get_finances_usecase.dart';
 import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_bloc.dart';
 import 'package:bts_technologie/logistiques/data/datasource/article_datasource.dart';
@@ -24,6 +25,7 @@ import 'package:bts_technologie/mainpage/domaine/Repository/base_accounts_repo.d
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_entreprise_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
+import 'package:bts_technologie/mainpage/domaine/UseCase/get_usestats_usecase.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/orders/data/Repository/commandes_repo_implem.dart';
 import 'package:bts_technologie/orders/data/dataSource/commades_datasource.dart';
@@ -41,10 +43,10 @@ class ServiceLocator {
   Future<void> init() async {
     // Bloc
     sl.registerFactory(() => UserBloc(sl(), sl()));
-    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl()));
+    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl(),sl()));
     sl.registerFactory(() => ArticleBloc(sl(), sl(), sl(), sl(), sl()));
-    sl.registerFactory(() => CommandBloc(sl(), sl(),sl()));
-    sl.registerFactory(() => FinanceBloc(sl()));
+    sl.registerFactory(() => CommandBloc(sl(), sl(), sl()));
+    sl.registerFactory(() => FinanceBloc(sl(), sl()));
 
     //Articles usecase
 
@@ -58,13 +60,15 @@ class ServiceLocator {
     // authentciation Usecases
     sl.registerLazySingleton(() => LoginUseCase(sl()));
     sl.registerLazySingleton(() => CreateUserUseCase(sl()));
-    sl.registerLazySingleton(() => GetAllUsersUseCase(sl()));
 
     // account
 
+    sl.registerLazySingleton(() => GetAllUsersUseCase(sl()));
     sl.registerLazySingleton(() => GetPagesUseCase(sl()));
     sl.registerLazySingleton(() => GetLivreurUseCase(sl()));
     sl.registerLazySingleton(() => GetEntrepriseInfoUsecase(sl()));
+    sl.registerLazySingleton(() => GetAdminUserStatsUseCase(sl()));
+    
 
     // Commandes
     sl.registerLazySingleton(() => GetCommandesUseCase(sl()));
@@ -73,6 +77,7 @@ class ServiceLocator {
 
     // Finances
     sl.registerLazySingleton(() => GetFinancesUseCase(sl()));
+    sl.registerLazySingleton(() => GetCashFlowUseCase(sl()));
 
     // Repository
     sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));

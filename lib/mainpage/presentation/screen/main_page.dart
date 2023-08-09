@@ -1,9 +1,16 @@
 import 'dart:developer';
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/admin_stats_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,94 +34,122 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-            backgroundColor: Colors.white,
-            body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _topContainer(context),
-                  
-                  Center(
-                    child: Container(
-                      height: 3,
-                      width: 43,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(22),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        dateFilter(0, "Avr 23"),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        dateFilter(1, "Mai 23"),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        dateFilter(2, "Jui 23"),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        dateFilter(3, "Jui 23"),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    return BlocProvider(
+      create: (context) => sl<AccountBloc>()..add(GetAdminUserStatsEvent()),
+      child: Builder(
+        builder: (context) {
+          return Builder(builder: (context) {
+            return BlocBuilder<AccountBloc, AccountState>(
+              builder: (context, state) {
+                return Scaffold(
+                  backgroundColor: Colors.white,
+                  body: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(
-                          height: 30,
+                        _topContainer(context),
+                        Center(
+                          child: Container(
+                            height: 3,
+                            width: 43,
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: const BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(22),
+                              ),
+                            ),
+                          ),
                         ),
-                        SizedBox(
-                          height: 330,
-                          child: PageView(
-                            controller: controller,
-                            onPageChanged: (index) {
-                              log("page ${index + 1} ");
-                              pageindex = index;
-                              setState(() {
-                                index;
-                              });
-                            },
-                            physics: const NeverScrollableScrollPhysics(),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
                             children: [
-                              _commandsStats(),
-                              const SizedBox(height: 24),
+                              dateFilter(0, "Avr 23"),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              dateFilter(1, "Mai 23"),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              dateFilter(2, "Jui 23"),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              dateFilter(3, "Jui 23"),
+                              const SizedBox(
+                                width: 10,
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        usersList(),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        pagesList(),
-                        const SizedBox(
-                          height: 50,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              SizedBox(
+                                height: 330,
+                                child: PageView(
+                                  controller: controller,
+                                  onPageChanged: (index) {
+                                    log("page ${index + 1} ");
+                                    pageindex = index;
+                                    setState(() {
+                                      index;
+                                    });
+                                  },
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: [
+                                    _commandsStats(),
+                                    const SizedBox(height: 24),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              if (state.getAdminUserStatsState ==
+                                  RequestState.loading)
+                                const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              if (state.getAdminUserStatsState ==
+                                  RequestState.error)
+                                Text(
+                                  state.getAdminUserStatsmessage,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              if (state.getAdminUserStatsState ==
+                                  RequestState.loaded)
+                                usersList(state.getAdminUserStats),
+                              // usersList(),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              pagesList(),
+                              const SizedBox(
+                                height: 50,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          );
+                );
+              },
+            );
+          });
+        },
+      ),
+    );
   }
 
   Widget pagesList() {
@@ -227,7 +262,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget usersList() {
+  Widget usersList(users) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -251,35 +286,44 @@ class _MainPageState extends State<MainPage> {
           ),
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: 4,
+          itemCount: users.length > 4 ? 4 : users.length,
           itemBuilder: (context, index) {
-            return userContainer();
+            return userContainer(users[index]);
           },
         ),
         const SizedBox(
           height: 10,
         ),
-        const Center(
-          child: Text(
-            "voir tous",
-            style: TextStyle(
-              decoration: TextDecoration.underline,
-              color:
-                  Color(0xFF9F9F9F), // Replace with your custom color if needed
-              fontFamily: "Inter", // Replace with the desired font family
-              fontSize: 16,
-              fontStyle: FontStyle.normal,
-              fontWeight: FontWeight.w400,
-              height: 1.0, // Default line height is normal (1.0)
+        Center(
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(
+                  builder: (_) => AdminUsersStatsPage(users: users),
+                ),
+              );
+            },
+            child: const Text(
+              "voir tous",
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: Color(
+                    0xFF9F9F9F), // Replace with your custom color if needed
+                fontFamily: "Inter", // Replace with the desired font family
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
+                height: 1.0, // Default line height is normal (1.0)
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ],
     );
   }
 
-  Widget userContainer() {
+  Widget userContainer(user) {
     return Container(
       width: double.infinity,
       height: 70,
@@ -299,12 +343,12 @@ class _MainPageState extends State<MainPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Mouloud Bari",
-                style: TextStyle(
+                user.fullname,
+                style: const TextStyle(
                   color: Color(0xFF111111),
                   fontFamily: "Inter",
                   fontSize: 18,
@@ -313,12 +357,12 @@ class _MainPageState extends State<MainPage> {
                   height: 1.0,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               Text(
-                "@mouloud",
-                style: TextStyle(
+                "@${user.username}",
+                style: const TextStyle(
                   color: Color(0xFF9F9F9F),
                   fontFamily: "Inter",
                   fontSize: 12,
@@ -332,9 +376,9 @@ class _MainPageState extends State<MainPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
-                "15,000DA",
-                style: TextStyle(
+              Text(
+                "${user.totalMoneyMade} DA",
+                style: const TextStyle(
                   color: Color(0xFF111111),
                   fontFamily: "Inter",
                   fontSize: 20,
@@ -346,8 +390,8 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(
                 height: 2,
               ),
-              smallRichText(
-                  "82", 'assets/images/navbar/commandes_activated.svg'),
+              smallRichText(user.numberOfCommands.toString(),
+                  'assets/images/navbar/commandes_activated.svg'),
             ],
           ),
         ],

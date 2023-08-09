@@ -4,6 +4,7 @@ import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/finances/presentation/screen/finances.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -103,27 +104,11 @@ class _NewFinanceChargeState extends State<NewFinanceCharge> {
                     },
                   ));
               if (response.statusCode == 200) {
-                // Navigator.pushAndRemoveUntil(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const FinancesPage(),
-                //   ),
-                //   (Route<dynamic> route) =>
-                //       false, // This prevents user from going back
-                // );
-                
-
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FinancesPage(),
-                    maintainState:
-                        false, // This prevents the previous page from being maintained
-                  ),
-                );
+                Navigator.of(context).pop();
+                CustomStyledSnackBar(message: "Charges ajoutés", success: true);
               } else {
-                log(response.data['error']);
-                log("failed");
+                CustomStyledSnackBar(
+                    message: response.data['err'], success: false);
               }
             },
             style: ButtonStyle(

@@ -5,6 +5,7 @@ import 'package:bts_technologie/mainpage/data/dataSource/account_datasource.dart
 import 'package:bts_technologie/mainpage/domaine/Entities/command_stats_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/entreprise_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/user_stat_entity.dart';
 import 'package:bts_technologie/mainpage/domaine/Repository/base_accounts_repo.dart';
 import 'package:dartz/dartz.dart';
 
@@ -47,6 +48,16 @@ class AccountRepository implements BaseAccountRepository {
   Future<Either<Failure, List<CommandStatsEntity>>> getCommandStats() async {
     try {
       final result = await baseAccountRemoteDateSource.getCommandStats();
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<UserStatEntity>>> getUsersStats() async {
+    try {
+      final result = await baseAccountRemoteDateSource.getUsersStats();
       return Right(result);
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
