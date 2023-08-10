@@ -76,7 +76,7 @@ class CommandModel extends Command {
           comNumber: data["comNumber"],
           noteClient: data["noteClient"],
           sommePaid: data["sommePaid"],
-          prixSoutraitant: data["prixSoutraitant"],
+          prixSoutraitant: data["sousTraitance"],
           user: data["user"]["username"],
           nomClient: data["nomClient"],
           adresse: data["adresse"],

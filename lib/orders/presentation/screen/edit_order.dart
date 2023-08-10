@@ -40,7 +40,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
   TextEditingController phonenumberController = TextEditingController();
   TextEditingController sommePaidController = TextEditingController();
   TextEditingController noteClientController = TextEditingController();
-  TextEditingController prixSoutraitantController = TextEditingController();
 
   List<Article> articles = [];
   List<Map<String, String>> articlesList = [];
@@ -62,12 +61,12 @@ class _EditOrderPageState extends State<EditOrderPage> {
     phonenumberController.text = widget.command.phoneNumber.toString();
     sommePaidController.text = widget.command.sommePaid.toString();
     noteClientController.text = widget.command.noteClient ?? "";
-    if (widget.command.prixSoutraitant != null) {
-      prixSoutraitantController.text =
-          widget.command.prixSoutraitant.toString();
-    } else {
-      prixSoutraitantController.text = "0";
-    }
+    // if (widget.command.prixSoutraitant != null) {
+    //   prixSoutraitantController.text =
+    //       widget.command.prixSoutraitant.toString();
+    // } else {
+    //   prixSoutraitantController.text = "0";
+    // }
     selectedPage = widget.command.page;
   }
 
@@ -78,7 +77,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
     phonenumberController.dispose();
     sommePaidController.dispose();
     noteClientController.dispose();
-    prixSoutraitantController.dispose();
     super.dispose();
   }
 
@@ -142,7 +140,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
       nomClient: fullnameController.text,
       phoneNumber: int.parse(phonenumberController.text),
       noteClient: noteClientController.text,
-      prixSoutraitant: num.parse(prixSoutraitantController.text),
       // page: article.page,
       sommePaid: double.parse(sommePaidController.text),
       // articleList: article.articleList,
@@ -335,19 +332,19 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                 isNumeric: false,
                                 isMoney: false,
                               ),
-                              if (widget.role == "admin" ||
-                                  widget.role == "financier") ...[
-                                const SizedBox(height: 15),
-                                buildInputField(
-                                  label: "Prix SousTraiant",
-                                  hintText: "Entrer le prix de soutraitant",
-                                  errorText: "",
-                                  controller: prixSoutraitantController,
-                                  formSubmitted: _formSubmitted,
-                                  isNumeric: true,
-                                  isMoney: true,
-                                ),
-                              ],
+                              // if (widget.role == "admin" ||
+                              //     widget.role == "financier") ...[
+                              //   const SizedBox(height: 15),
+                              //   buildInputField(
+                              //     label: "Prix SousTraiant",
+                              //     hintText: "Entrer le prix de soutraitant",
+                              //     errorText: "",
+                              //     controller: prixSoutraitantController,
+                              //     formSubmitted: _formSubmitted,
+                              //     isNumeric: true,
+                              //     isMoney: true,
+                              //   ),
+                              // ],
                               const SizedBox(height: 15),
                               if (widget.role == "pageAdmin") ...[
                                 buildSelectField(

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/finances/domaine/entities/cashflow_entity.dart';
@@ -9,8 +10,10 @@ import 'package:bts_technologie/finances/presentation/controller/finance_bloc/fi
 import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_state.dart';
 import 'package:bts_technologie/finances/presentation/screen/new_charge.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
@@ -29,15 +32,38 @@ class _FinancesPageState extends State<FinancesPage> {
 
   @override
   void initState() {
-    data = [
-      _ChartData('CHN', 12),
-      _ChartData('GER', 15),
-      _ChartData('RUS', 30),
-      _ChartData('BRZ', 6.4),
-      _ChartData('IND', 14)
-    ];
+    data = [];
     _tooltip = TooltipBehavior(enable: true);
+    _fetchFinancesChartData();
     super.initState();
+  }
+
+  Future<void> _fetchFinancesChartData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("token");
+
+      final response = await Dio().get(ApiConstance.getFinancesChart,
+          options: Options(
+            headers: {
+              "Authorization": "Bearer $token",
+            },
+          ));
+      final Map<String, dynamic> chartData =
+          Map<String, dynamic>.from(response.data);
+
+      data = chartData.entries.map((entry) {
+        final List<String> dateParts = entry.key.split('-');
+        final String month = dateParts[0];
+        final double value = entry.value.toDouble();
+        return _ChartData('$month-${dateParts[1]}', value);
+      }).toList();
+      log(data.toString());
+
+      setState(() {}); // Trigger a rebuild to update the chart data
+    } catch (error) {
+      print('Error fetching finances chart data: $error');
+    }
   }
 
   @override

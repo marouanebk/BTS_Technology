@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
@@ -26,7 +28,10 @@ class _OrdersPageState extends State<OrdersPage> {
   int pageindex = 0;
   String searchQuery = ''; // Add this line
 
-  List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
+  // List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
+  Map<String, List<bool>> isDropDownVisibleMap = {};
+  bool initList = false;
+
   List<String> statusListAdministrator = [
     'Tous',
     'Téléphone éteint',
@@ -144,6 +149,14 @@ class _OrdersPageState extends State<OrdersPage> {
                           }
                           groupedData[command.date]?.add(command);
                         }
+                        if (initList == false) {
+                          for (String date in groupedData.keys) {
+                            isDropDownVisibleMap[date] = List.generate(
+                                groupedData[date]!.length, (index) => false);
+                          }
+                          initList = true;
+                        }
+
                         return Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
@@ -227,6 +240,7 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget commandeCard(Command command, int index) {
     Color statusColor;
     Color bgColor;
+    String? date = command.date;
 
     if (command.status == 'Numero erroné' ||
         command.status == 'Ne répond pas' ||
@@ -252,7 +266,8 @@ class _OrdersPageState extends State<OrdersPage> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          isDropDownVisibleList[index] = !isDropDownVisibleList[index];
+          isDropDownVisibleMap[date]![index] =
+              !isDropDownVisibleMap[date]![index];
         });
       },
       child: Container(
@@ -301,7 +316,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 ),
               ),
             ),
-            if (isDropDownVisibleList[index])
+            if (isDropDownVisibleMap[date]![index])
               FactorCommandContainer(
                 role: widget.role,
                 command: command,

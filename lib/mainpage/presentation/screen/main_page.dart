@@ -537,7 +537,7 @@ class _MainPageState extends State<MainPage> {
             progressColor: Colors.black,
           ),
           const SizedBox(width: 8),
-          Container(
+          SizedBox(
             width: 50, // adjust this value to your needs
             child: Text(
               '$number - $progress%',

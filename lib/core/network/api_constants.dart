@@ -42,6 +42,9 @@ class ApiConstance {
   static String updateCommandStatus(String id) =>
       '$baseUrl$commandApi/status/update/$id';
 
+  static String soutraitanceCommand(String id) =>
+      '$baseUrl$commandApi/sous-traitance/$id';
+
   static const String getCommandesStatsForAdmin =
       "$baseUrl$commandApi/status/stats";
 
@@ -49,6 +52,7 @@ class ApiConstance {
   static const String getFinancesApi = "$baseUrl$financeApi/";
   static const String getCashFlowApi = "$baseUrl$financeApi/cashflow";
   static const String createFinanceChargeApi = "$baseUrl$financeApi/add";
+  static const String getFinancesChart = "$baseUrl$financeApi/chart";
 
   static const String getNotificaitonsApi = "$baseUrl/api/notification/";
 }

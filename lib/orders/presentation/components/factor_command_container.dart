@@ -11,6 +11,7 @@ import 'package:bts_technologie/orders/presentation/components/image_detail_page
 import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/orders/presentation/screen/edit_order.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
+import 'package:bts_technologie/orders/presentation/screen/prix_soutraitance.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -123,7 +124,6 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          
           SnackBar(
             backgroundColor: Colors.transparent,
             content:
@@ -173,7 +173,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 color: Color(0xFFECECEC),
               ),
             ),
-            clientInfo(widget.command),
+            clientInfo(widget.command, isModificationAllowed),
             const SizedBox(
               height: 16,
             ),
@@ -212,6 +212,19 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 10,
             ),
+            if (isModificationAllowed) ...[
+              containerButton(
+                  "Ajouter un prix de sous traitance",
+                  PrixSoutraitancePage(
+                    id: widget.command.id!,
+                    role: widget.role,
+                    // command: widget.command,
+                  )),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+
             if (isModificationAllowed)
               containerButton(
                   "Modifier la commande",
@@ -276,7 +289,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     });
   }
 
-  Widget clientInfo(Command command) {
+  Widget clientInfo(Command command, isModificationAllowed) {
     String totalPriceText = command.articleList
         .map((article) => "${article!.quantity} x ${article.unityPrice}DA")
         .join(" + ");
@@ -284,6 +297,12 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     int totalPrice = command.articleList.fold(0, (sum, article) {
       return sum + (article!.quantity * article.unityPrice.toInt());
     });
+    String st;
+    if (command.prixSoutraitant == null) {
+      st = "non définie";
+    } else {
+      st = command.prixSoutraitant.toString();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -386,29 +405,32 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           ),
         ),
         // Prix Soutraitant
-        RichText(
-          text: TextSpan(
-            children: [
-              const WidgetSpan(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Icon(
-                    Icons.event_note,
-                    color: Colors.black,
-                    size: 16,
+        if (isModificationAllowed) ...[
+          RichText(
+            text: TextSpan(
+              children: [
+                const WidgetSpan(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(
+                      // Icons.event_note,
+                      Icons.numbers,
+                      color: Colors.black,
+                      size: 16,
+                    ),
                   ),
                 ),
-              ),
-              TextSpan(
-                text: "prix Soutraitant  : ${command.prixSoutraitant}",
-                style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF9F9F9F),
-                    fontWeight: FontWeight.w400),
-              ),
-            ],
+                TextSpan(
+                  text: st,
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF9F9F9F),
+                      fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -513,12 +535,17 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
+          child: FittedBox(
+            fit: BoxFit.scaleDown, // Scale down the text if needed
+            alignment: Alignment.center,
+
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
             ),
           ),
         ),

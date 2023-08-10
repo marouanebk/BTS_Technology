@@ -39,7 +39,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
   TextEditingController phonenumberController = TextEditingController();
   TextEditingController sommePaidController = TextEditingController();
   TextEditingController noteClientController = TextEditingController();
-  TextEditingController prixSoutraitantController = TextEditingController();
+  // TextEditingController prixSoutraitantController = TextEditingController();
   bool _formSubmitted = false;
 
   String? selectedPage;
@@ -54,7 +54,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
     phonenumberController.dispose();
     sommePaidController.dispose();
     noteClientController.dispose();
-    prixSoutraitantController.dispose();
     super.dispose();
   }
 
@@ -259,19 +258,19 @@ class _AddOrderPageState extends State<AddOrderPage> {
                         isNumeric: false,
                         isMoney: false,
                       ),
-                      if (widget.role == "admin" ||
-                          widget.role == "financier") ...[
-                        const SizedBox(height: 15),
-                        buildInputField(
-                          label: "Prix SousTraiant",
-                          hintText: "Entrer le prix de soutraitant",
-                          errorText: "",
-                          controller: prixSoutraitantController,
-                          formSubmitted: _formSubmitted,
-                          isNumeric: true,
-                          isMoney: true,
-                        ),
-                      ],
+                      // if (widget.role == "admin" ||
+                      //     widget.role == "financier") ...[
+                      //   const SizedBox(height: 15),
+                      //   buildInputField(
+                      //     label: "Prix SousTraiant",
+                      //     hintText: "Entrer le prix de soutraitant",
+                      //     errorText: "",
+                      //     controller: prixSoutraitantController,
+                      //     formSubmitted: _formSubmitted,
+                      //     isNumeric: true,
+                      //     isMoney: true,
+                      //   ),
+                      // ],
                       const SizedBox(height: 15),
                       if (widget.role == "pageAdmin") ...[
                         buildSelectField(
