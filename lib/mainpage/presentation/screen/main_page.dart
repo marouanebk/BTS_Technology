@@ -613,11 +613,14 @@ class _MainPageState extends State<MainPage> {
                     height: 30,
                   ),
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => const AdminParams(),
-                      ),
-                    );
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamed('/adminParams');
+
+                    // Navigator.of(context, rootNavigator: true).push(
+                    //   MaterialPageRoute(
+                    //     builder: (_) => const AdminParams(),
+                    //   ),
+                    // );
                   },
                 ),
               ],

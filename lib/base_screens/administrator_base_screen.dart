@@ -10,7 +10,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class PageAdministratorBaseScreen extends StatefulWidget {
-  const PageAdministratorBaseScreen({Key? key}) : super(key: key);
+  final int initialIndex; // Add the parameter
+
+  const PageAdministratorBaseScreen({this.initialIndex = 0, Key? key})
+      : super(key: key);
   @override
   State<PageAdministratorBaseScreen> createState() =>
       _PageAdministratorBaseScreenState();
@@ -18,7 +21,15 @@ class PageAdministratorBaseScreen extends StatefulWidget {
 
 class _PageAdministratorBaseScreenState
     extends State<PageAdministratorBaseScreen> {
-  final _controller = PersistentTabController(initialIndex: 0);
+  late PersistentTabController _controller;
+
+  // final _controller = PersistentTabController(initialIndex: widget.initialIndex);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PersistentTabController(initialIndex: widget.initialIndex);
+  }
 
   List<Widget> _buildScreens(context) {
     return [
@@ -27,8 +38,12 @@ class _PageAdministratorBaseScreenState
         role: "admin",
       ),
       const Notifications(),
-      const Logistiques(),
-      const FinancesPage()
+      const Logistiques(
+        role: "admin",
+      ),
+      const FinancesPage(
+        role: "admin",
+      )
     ];
   }
 
@@ -106,7 +121,6 @@ class _PageAdministratorBaseScreenState
         ),
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
-       
       ),
     ];
   }
@@ -144,6 +158,4 @@ class _PageAdministratorBaseScreenState
       navBarStyle: NavBarStyle.style5,
     );
   }
-
-
 }

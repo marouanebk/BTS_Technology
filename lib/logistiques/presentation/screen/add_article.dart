@@ -1,4 +1,7 @@
-
+import 'package:bts_technologie/base_screens/admin_base_screen.dart';
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
+import 'package:bts_technologie/base_screens/finances_base_screen.dart';
+import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/data/model/article_model.dart';
@@ -9,12 +12,14 @@ import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/ar
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/logistiques.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class NewArticle extends StatefulWidget {
-  const NewArticle({super.key});
+  final String role;
+  const NewArticle({required this.role, super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -107,7 +112,6 @@ class _NewArticleState extends State<NewArticle> {
       }).toList(),
     );
 
-
     BlocProvider.of<ArticleBloc>(context).add(
       CreateArticleEvent(
         article: articleModel,
@@ -124,10 +128,26 @@ class _NewArticleState extends State<NewArticle> {
           if (state.createArticleState == RequestState.loaded) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const Logistiques(), // Replace MainPage with the actual widget class for your MainPage
+              MaterialPageRoute(builder: (context) {
+                if (widget.role == "logistics") {
+                  return const LogistiquesBaseScreen(initialIndex: 2);
+                } else {
+                  return const PageAdministratorBaseScreen(initialIndex: 3);
+                }
+              }),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.transparent,
+                content: CustomStyledSnackBar(
+                    message: "Command ajoutés", success: true),
               ),
+            );
+          } else if (state.createArticleState == RequestState.error) {
+            SnackBar(
+              backgroundColor: Colors.transparent,
+              content: CustomStyledSnackBar(
+                  message: state.createArticleMessage, success: true),
             );
           }
         },

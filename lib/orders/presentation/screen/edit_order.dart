@@ -1,5 +1,9 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/base_screens/admin_base_screen.dart';
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
+import 'package:bts_technologie/base_screens/finances_base_screen.dart';
+import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
@@ -62,7 +66,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
       prixSoutraitantController.text =
           widget.command.prixSoutraitant.toString();
     } else {
-       prixSoutraitantController.text = "0";
+      prixSoutraitantController.text = "0";
     }
     selectedPage = widget.command.page;
   }
@@ -155,8 +159,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
     );
 
     // log(commandModel.toJson().toString());
-    log("in edit page");
-    log(commandModel.id!);
 
     BlocProvider.of<CommandBloc>(context).add(
       EditCommandEvent(
@@ -181,13 +183,34 @@ class _EditOrderPageState extends State<EditOrderPage> {
           BlocListener<CommandBloc, CommandesState>(
             listener: (context, state) {
               if (state.editCommandState == RequestState.loaded) {
-                Navigator.of(context).pop();
-                CustomStyledSnackBar(
-                    message: "Modification enregistré", success: true);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    if (widget.role == "financier") {
+                      return const FinancesBaseScreen(initialIndex: 0);
+                    } else if (widget.role == "pageAdmin") {
+                      return const AdminPageBaseScreen(initialIndex: 0);
+                    } else if (widget.role == "logistics") {
+                      return const LogistiquesBaseScreen(initialIndex: 0);
+                    } else {
+                      return const PageAdministratorBaseScreen(initialIndex: 4);
+                    }
+                  }),
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.transparent,
+                    content: CustomStyledSnackBar(
+                        message: "Modified", success: true),
+                  ),
+                );
               } else if (state.editCommandState == RequestState.error) {
-                Navigator.of(context).pop();
-                CustomStyledSnackBar(
-                    message: state.editCommandMessage, success: false);
+                SnackBar(
+                  backgroundColor: Colors.transparent,
+                  content: CustomStyledSnackBar(
+                      message: state.editCommandMessage, success: false),
+                );
               }
             },
           ),

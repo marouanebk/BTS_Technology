@@ -10,21 +10,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogistiquesBaseScreen extends StatefulWidget {
-  const LogistiquesBaseScreen({Key? key}) : super(key: key);
+  final int initialIndex; // Add the parameter
+
+  const LogistiquesBaseScreen({this.initialIndex = 0, Key? key})
+      : super(key: key);
   @override
   State<LogistiquesBaseScreen> createState() => _LogistiquesBaseScreenState();
 }
 
 class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
-  final _controller = PersistentTabController(initialIndex: 0);
+  late PersistentTabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PersistentTabController(initialIndex: widget.initialIndex);
+  }
 
   List<Widget> _buildScreens(context) {
     return [
-      const OrdersPage(role : "logistics"),
+      const OrdersPage(
+        role: "logistics",
+      ),
       const Notifications(),
-      const Logistiques(),
+      const Logistiques(
+        role: "logistics",
+      ),
       const LogoutButton()
     ];
   }
@@ -132,7 +146,13 @@ class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
     );
   }
 
-  void performLogout(BuildContext ontext) {
+  void performLogout(BuildContext ontext) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt('is logged in', 0);
+    await prefs.remove("id");
+    await prefs.remove('type');
+    await prefs.remove("token");
     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (BuildContext context) {

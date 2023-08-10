@@ -1,3 +1,5 @@
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
+import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -17,8 +19,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditArticle extends StatefulWidget {
+  final String role;
   final Article article;
-  const EditArticle({required this.article, super.key});
+  const EditArticle({required this.role, required this.article, super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -156,16 +159,29 @@ class _EditArticleState extends State<EditArticle> {
       ),
     );
     if (response.statusCode == 200) {
-      CustomStyledSnackBar(message: "article Modified ");
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) =>
-              const Logistiques(), // Replace MainPage with the actual widget class for your MainPage
+        MaterialPageRoute(builder: (context) {
+          if (widget.role == "logistics") {
+            return const LogistiquesBaseScreen(initialIndex: 2);
+          } else {
+            return const PageAdministratorBaseScreen(initialIndex: 3);
+          }
+        }),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content:
+              CustomStyledSnackBar(message: "Command ajoutés", success: true),
         ),
       );
     } else {
-      CustomStyledSnackBar(message: response.data['err'], success: false);
+      SnackBar(
+        backgroundColor: Colors.transparent,
+        content:
+            CustomStyledSnackBar(message: response.data['err'], success: true),
+      );
     }
   }
 
@@ -173,142 +189,128 @@ class _EditArticleState extends State<EditArticle> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<ArticleBloc>(),
-      child: BlocListener<ArticleBloc, ArticleState>(
-        listener: (context, state) {
-          if (state.createArticleState == RequestState.loaded) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const Logistiques(), // Replace MainPage with the actual widget class for your MainPage
-              ),
-            );
-          }
-        },
-        child: Builder(builder: (context) {
-          return Scaffold(
+      child: Builder(builder: (context) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              centerTitle: true, // Align the title to the center
+            centerTitle: true, // Align the title to the center
 
-              title: const Text(
-                "Ajouter un article",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black),
-              ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              // backgroundColor:
-              //     Colors.blue.withOpacity(0.3), //You can make this transparent
-              elevation: 0.0,
+            title: const Text(
+              "Ajouter un article",
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
             ),
-            body: Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only(right: 20.0, left: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      buildInputField(
-                          label: "Nom de l'article",
-                          hintText: "Entrez le nom de l'article",
-                          errorText: "Vous devez entrer une nom",
-                          controller: nomArticleController,
-                          formSubmitted: _formSubmitted),
-                      const SizedBox(height: 20),
-                      buildInputField(
-                        label: "Unité",
-                        hintText: "Entrez l'unité",
-                        errorText: "Vous devez entrer une Unité",
-                        controller: uniteController,
-                        formSubmitted: _formSubmitted,
-                      ),
-                      const SizedBox(height: 20),
-                      buildInputField(
-                          label: "Prix d'achat",
-                          hintText: "Entrez le prix d'achat",
-                          errorText: "Vous devez entrer le prix d'achat",
-                          controller: prixAchatController,
-                          isNumeric: true,
-                          formSubmitted: _formSubmitted),
-                      const SizedBox(height: 20),
-                      buildInputField(
-                          label: "Prix de ventre en gros",
-                          hintText: "Entrez le prix de vente en gros",
-                          errorText:
-                              "Vous devez entrer le prix de vente en gros",
-                          controller: prixGrosController,
-                          isNumeric: true,
-                          formSubmitted: _formSubmitted),
-                      const SizedBox(height: 20),
-                      buildInputField(
-                          label: "Quantité d'alerte",
-                          hintText: "Entrez la quantité d'alerte",
-                          errorText: "Vous devez entrer la quantité d'alerte",
-                          controller: quanAlertController,
-                          isNumeric: true,
-                          formSubmitted: _formSubmitted),
-                      const SizedBox(height: 20),
-                      _imagePickerContainer(),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      const Text(
-                        "Variants",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF9F9F9F)),
-                      ),
-                      const SizedBox(height: 10),
-                      // _variantContainer(),
-                      _variantContainerList(),
-                      const SizedBox(height: 20),
-                      _addVariantContainer(),
-                      const SizedBox(height: 80),
-                    ],
-                  ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            // backgroundColor:
+            //     Colors.blue.withOpacity(0.3), //You can make this transparent
+            elevation: 0.0,
+          ),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.only(right: 20.0, left: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    buildInputField(
+                        label: "Nom de l'article",
+                        hintText: "Entrez le nom de l'article",
+                        errorText: "Vous devez entrer une nom",
+                        controller: nomArticleController,
+                        formSubmitted: _formSubmitted),
+                    const SizedBox(height: 20),
+                    buildInputField(
+                      label: "Unité",
+                      hintText: "Entrez l'unité",
+                      errorText: "Vous devez entrer une Unité",
+                      controller: uniteController,
+                      formSubmitted: _formSubmitted,
+                    ),
+                    const SizedBox(height: 20),
+                    buildInputField(
+                        label: "Prix d'achat",
+                        hintText: "Entrez le prix d'achat",
+                        errorText: "Vous devez entrer le prix d'achat",
+                        controller: prixAchatController,
+                        isNumeric: true,
+                        formSubmitted: _formSubmitted),
+                    const SizedBox(height: 20),
+                    buildInputField(
+                        label: "Prix de ventre en gros",
+                        hintText: "Entrez le prix de vente en gros",
+                        errorText: "Vous devez entrer le prix de vente en gros",
+                        controller: prixGrosController,
+                        isNumeric: true,
+                        formSubmitted: _formSubmitted),
+                    const SizedBox(height: 20),
+                    buildInputField(
+                        label: "Quantité d'alerte",
+                        hintText: "Entrez la quantité d'alerte",
+                        errorText: "Vous devez entrer la quantité d'alerte",
+                        controller: quanAlertController,
+                        isNumeric: true,
+                        formSubmitted: _formSubmitted),
+                    const SizedBox(height: 20),
+                    _imagePickerContainer(),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Text(
+                      "Variants",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF9F9F9F)),
+                    ),
+                    const SizedBox(height: 10),
+                    // _variantContainer(),
+                    _variantContainerList(),
+                    const SizedBox(height: 20),
+                    _addVariantContainer(),
+                    const SizedBox(height: 80),
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      height: 50, // Set the height to 50
-                      width: double.infinity,
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _checkFormValidation(context);
-                        },
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.black),
-                        ),
-                        child: const Text(
-                          "Ajouter l'article",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    height: 50, // Set the height to 50
+                    width: double.infinity,
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _checkFormValidation(context);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                      ),
+                      child: const Text(
+                        "Ajouter l'article",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        }),
-      ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 

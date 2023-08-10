@@ -5,10 +5,14 @@ import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/facture/page/pdf_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'mainpage/presentation/screen/account manager/account_manager.dart';
 
 int? isLoggedIn;
 String? type;
@@ -42,18 +46,45 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       theme: ThemeData(primarySwatch: Colors.deepOrange),
-      // home: PdfPage(),
-      home: (isLoggedIn == 1)
+      initialRoute: (isLoggedIn == 1)
           ? ((type == "admin")
-              ? const PageAdministratorBaseScreen()
+              ? '/pageAdministrator'
               : ((type == "PageAdministratorBaseScreen")
-                  ? const FinancesBaseScreen()
+                  ? '/finances'
                   : ((type == "pageAdmin")
-                      ? const AdminPageBaseScreen()
-                      : ((type == "logistics")
-                          ? const LogistiquesBaseScreen()
-                          : const LoginPage()))))
-          : const LoginPage(),
+                      ? '/adminPage'
+                      : ((type == "logistics") ? '/logistiques' : '/'))))
+          : '/',
+      routes: {
+        '/': (context) => const LoginPage(),
+        '/pageAdministrator': (context) => const PageAdministratorBaseScreen(),
+        '/adminPage': (context) => const AdminPageBaseScreen(),
+        '/logistiques': (context) => const LogistiquesBaseScreen(),
+        '/finances': (context) => const FinancesBaseScreen(),
+        '/accountManager': (context) => const AccountManager(),
+        '/adminParams': (context) => const AdminParams(),
+        '/createPage': (context) => const NewPageAccount(),
+      },
+
+      // initialRoute: '/',
+      // routes: {
+      //   '/': (context) => const LoginPage(),
+      //   '/pageAdministrator': (context) => const PageAdministratorBaseScreen(),
+      //   '/adminPage': (context) => const AdminPageBaseScreen(),
+      //   '/logistiques': (context) => const LogistiquesBaseScreen(),
+      //   '/finances': (context) => const FinancesBaseScreen(),
+      // },
+      // home: (isLoggedIn == 1)
+      //     ? ((type == "admin")
+      //         ? const PageAdministratorBaseScreen()
+      //         : ((type == "PageAdministratorBaseScreen")
+      //             ? const FinancesBaseScreen()
+      //             : ((type == "pageAdmin")
+      //                 ? const AdminPageBaseScreen()
+      //                 : ((type == "logistics")
+      //                     ? const LogistiquesBaseScreen()
+      //                     : const LoginPage()))))
+      //     : const LoginPage(),
     );
   }
 }

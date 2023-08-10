@@ -15,7 +15,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
 class FinancesPage extends StatefulWidget {
-  const FinancesPage({super.key});
+  final String role;
+  const FinancesPage({required this.role, super.key});
 
   @override
   State<FinancesPage> createState() => _FinancesPageState();
@@ -103,7 +104,8 @@ class _FinancesPageState extends State<FinancesPage> {
                           xValueMapper: (_ChartData data, _) => data.x,
                           yValueMapper: (_ChartData data, _) => data.y,
                           name: 'Gold',
-                          borderRadius:const  BorderRadius.all(Radius.circular(25)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(25)),
                           color: const Color(0xFFECECEC),
                           selectionBehavior: SelectionBehavior(
                             enable: true,
@@ -169,7 +171,9 @@ class _FinancesPageState extends State<FinancesPage> {
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
-                            builder: (_) => const NewFinanceCharge(),
+                            builder: (_) => NewFinanceCharge(
+                              role: widget.role,
+                            ),
                           ),
                         );
                       },
@@ -348,7 +352,6 @@ class _FinancesPageState extends State<FinancesPage> {
                       : _selectedPeriod == 'Par jour'
                           ? '${cashflow.day} DA'
                           : '${cashflow.year} DA',
-                          
                   style: const TextStyle(
                     color: Colors.black,
                     fontFamily: "Inter",

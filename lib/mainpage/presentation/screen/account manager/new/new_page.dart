@@ -3,8 +3,10 @@ import 'dart:developer';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -84,13 +86,20 @@ class _NewPageAccountState extends State<NewPageAccount> {
                   ));
               log("response");
               if (response.statusCode == 200) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                      const   AccountManager(), // Replace MainPage with the actual widget class for your MainPage
+
+                Navigator.popUntil(context,
+                    (route) => route.settings.name == '/accountManager');
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.transparent,
+                    content: CustomStyledSnackBar(
+                        message: "Page ajoutés", success: true),
                   ),
                 );
+
+                //   ),
+                // );
               } else {
                 log("failed");
               }

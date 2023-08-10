@@ -13,8 +13,6 @@ class ChartBarModel extends ChartBarEntity {
   factory ChartBarModel.fromJson(Map<String, dynamic> json) {
     return ChartBarModel(
       date: json["month"],
-
-
     );
   }
 }

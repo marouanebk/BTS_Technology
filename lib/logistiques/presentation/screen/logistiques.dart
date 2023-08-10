@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Logistiques extends StatefulWidget {
-  const Logistiques({super.key});
+  final String role;
+  const Logistiques({required this.role, super.key});
 
   @override
   State<Logistiques> createState() => _LogistiquesState();
@@ -82,7 +83,9 @@ class _LogistiquesState extends State<Logistiques> {
                       onPressed: () {
                         Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
-                            builder: (_) => const NewArticle(),
+                            builder: (_) => NewArticle(
+                              role: widget.role,
+                            ),
                           ),
                         );
                       },
@@ -258,7 +261,8 @@ class _LogistiquesState extends State<Logistiques> {
           onPressed: () {
             Navigator.of(context, rootNavigator: true).push(
               MaterialPageRoute(
-                builder: (_) => EditArticle(article: article),
+                builder: (_) =>
+                    EditArticle(role: widget.role, article: article),
               ),
             );
           },

@@ -38,8 +38,60 @@ class _AdminParamsState extends State<AdminParams> {
             const SizedBox(
               height: 30,
             ),
-            adminParamsContainer("Gestionnaire des compte",
-                "assets/images/compte.svg", const AccountManager()),
+            // adminParamsContainer("Gestionnaire des compte",
+            //     "assets/images/compte.svg", const AccountManager()),
+
+            ///////////////////////////////
+
+            InkWell(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamed('/accountManager');
+                // Navigator.of(context, rootNavigator: true).push(
+                //   MaterialPageRoute(
+                //     builder: (_) => page,
+                //   ),
+                // );
+              },
+              child: Container(
+                height: 70,
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 18),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: const Color(0xFFFFFFFF),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x26000000),
+                      offset: Offset(0, 0),
+                      blurRadius: 12,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/images/compte.svg",
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    const Text(
+                      "Gestionnaire des compte",
+                      style: TextStyle(
+                        color: Colors.black,
+                        height: 1.0,
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            /////////////////////////
             const SizedBox(
               height: 10,
             ),

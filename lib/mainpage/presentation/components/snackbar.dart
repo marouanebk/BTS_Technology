@@ -11,9 +11,13 @@ class CustomStyledSnackBar extends StatelessWidget {
     Color iconColor = success ? Colors.green : Colors.red;
     IconData iconData = success ? Icons.verified_rounded : Icons.error_outline;
 
-    return SnackBar(
-      backgroundColor: Colors.transparent,
-      content: Container(
+    return 
+    
+    // SnackBar(
+    //   backgroundColor: Colors.transparent,
+    //   content: 
+      
+      Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
           color: Colors.white,
@@ -47,7 +51,7 @@ class CustomStyledSnackBar extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      // ),
     );
   }
 }
