@@ -18,7 +18,7 @@ import 'package:bts_technologie/logistiques/domaine/usecases/delete_article_usec
 import 'package:bts_technologie/logistiques/domaine/usecases/edit_article_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/get_articles_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/get_undone_article_usecase.dart';
-import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
 import 'package:bts_technologie/mainpage/data/Repository/account_repo_emplem.dart';
 import 'package:bts_technologie/mainpage/data/dataSource/account_datasource.dart';
 import 'package:bts_technologie/mainpage/domaine/Repository/base_accounts_repo.dart';
@@ -28,6 +28,11 @@ import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dar
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_usestats_usecase.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/notifications/data/Repository/notification_repo_implem.dart';
+import 'package:bts_technologie/notifications/data/dataSource/base_notifications_datasource.dart';
+import 'package:bts_technologie/notifications/domaine/Repository/base_notification_repo.dart';
+import 'package:bts_technologie/notifications/domaine/UseCase/get_notifications_usecase.dart';
+import 'package:bts_technologie/notifications/presentation/controller/notification_bloc/notification_bloc.dart';
 import 'package:bts_technologie/orders/data/Repository/commandes_repo_implem.dart';
 import 'package:bts_technologie/orders/data/dataSource/commades_datasource.dart';
 import 'package:bts_technologie/orders/domaine/Repository/base_command_repo.dart';
@@ -44,10 +49,11 @@ class ServiceLocator {
   Future<void> init() async {
     // Bloc
     sl.registerFactory(() => UserBloc(sl(), sl()));
-    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl(),sl() ,sl()));
+    sl.registerFactory(() => AccountBloc(sl(), sl(), sl(), sl(), sl(), sl()));
     sl.registerFactory(() => ArticleBloc(sl(), sl(), sl(), sl(), sl()));
     sl.registerFactory(() => CommandBloc(sl(), sl(), sl()));
     sl.registerFactory(() => FinanceBloc(sl(), sl()));
+    sl.registerFactory(() => NotificationBloc(sl()));
 
     //Articles usecase
 
@@ -70,7 +76,6 @@ class ServiceLocator {
     sl.registerLazySingleton(() => GetEntrepriseInfoUsecase(sl()));
     sl.registerLazySingleton(() => GetAdminUserStatsUseCase(sl()));
     sl.registerLazySingleton(() => GetCommandsStatsUseCase(sl()));
-    
 
     // Commandes
     sl.registerLazySingleton(() => GetCommandesUseCase(sl()));
@@ -80,6 +85,8 @@ class ServiceLocator {
     // Finances
     sl.registerLazySingleton(() => GetFinancesUseCase(sl()));
     sl.registerLazySingleton(() => GetCashFlowUseCase(sl()));
+    //
+    sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
 
     // Repository
     sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));
@@ -92,6 +99,9 @@ class ServiceLocator {
 
     sl.registerLazySingleton<BaseFinanceRepository>(
         () => FinanceRepository(sl()));
+
+    sl.registerLazySingleton<BaseNotificationRepository>(
+        () => NotificationsRepository(sl()));
 
     // sl.registerLazySingleton<BaseUserRepository>(() => UserRepository(sl()));
 
@@ -109,5 +119,8 @@ class ServiceLocator {
 
     sl.registerLazySingleton<BaseFinanceRemoteDateSource>(
         () => FinanceRemoteDataSource());
+    //notification
+    sl.registerLazySingleton<BaseNotificationsRemoteDateSource>(
+        () => NotificationsRemoteDataSource());
   }
 }

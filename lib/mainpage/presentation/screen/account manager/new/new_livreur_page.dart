@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,7 +45,7 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
                 controller: livreurNameController,
                 formSubmitted: _formSubmitted,
               ),
-              registerButton(),
+              registerButton(context ),
               const SizedBox(
                 height: 30,
               ),
@@ -56,7 +56,7 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
     );
   }
 
-  Widget registerButton() {
+  Widget registerButton(context ) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -85,11 +85,14 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
               log("response");
               if (response.statusCode == 200) {
                 // ignore: use_build_context_synchronously
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const AccountManager(), // Replace MainPage with the actual widget class for your MainPage
+                Navigator.popUntil(context,
+                    (route) => route.settings.name == '/accountManager');
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.transparent,
+                    content: CustomStyledSnackBar(
+                        message: "Compte Ajoutes", success: true),
                   ),
                 );
               } else {

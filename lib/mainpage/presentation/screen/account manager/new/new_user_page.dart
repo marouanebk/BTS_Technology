@@ -1,4 +1,3 @@
-
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_event.dart';
@@ -9,6 +8,7 @@ import 'package:bts_technologie/logistiques/presentation/components/select_field
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/check_box.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -179,10 +179,18 @@ class _NewUserPageState extends State<NewUserPage> {
                           error = state.message;
                         });
                       } else if (state is MessageUserBlocState) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => const AccountManager()),
-                            (Route<dynamic> route) => false);
+                        Navigator.popUntil(
+                            context,
+                            (route) =>
+                                route.settings.name == '/accountManager');
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.transparent,
+                            content: CustomStyledSnackBar(
+                                message: "compte ajoutés", success: true),
+                          ),
+                        );
                       }
                     },
                     child: Align(

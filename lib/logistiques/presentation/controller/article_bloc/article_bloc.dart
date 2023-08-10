@@ -6,8 +6,8 @@ import 'package:bts_technologie/logistiques/domaine/usecases/delete_article_usec
 import 'package:bts_technologie/logistiques/domaine/usecases/edit_article_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/get_articles_usecase.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/get_undone_article_usecase.dart';
-import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
-import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_event.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 

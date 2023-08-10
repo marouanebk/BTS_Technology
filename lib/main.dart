@@ -5,7 +5,10 @@ import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/facture/page/pdf_page.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_livreur_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_user_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,27 +67,14 @@ class MyApp extends StatelessWidget {
         '/accountManager': (context) => const AccountManager(),
         '/adminParams': (context) => const AdminParams(),
         '/createPage': (context) => const NewPageAccount(),
+        '/createLivreur': (context) => const NewLivreurAccount(),
+        '/createUser': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          List<FacePage> pages = args['pages'];
+          return NewUserPage(pages: pages);
+        },
       },
-
-      // initialRoute: '/',
-      // routes: {
-      //   '/': (context) => const LoginPage(),
-      //   '/pageAdministrator': (context) => const PageAdministratorBaseScreen(),
-      //   '/adminPage': (context) => const AdminPageBaseScreen(),
-      //   '/logistiques': (context) => const LogistiquesBaseScreen(),
-      //   '/finances': (context) => const FinancesBaseScreen(),
-      // },
-      // home: (isLoggedIn == 1)
-      //     ? ((type == "admin")
-      //         ? const PageAdministratorBaseScreen()
-      //         : ((type == "PageAdministratorBaseScreen")
-      //             ? const FinancesBaseScreen()
-      //             : ((type == "pageAdmin")
-      //                 ? const AdminPageBaseScreen()
-      //                 : ((type == "logistics")
-      //                     ? const LogistiquesBaseScreen()
-      //                     : const LoginPage()))))
-      //     : const LoginPage(),
     );
   }
 }

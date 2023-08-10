@@ -130,28 +130,15 @@ class _AccountManagerState extends State<AccountManager> {
                 if (value == 'Ajouter une page') {
                   Navigator.of(context, rootNavigator: true)
                       .pushNamed('/createPage');
-
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (_) => const NewPageAccount(),
-                  //   ),
-                  // );
                 } else if (value == 'Ajouter un utilisateur') {
                   final accountBloc = BlocProvider.of<AccountBloc>(context);
                   final state = accountBloc.state;
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => NewUserPage(
-                        pages: state.getPages,
-                      ),
-                    ),
-                  );
+                  Navigator.of(context, rootNavigator: true).pushNamed(
+                      '/createUser',
+                      arguments: {'pages': state.getPages});
                 } else if (value == 'Ajouter un livreur') {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const NewLivreurAccount(),
-                    ),
-                  );
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed('/createLivreur');
                 }
 
                 setState(() {

@@ -90,12 +90,13 @@ class _CompanyInformationsState extends State<CompanyInformations> {
           },
         ));
     if (response.statusCode == 200) {
-      CustomStyledSnackBar(message: "Modification enregistré", success: true);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              const AdminParams(), // Replace MainPage with the actual widget class for your MainPage
+      Navigator.popUntil(
+          context, (route) => route.settings.name == '/accountManager');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(message: "Information Modifier", success: true),
         ),
       );
     } else {

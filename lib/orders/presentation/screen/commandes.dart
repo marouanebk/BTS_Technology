@@ -61,152 +61,160 @@ class _OrdersPageState extends State<OrdersPage> {
       create: (context) => sl<CommandBloc>()..add(GetCommandesEvent()),
       child: Builder(builder: (context) {
         return SafeArea(
-          child: Scaffold(
-            body: Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                screenHeader("Commandes",
-                    'assets/images/navbar/commandes_activated.svg'),
-                const SizedBox(
-                  height: 28,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: searchContainer("Chercher une commande", (query) {
-                    setState(() {
-                      searchQuery = query;
-                    });
-                  }),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Row(
-                      children: List.generate(statusListAdministrator.length,
-                          (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: statusFilter(
-                              index, statusListAdministrator[index]),
-                        );
-                      }),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              // Reload the page here
+              // For example, you can call a method on your bloc to fetch new data
+              context.read<CommandBloc>().add(GetCommandesEvent());
+            },
+            child: Scaffold(
+              body: Column(
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  screenHeader("Commandes",
+                      'assets/images/navbar/commandes_activated.svg'),
+                  const SizedBox(
+                    height: 28,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: searchContainer("Chercher une commande", (query) {
+                      setState(() {
+                        searchQuery = query;
+                      });
+                    }),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Row(
+                        children: List.generate(statusListAdministrator.length,
+                            (index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: statusFilter(
+                                index, statusListAdministrator[index]),
+                          );
+                        }),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                BlocBuilder<CommandBloc, CommandesState>(
-                  builder: (context, state) {
-                    if (state.getCommandesState == RequestState.loading) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.red,
-                        ),
-                      );
-                    }
-                    if (state.getCommandesState == RequestState.error) {
-                      return Text(
-                        state.getCommandesmessage,
-                        style: const TextStyle(color: Colors.red),
-                      );
-                    }
-                    if (state.getCommandesState == RequestState.loaded) {
-                      List<Command> filteredCommands = state.getCommandes
-                          .where((command) =>
-                              (selectedStatus == 'Tous' ||
-                                  command.status == selectedStatus) &&
-                              (searchQuery.isEmpty ||
-                                  command.phoneNumber
-                                      .toString()
-                                      .contains(searchQuery)))
-                          .toList();
-
-                      // Group and display filtered data
-                      Map<String, List<Command>> groupedData = {};
-                      // for (Command command in state.getCommandes) {
-
-                      for (Command command in filteredCommands) {
-                        if (!groupedData.containsKey(command.date)) {
-                          groupedData[command.date!] = [];
-                        }
-                        groupedData[command.date]?.add(command);
-                      }
-                      return Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                for (String date in groupedData.keys) ...[
-                                  Text(date),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  ListView.separated(
-                                    scrollDirection: Axis.vertical,
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      height: 14,
-                                    ),
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: groupedData[date]!.length,
-                                    itemBuilder: (context, index) {
-                                      Command command =
-                                          groupedData[date]![index];
-                                      return commandeCard(command, index);
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                ],
-                                const SizedBox(
-                                  height: 80,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    return Container();
-                  },
-                ),
-              ],
-            ),
-            floatingActionButton: Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 20, bottom: 20),
-                child: Container(
-                  height: 76,
-                  width: 76,
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.black),
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (_) => AddOrderPage(role: widget.role),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  BlocBuilder<CommandBloc, CommandesState>(
+                    builder: (context, state) {
+                      if (state.getCommandesState == RequestState.loading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.red,
                           ),
                         );
-                      },
-                      icon: const Icon(
-                        Icons.add,
-                        size: 35,
-                      ),
-                      color: Colors.white),
+                      }
+                      if (state.getCommandesState == RequestState.error) {
+                        return Text(
+                          state.getCommandesmessage,
+                          style: const TextStyle(color: Colors.red),
+                        );
+                      }
+                      if (state.getCommandesState == RequestState.loaded) {
+                        List<Command> filteredCommands = state.getCommandes
+                            .where((command) =>
+                                (selectedStatus == 'Tous' ||
+                                    command.status == selectedStatus) &&
+                                (searchQuery.isEmpty ||
+                                    command.phoneNumber
+                                        .toString()
+                                        .contains(searchQuery)))
+                            .toList();
+
+                        // Group and display filtered data
+                        Map<String, List<Command>> groupedData = {};
+                        // for (Command command in state.getCommandes) {
+
+                        for (Command command in filteredCommands) {
+                          if (!groupedData.containsKey(command.date)) {
+                            groupedData[command.date!] = [];
+                          }
+                          groupedData[command.date]?.add(command);
+                        }
+                        return Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  for (String date in groupedData.keys) ...[
+                                    Text(date),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    ListView.separated(
+                                      scrollDirection: Axis.vertical,
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(
+                                        height: 14,
+                                      ),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: groupedData[date]!.length,
+                                      itemBuilder: (context, index) {
+                                        Command command =
+                                            groupedData[date]![index];
+                                        return commandeCard(command, index);
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                  ],
+                                  const SizedBox(
+                                    height: 80,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return Container();
+                    },
+                  ),
+                ],
+              ),
+              floatingActionButton: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 20, bottom: 20),
+                  child: Container(
+                    height: 76,
+                    width: 76,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.black),
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (_) => AddOrderPage(role: widget.role),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          size: 35,
+                        ),
+                        color: Colors.white),
+                  ),
                 ),
               ),
             ),

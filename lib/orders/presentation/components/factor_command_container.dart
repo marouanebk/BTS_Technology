@@ -1,8 +1,14 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/base_screens/admin_base_screen.dart';
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
+import 'package:bts_technologie/base_screens/finances_base_screen.dart';
+import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
+import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/orders/presentation/screen/edit_order.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:dio/dio.dart';
@@ -87,7 +93,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     }
   }
 
-  Future<void> _updateStatus(String? newStatus) async {
+  Future<void> _updateStatus(String? newStatus, context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("token");
@@ -99,7 +105,38 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      log('Status updated successfully: ${response.data}');
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return OrdersPage(role: widget.role);
+            // if (widget.role == "financier") {
+            //   return const FinancesBaseScreen(initialIndex: 0);
+            // } else if (widget.role == "pageAdmin") {
+            //   return const AdminPageBaseScreen(initialIndex: 0);
+            // } else if (widget.role == "logistics") {
+            //   return const LogistiquesBaseScreen(initialIndex: 0);
+            // } else {
+            //   return const PageAdministratorBaseScreen(initialIndex: 1);
+            // }
+          }),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          
+          SnackBar(
+            backgroundColor: Colors.transparent,
+            content:
+                CustomStyledSnackBar(message: "Status Modifier", success: true),
+          ),
+        );
+      } else {
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(
+              message: response.data['err'], success: false),
+        );
+      }
     } catch (error) {
       log('Error updating status: $error');
     }
@@ -110,129 +147,133 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     bool isModificationAllowed = widget.role == "admin" ||
         widget.role == "financier" ||
         getStatusListBasedOnRole().contains(type);
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0, bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            width: double.infinity,
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: Color(0xFFECECEC),
+    return Builder(builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 16.0, bottom: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              width: double.infinity,
+              child: Divider(
+                height: 1,
+                thickness: 1,
+                color: Color(0xFFECECEC),
+              ),
             ),
-          ),
-          const SizedBox(height: 5,),
-          for (var item in widget.command.articleList) productDetail(item!),
-          const SizedBox(
-            width: double.infinity,
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: Color(0xFFECECEC),
+            const SizedBox(
+              height: 5,
             ),
-          ),
-          clientInfo(widget.command),
-          const SizedBox(
-            height: 16,
-          ),
-          Wrap(
-            spacing: 8.0, // Adjust spacing between images
-            runSpacing: 8.0, // Adjust spacing between lines
-            children: [
-              ...List.generate(
-                5,
-                (index) => InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      _createRoute("assets/images/tshirt_${index + 1}.png"),
-                    );
-                  },
-                  child: Container(
-                    height: 72,
-                    width: 72,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: const Color(0xFFECECEC),
-                        width: 1,
+            for (var item in widget.command.articleList) productDetail(item!),
+            const SizedBox(
+              width: double.infinity,
+              child: Divider(
+                height: 1,
+                thickness: 1,
+                color: Color(0xFFECECEC),
+              ),
+            ),
+            clientInfo(widget.command),
+            const SizedBox(
+              height: 16,
+            ),
+            Wrap(
+              spacing: 8.0, // Adjust spacing between images
+              runSpacing: 8.0, // Adjust spacing between lines
+              children: [
+                ...List.generate(
+                  5,
+                  (index) => InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        _createRoute("assets/images/tshirt_${index + 1}.png"),
+                      );
+                    },
+                    child: Container(
+                      height: 72,
+                      width: 72,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                          color: const Color(0xFFECECEC),
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    child: Image.asset(
-                      "assets/images/tshirt_2.png",
-                      fit: BoxFit.cover,
+                      child: Image.asset(
+                        "assets/images/tshirt_2.png",
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          if (isModificationAllowed)
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            if (isModificationAllowed)
+              containerButton(
+                  "Modifier la commande",
+                  EditOrderPage(
+                    role: widget.role,
+                    command: widget.command,
+                  )),
+            const SizedBox(
+              height: 10,
+            ),
+            //add the generate factor
             containerButton(
-                "Modifier la commande",
-                EditOrderPage(
-                  role: widget.role,
+                "Générer une facture",
+                NewFactorPage(
                   command: widget.command,
                 )),
-          const SizedBox(
-            height: 10,
-          ),
-          //add the generate factor
-          containerButton(
-              "Générer une facture",
-              NewFactorPage(
-                command: widget.command,
-              )),
-          const SizedBox(
-            height: 10,
-          ),
-          confirmationContainer(
-            value: type,
-            onChanged: (value) {
-              setState(() {
-                _updateStatus(value);
+            const SizedBox(
+              height: 10,
+            ),
+            confirmationContainer(
+              value: type,
+              onChanged: (value) {
+                setState(() {
+                  _updateStatus(value, context);
 
-                type = value;
-              });
-            },
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Center(
-            child: Text(
-              "Saisie par @${widget.command.user}",
-              style: const TextStyle(
-                color: Color(0xFF9F9F9F),
-                fontFamily: "Inter",
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-              ),
-              textAlign: TextAlign.center,
+                  type = value;
+                });
+              },
             ),
-          ),
-          const Center(
-            child: Text(
-              "Livré par Yalidine",
-              style: TextStyle(
-                color: Color(0xFF9F9F9F),
-                fontFamily: "Inter",
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-              ),
-              textAlign: TextAlign.center,
+            const SizedBox(
+              height: 10,
             ),
-          ),
-        ],
-      ),
-    );
+            Center(
+              child: Text(
+                "Saisie par @${widget.command.user}",
+                style: const TextStyle(
+                  color: Color(0xFF9F9F9F),
+                  fontFamily: "Inter",
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Center(
+              child: Text(
+                "Livré par Yalidine",
+                style: TextStyle(
+                  color: Color(0xFF9F9F9F),
+                  fontFamily: "Inter",
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget clientInfo(Command command) {

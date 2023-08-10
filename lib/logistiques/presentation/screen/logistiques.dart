@@ -1,8 +1,8 @@
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
-import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_bloc.dart';
-import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_event.dart';
-import 'package:bts_technologie/logistiques/presentation/controller/todo_bloc/article_state.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_event.dart';
+import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_state.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/edit_article.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';

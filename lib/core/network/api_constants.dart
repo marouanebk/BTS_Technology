@@ -49,4 +49,6 @@ class ApiConstance {
   static const String getFinancesApi = "$baseUrl$financeApi/";
   static const String getCashFlowApi = "$baseUrl$financeApi/cashflow";
   static const String createFinanceChargeApi = "$baseUrl$financeApi/add";
+
+  static const String getNotificaitonsApi = "$baseUrl/api/notification/";
 }

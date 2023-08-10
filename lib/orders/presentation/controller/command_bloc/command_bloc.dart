@@ -19,11 +19,14 @@ class CommandBloc extends Bloc<CommandEvent, CommandesState> {
     on<GetCommandesEvent>(_getCommandesEvent);
     on<CreateCommandEvent>(_createCommandEvent);
     on<EditCommandEvent>(_editCommandEvent);
-
   }
   FutureOr<void> _getCommandesEvent(
       GetCommandesEvent event, Emitter<CommandesState> emit) async {
+    emit(state.copyWith(
+      getCommandesState: RequestState.loading,
+    ));
     final result = await getCommandesUseCase();
+
     result.fold(
         (l) => emit(state.copyWith(
             getCommandesState: RequestState.error,
