@@ -6,6 +6,7 @@ import 'package:bts_technologie/mainpage/domaine/UseCase/get_commands_stats_usec
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_entreprise_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
+import 'package:bts_technologie/mainpage/domaine/UseCase/get_userinfo_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_usestats_usecase.dart';
 
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
@@ -19,6 +20,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final GetEntrepriseInfoUsecase getEntrepriseInfoUsecase;
   final GetAdminUserStatsUseCase getAdminUserStatsUseCase;
   final GetCommandsStatsUseCase getCommandsStatsUseCase;
+  final GetUserInfoUseCase getUserInfoUseCase;
 
   AccountBloc(
     this.getAllUsersUseCase,
@@ -27,14 +29,28 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     this.getEntrepriseInfoUsecase,
     this.getAdminUserStatsUseCase,
     this.getCommandsStatsUseCase,
+    this.getUserInfoUseCase,
   ) : super(const AccountState()) {
-    on<GetAllAccountsEvent>(_getAccountEvent);
+    on<GetAllAccountsEvent>(_getAllAccountsEvent);
     on<GetPagesEvent>(_getPagesEvent);
     on<GetLivreursEvent>(_getLivreursEvent);
     on<GetEntrepriseInfoEvent>(_getEntrepriseInfoEvent);
     on<GetAdminUserStatsEvent>(_getAdminUsersStatsEvent);
     on<GetCommandsStatsEvent>(_getCommandsStatsEvent);
+    on<GetUserInfoEvent>(_getUserInfoEvent);
   }
+
+  FutureOr<void> _getUserInfoEvent(
+      GetUserInfoEvent event, Emitter<AccountState> emit) async {
+    final result = await getUserInfoUseCase();
+    result.fold(
+        (l) => emit(state.copyWith(
+            getUserInfoState: RequestState.error,
+            getUserInfomessage: l.message)),
+        (r) => emit(state.copyWith(
+            getUserInfo: r, getUserInfoState: RequestState.loaded)));
+  }
+
   FutureOr<void> _getEntrepriseInfoEvent(
       GetEntrepriseInfoEvent event, Emitter<AccountState> emit) async {
     final result = await getEntrepriseInfoUsecase();
@@ -47,7 +63,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
             getEntrepriseInfoState: RequestState.loaded)));
   }
 
-  FutureOr<void> _getAccountEvent(
+  FutureOr<void> _getAllAccountsEvent(
       GetAllAccountsEvent event, Emitter<AccountState> emit) async {
     final result = await getAllUsersUseCase();
     result.fold(

@@ -1,3 +1,4 @@
+import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 import 'package:bts_technologie/mainpage/data/Models/livreur_model.dart';
@@ -58,6 +59,16 @@ class AccountRepository implements BaseAccountRepository {
   Future<Either<Failure, List<UserStatEntity>>> getUsersStats() async {
     try {
       final result = await baseAccountRemoteDateSource.getUsersStats();
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> getUserInfo() async {
+    try {
+      final result = await baseAccountRemoteDateSource.getUserInfo();
       return Right(result);
     } on ServerException catch (failure) {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));

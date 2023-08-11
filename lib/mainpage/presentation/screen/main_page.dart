@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math' as math;
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -53,7 +54,8 @@ class _MainPageState extends State<MainPage> {
     return BlocProvider(
       create: (context) => sl<AccountBloc>()
         ..add(GetAdminUserStatsEvent())
-        ..add(GetCommandsStatsEvent()),
+        ..add(GetCommandsStatsEvent())
+        ..add(GetUserInfoEvent()),
       child: Builder(
         builder: (context) {
           return Builder(builder: (context) {
@@ -61,117 +63,135 @@ class _MainPageState extends State<MainPage> {
               builder: (context, state) {
                 return Scaffold(
                   backgroundColor: Colors.white,
-                  body: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _topContainer(context),
-                        Center(
-                          child: Container(
-                            height: 3,
-                            width: 43,
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            decoration: const BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(22),
+                  body: NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) {
+                      return [
+                        SliverAppBar(
+                          expandedHeight: 200, // Adjust this value as needed
+                          floating: false,
+                          pinned: true,
+                          flexibleSpace: FlexibleSpaceBar(
+                            background: _topContainer(context, state),
+                          ),
+                        ),
+                      ];
+                    },
+                    body: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // _topContainer(context),
+                          Center(
+                            child: Container(
+                              height: 3,
+                              width: 43,
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: const BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(22),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        if (state.getCommandsStatsState == RequestState.loading)
-                          const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.black,
+                          if (state.getCommandsStatsState ==
+                              RequestState.loading)
+                            const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                        if (state.getCommandsStatsState == RequestState.error)
-                          Text(
-                            state.getAdminUserStatsmessage,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        if (state.getCommandsStatsState ==
-                            RequestState.loaded) ...[
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                for (var i = 0;
-                                    i < state.getCommandsStats.length;
-                                    i++) ...[
-                                  dateFilter(
-                                      i,
-                                      frenchMonthAbbreviations[
-                                          state.getCommandsStats[i].month]),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
+                          if (state.getCommandsStatsState == RequestState.error)
+                            Text(
+                              state.getAdminUserStatsmessage,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          if (state.getCommandsStatsState ==
+                              RequestState.loaded) ...[
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  for (var i = 0;
+                                      i < state.getCommandsStats.length;
+                                      i++) ...[
+                                    dateFilter(
+                                        i,
+                                        frenchMonthAbbreviations[
+                                            state.getCommandsStats[i].month]),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                  ],
                                 ],
+                              ),
+                            ),
+                          ],
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                SizedBox(
+                                  height: 330,
+                                  child: PageView(
+                                    controller: controller,
+                                    onPageChanged: (index) {
+                                      log("page ${index + 1} ");
+                                      pageindex = index;
+                                      setState(() {
+                                        index;
+                                      });
+                                    },
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    children: [
+                                      for (var i = 0;
+                                          i < state.getCommandsStats.length;
+                                          i++) ...[
+                                        _commandsStats(
+                                            state.getCommandsStats[i]),
+                                        // const SizedBox(height: 24),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                if (state.getAdminUserStatsState ==
+                                    RequestState.loading)
+                                  const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                if (state.getAdminUserStatsState ==
+                                    RequestState.error)
+                                  Text(
+                                    state.getAdminUserStatsmessage,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                if (state.getAdminUserStatsState ==
+                                    RequestState.loaded)
+                                  usersList(state.getAdminUserStats),
+                                // usersList(),
+                                const SizedBox(
+                                  height: 30,
+                                ),
+                                pagesList(),
+                                const SizedBox(
+                                  height: 50,
+                                ),
                               ],
                             ),
                           ),
                         ],
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              SizedBox(
-                                height: 330,
-                                child: PageView(
-                                  controller: controller,
-                                  onPageChanged: (index) {
-                                    log("page ${index + 1} ");
-                                    pageindex = index;
-                                    setState(() {
-                                      index;
-                                    });
-                                  },
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    for (var i = 0;
-                                        i < state.getCommandsStats.length;
-                                        i++) ...[
-                                      _commandsStats(state.getCommandsStats[i]),
-                                      // const SizedBox(height: 24),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              if (state.getAdminUserStatsState ==
-                                  RequestState.loading)
-                                const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              if (state.getAdminUserStatsState ==
-                                  RequestState.error)
-                                Text(
-                                  state.getAdminUserStatsmessage,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              if (state.getAdminUserStatsState ==
-                                  RequestState.loaded)
-                                usersList(state.getAdminUserStats),
-                              // usersList(),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              pagesList(),
-                              const SizedBox(
-                                height: 50,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 );
@@ -562,113 +582,170 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _topContainer(context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF072072),
-            Color(0xFF53B7FF),
-          ],
+  Widget _topContainer(context, state) {
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/images/homebg.png",
+          alignment: Alignment.topCenter,
+          fit: BoxFit.cover,
+          width: double.infinity,
         ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/images/logout_admin.svg',
-                    width: 20,
-                    height: 30,
-                  ),
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-
-                    await prefs.setInt('is logged in', 0);
-                    await prefs.remove("id");
-                    await prefs.remove('type');
-                    await prefs.remove("token");
-                    Navigator.of(context, rootNavigator: true)
-                        .pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return const LoginPage();
-                        },
+        SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 30, right: 20, left: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/images/logout_admin.svg',
+                        width: 20,
+                        height: 30,
                       ),
-                      (_) => false,
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/images/setting_admin.svg',
-                    width: 20,
-                    height: 30,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true)
-                        .pushNamed('/adminParams');
+                      onPressed: () async {
+                        final prefs = await SharedPreferences.getInstance();
 
-                    // Navigator.of(context, rootNavigator: true).push(
-                    //   MaterialPageRoute(
-                    //     builder: (_) => const AdminParams(),
-                    //   ),
-                    // );
-                  },
+                        await prefs.setInt('is logged in', 0);
+                        await prefs.remove("id");
+                        await prefs.remove('type');
+                        await prefs.remove("token");
+                        Navigator.of(context, rootNavigator: true)
+                            .pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return const LoginPage();
+                            },
+                          ),
+                          (_) => false,
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/images/setting_admin.svg',
+                        width: 20,
+                        height: 30,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true)
+                            .pushNamed('/adminParams');
+
+                        // Navigator.of(context, rootNavigator: true).push(
+                        //   MaterialPageRoute(
+                        //     builder: (_) => const AdminParams(),
+                        //   ),
+                        // );
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const Text(
-            "bienvenue",
-            style: TextStyle(
-              color: Color(0xFFFFFFFF), // White color (#FFF)
-              fontFamily: 'Inter', // Font family
-              fontSize: 16, // Font size
-              fontStyle: FontStyle.normal, // Font style
-              fontWeight: FontWeight.w400, // Font weight
-              height: 1.2, // Line height
-            ),
-          ),
-          const Text(
-            "Aziz Berrazouane",
-            style: TextStyle(
-              color: Color(0xFFFFFFFF), // White color (#FFF)
-              fontFamily: 'Inter', // Font family
-              fontSize: 28, // Font size
-              fontStyle: FontStyle.normal, // Font style
-              fontWeight: FontWeight.w600, // Font weight
-              height: 1.2, // Line height
-            ),
-          ),
-          const SizedBox(
-            height: 6,
-          ),
-          Container(
-            height: 20,
-            width: 70,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(25),
               ),
-              color: Colors.white,
-            ),
-            child: const Center(
-              child: Text(" @aziz"),
-            ),
+              BlocBuilder<AccountBloc, AccountState>(
+                builder: (context, state) {
+                  if (state.getUserInfoState == RequestState.loaded) {
+                    return Column(
+                      children: [
+                        const Text(
+                          "bienvenue",
+                          style: TextStyle(
+                            color: Color(0xFFFFFFFF), // White color (#FFF)
+                            fontFamily: 'Inter', // Font family
+                            fontSize: 16, // Font size
+                            fontStyle: FontStyle.normal, // Font style
+                            fontWeight: FontWeight.w400, // Font weight
+                            height: 1.2, // Line height
+                          ),
+                        ),
+                        Text(
+                          state.getUserInfo!.fullname!,
+                          style: const TextStyle(
+                            color: Color(0xFFFFFFFF), // White color (#FFF)
+                            fontFamily: 'Inter', // Font family
+                            fontSize: 28, // Font size
+                            fontStyle: FontStyle.normal, // Font style
+                            fontWeight: FontWeight.w600, // Font weight
+                            height: 1.2, // Line height
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Container(
+                          height: 20,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(" @${state.getUserInfo!.username}"),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else if (state.getUserInfoState == RequestState.loading) {
+                    return const CircularProgressIndicator(
+                      color: Colors.white,
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+              // const Text(
+              //   "bienvenue",
+              //   style: TextStyle(
+              //     color: Color(0xFFFFFFFF), // White color (#FFF)
+              //     fontFamily: 'Inter', // Font family
+              //     fontSize: 16, // Font size
+              //     fontStyle: FontStyle.normal, // Font style
+              //     fontWeight: FontWeight.w400, // Font weight
+              //     height: 1.2, // Line height
+              //   ),
+              // ),
+              // const Text(
+              //   "Aziz Berrazouane",
+              //   style: TextStyle(
+              //     color: Color(0xFFFFFFFF), // White color (#FFF)
+              //     fontFamily: 'Inter', // Font family
+              //     fontSize: 28, // Font size
+              //     fontStyle: FontStyle.normal, // Font style
+              //     fontWeight: FontWeight.w600, // Font weight
+              //     height: 1.2, // Line height
+              //   ),
+              // ),
+              // const SizedBox(
+              //   height: 6,
+              // ),
+              // Container(
+              //   height: 20,
+              //   width: 70,
+              //   decoration: const BoxDecoration(
+              //     borderRadius: BorderRadius.all(
+              //       Radius.circular(25),
+              //     ),
+              //     color: Colors.white,
+              //   ),
+              //   child: const Center(
+              //     child: Text(" @aziz"),
+              //   ),
+              // ),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

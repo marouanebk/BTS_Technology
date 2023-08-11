@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/data/Models/command_stats_model.dart';
 import 'package:bts_technologie/mainpage/data/Models/entreprise_model.dart';
@@ -18,6 +19,7 @@ abstract class BaseAccountRemoteDateSource {
   Future<List<CommandStatsModel>> getCommandStats();
   Future<EntrepriseModel> getEntrepriseInfo();
   Future<List<UserStatModel>> getUsersStats();
+  Future<UserModel> getUserInfo();
 }
 
 class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
@@ -63,6 +65,35 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
               statusMessage: response.data['message']));
+    }
+  }
+
+  @override
+  Future<UserModel> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final id = prefs.getString("id");
+
+    final response = await Dio().get(
+      ApiConstance.getUser(id!),
+      options: Options(
+        followRedirects: false,
+        validateStatus: (status) {
+          return status! < 500;
+        },
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data);
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel(
+              statusCode: response.statusCode,
+              statusMessage: response.data['error']));
     }
   }
 

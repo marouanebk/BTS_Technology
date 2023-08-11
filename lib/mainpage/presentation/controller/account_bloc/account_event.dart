@@ -14,5 +14,7 @@ class GetAdminUserStatsEvent extends AccountEvent {}
 
 class GetEntrepriseInfoEvent extends AccountEvent {}
 class GetCommandsStatsEvent extends AccountEvent {}
+class GetUserInfoEvent extends AccountEvent {}
+
 
 

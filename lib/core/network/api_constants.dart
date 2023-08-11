@@ -11,6 +11,8 @@ class ApiConstance {
   static const String login = "$baseUrl$authApi/login";
 
   static const String getAllUsers = "$baseUrl$accountApi/get";
+  static String getUser(String id) => '$baseUrl$accountApi/get/$id';
+
   static const String getAllPages = "$baseUrl/api/page/";
   static const String getAllLivreurs = "$baseUrl/api/livreur/";
   static const String createPage = "$baseUrl/api/page/add";

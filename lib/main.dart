@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: title,
-      theme: ThemeData(primarySwatch: Colors.deepOrange),
+      // theme: ThemeData(primarySwatch: Colors.deepOrange),
       initialRoute: (isLoggedIn == 1)
           ? ((type == "admin")
               ? '/pageAdministrator'

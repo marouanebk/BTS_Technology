@@ -32,6 +32,10 @@ class AccountState extends Equatable {
   final RequestState getAdminUserStatsState;
   final String getAdminUserStatsmessage;
 
+  final User? getUserInfo;
+  final RequestState getUserInfoState;
+  final String getUserInfomessage;
+
   // final ToDo createArticle;
   final RequestState createArticleState;
   final String createArticleMessage;
@@ -63,6 +67,10 @@ class AccountState extends Equatable {
     this.getAdminUserStats = const [],
     this.getAdminUserStatsState = RequestState.loading,
     this.getAdminUserStatsmessage = "",
+    //
+    this.getUserInfo = null,
+    this.getUserInfoState = RequestState.loading,
+    this.getUserInfomessage = "",
   });
 
   AccountState copyWith({
@@ -94,6 +102,9 @@ class AccountState extends Equatable {
     List<UserStatEntity>? getAdminUserStats,
     RequestState? getAdminUserStatsState,
     String? getAdminUserStatsmessage,
+    User? getUserInfo,
+    RequestState? getUserInfoState,
+    String? getUserInfomessage,
   }) {
     return AccountState(
       getAccount: getAccount ?? this.getAccount,
@@ -129,6 +140,10 @@ class AccountState extends Equatable {
           getCommandsStatsState ?? this.getCommandsStatsState,
       getCommandsStatsmessage:
           getCommandsStatsmessage ?? this.getCommandsStatsmessage,
+
+      getUserInfo: getUserInfo ?? this.getUserInfo,
+      getUserInfoState: getUserInfoState ?? this.getUserInfoState,
+      getUserInfomessage: getUserInfomessage ?? this.getUserInfomessage,
     );
     //
   }
@@ -160,5 +175,9 @@ class AccountState extends Equatable {
         getCommandsStats,
         getCommandsStatsState,
         getCommandsStatsmessage,
+        //
+        getUserInfo,
+        getUserInfoState,
+        getUserInfomessage,
       ];
 }
