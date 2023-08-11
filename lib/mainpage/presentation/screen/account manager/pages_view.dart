@@ -148,13 +148,7 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                       },
                     ));
                 if (response.statusCode == 200) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          const AccountManager(), // Replace MainPage with the actual widget class for your MainPage
-                    ),
-                  );
+                  Navigator.of(context).pushReplacementNamed('/accountManager');
                 } else {
                   log("failed");
                 }

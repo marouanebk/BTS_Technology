@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 
@@ -69,7 +71,9 @@ class CommandModel extends Command {
           }).toList();
         }
         String? page;
+        String? livreur;
         if (data["page"] != null) page = data["page"]["name"];
+        if (data["livreur"] != null) livreur = data["livreur"]["name"];
         final commandModel = CommandModel(
           date: dateKey,
           id: data["_id"],
@@ -84,7 +88,8 @@ class CommandModel extends Command {
           phoneNumber: data["phoneNumber"],
           status: data["status"],
           articleList: variants,
-          livreur: data["livreur"],
+          livreur: livreur,
+          // livreur: data["livreur"]["name"],
         );
 
         // Add the CommandModel instance to the list

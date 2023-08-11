@@ -5,7 +5,7 @@ class UserModel extends User {
     String? id,
     String? fullname,
     required String username,
-    required String password,
+    String? password,
     String? role,
     List<String?>? pages,
     List<String?>? commandeTypes,

@@ -1,21 +1,36 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UsersInfoPageVIew extends StatefulWidget {
   final List<User> users;
-  const UsersInfoPageVIew({required this.users, super.key});
+  final List<FacePage> pages;
+
+  const UsersInfoPageVIew(
+      {required this.pages, required this.users, super.key});
 
   @override
   State<UsersInfoPageVIew> createState() => _UsersInfoPageVIewState();
 }
 
 class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
-  List<bool> isUserDropDownVisibleList = List.generate(15, (index) => false);
-  bool _isPasswordVisible = false; // Add this variable
+  List<bool> isAdminDropDownVisibleList = List.generate(45, (index) => false);
+  List<bool> isPageAdminDropDownVisibleList =
+      List.generate(45, (index) => false);
+  List<bool> isLogisticsDropDownVisibleList =
+      List.generate(45, (index) => false);
+  List<bool> isFinancierDropDownVisibleList =
+      List.generate(45, (index) => false);
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +49,12 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                 const Text(
                   "Admins de l'application ",
                   style: TextStyle(
-                    color: Color(
-                        0xFF9F9F9F), // Replace with your custom color if needed
-                    fontFamily: "Inter", // Replace with the desired font family
+                    color: Color(0xFF9F9F9F),
+                    fontFamily: "Inter",
                     fontSize: 16,
                     fontStyle: FontStyle.normal,
                     fontWeight: FontWeight.w400,
-                    height: 1.0, // Default line height is normal (1.0)
+                    height: 1.0,
                   ),
                   textAlign: TextAlign.right,
                 ),
@@ -187,21 +201,39 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
   }
 
   Widget userContainerView(User user, int index) {
+    List<bool> dropDownList;
+
+    switch (user.role) {
+      case "admin":
+        dropDownList = isAdminDropDownVisibleList;
+        break;
+      case "pageAdmin":
+        dropDownList = isPageAdminDropDownVisibleList;
+        break;
+      case "logistics":
+        dropDownList = isLogisticsDropDownVisibleList;
+        break;
+      case "financier":
+        dropDownList = isFinancierDropDownVisibleList;
+        break;
+      default:
+        dropDownList = [];
+        break;
+    }
+
     return GestureDetector(
       onTap: () {
         setState(() {
-          isUserDropDownVisibleList[index] = !isUserDropDownVisibleList[index];
+          dropDownList[index] = !dropDownList[index];
         });
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(
             top: const Radius.circular(5),
-            bottom: isUserDropDownVisibleList[index]
-                ? const Radius.circular(
-                    0) // Remove bottom-left and bottom-right radius
-                : const Radius.circular(
-                    5), // Keep radius when dropdown is not visible
+            bottom: dropDownList[index]
+                ? const Radius.circular(0)
+                : const Radius.circular(5),
           ),
           color: Colors.white,
           boxShadow: const [
@@ -308,14 +340,14 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
               ),
             ),
             //drop down
-            if (isUserDropDownVisibleList[index]) usersContainerDropDown(),
+            if (dropDownList[index]) usersContainerDropDown(user, context),
           ],
         ),
       ),
     );
   }
 
-  Widget usersContainerDropDown() {
+  Widget usersContainerDropDown(User user, context) {
     return Column(
       children: [
         const SizedBox(
@@ -334,7 +366,14 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
               ),
             ),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pushNamed(
+                    '/editUser',
+                    arguments: {'pages': widget.pages, 'user': user}).then((_) {
+                  BlocProvider.of<AccountBloc>(context)
+                      .add(GetAllAccountsEvent());
+                });
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.white),
               ),
@@ -361,7 +400,22 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
               borderRadius: BorderRadius.circular(5),
             ),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                final token = prefs.getString("token");
+                final response =
+                    await Dio().delete(ApiConstance.deleteUser(user.id!),
+                        options: Options(
+                          headers: {
+                            "Authorization": "Bearer $token",
+                          },
+                        ));
+                if (response.statusCode == 200) {
+                  Navigator.of(context).pushReplacementNamed('/accountManager');
+                } else {
+                  log("failed");
+                }
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.red),
               ),

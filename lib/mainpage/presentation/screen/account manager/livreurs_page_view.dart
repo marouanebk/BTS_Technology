@@ -1,5 +1,11 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LivreursInfoPageView extends StatefulWidget {
   final List<Livreur> livreurs;
@@ -33,7 +39,8 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
               shrinkWrap: true,
               itemCount: widget.livreurs.length,
               itemBuilder: (context, index) {
-                return livreurContainerView(widget.livreurs[index], index);
+                return livreurContainerView(
+                    widget.livreurs[index], index, context);
               },
             ),
             const SizedBox(
@@ -45,7 +52,7 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
     );
   }
 
-  Widget livreurContainerView(Livreur livreur, int index) {
+  Widget livreurContainerView(Livreur livreur, int index, context) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -84,14 +91,15 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
                 textAlign: TextAlign.left,
               ),
             ),
-            if (isUserDropDownVisibleList[index]) livreurContainerDropDown()
+            if (isUserDropDownVisibleList[index])
+              livreurContainerDropDown(context, livreur.id)
           ],
         ),
       ),
     );
   }
 
-  Widget livreurContainerDropDown() {
+  Widget livreurContainerDropDown(context, id) {
     return Column(
       children: [
         Padding(
@@ -103,7 +111,22 @@ class _LivreursInfoPageViewState extends State<LivreursInfoPageView> {
               borderRadius: BorderRadius.circular(5),
             ),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                final token = prefs.getString("token");
+                final response =
+                    await Dio().delete(ApiConstance.deleteLivreur(id),
+                        options: Options(
+                          headers: {
+                            "Authorization": "Bearer $token",
+                          },
+                        ));
+                if (response.statusCode == 200) {
+                  Navigator.of(context).pushReplacementNamed('/accountManager');
+                } else {
+                  log("failed");
+                }
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.red),
               ),

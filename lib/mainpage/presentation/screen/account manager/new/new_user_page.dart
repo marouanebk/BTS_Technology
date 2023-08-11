@@ -66,10 +66,24 @@ class _NewUserPageState extends State<NewUserPage> {
       hasEmptyFields = true;
     }
 
+    if (type == 'pageAdmin' && _selectedPages.isEmpty) {
+      hasEmptyFields = true;
+    }
+
+    // Check if user type is pageAdmin and at least one command type is selected
+    if (type == 'pageAdmin' && _selectedCommandeTypes.isEmpty) {
+      hasEmptyFields = true;
+    }
+
     if (hasEmptyFields) {
       setState(() {
         _formSubmitted = true;
       });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.transparent,
+        content: CustomStyledSnackBar(
+            message: "remplir les champs manquants ", success: false),
+      ));
       return;
     }
 
@@ -96,7 +110,7 @@ class _NewUserPageState extends State<NewUserPage> {
         fullname: fullnameController.text,
         role: type,
         pages: selectedPages,
-        commandeTypes: commandeTypes,
+        commandeTypes: selectedCommandeTypes,
       );
       BlocProvider.of<UserBloc>(context).add(
         CreateUserEvent(
@@ -179,10 +193,8 @@ class _NewUserPageState extends State<NewUserPage> {
                           error = state.message;
                         });
                       } else if (state is MessageUserBlocState) {
-                        Navigator.popUntil(
-                            context,
-                            (route) =>
-                                route.settings.name == '/accountManager');
+                        Navigator.of(context)
+                            .pushReplacementNamed('/accountManager');
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

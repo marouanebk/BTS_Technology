@@ -1,17 +1,23 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_event.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_state.dart';
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/logistiques/presentation/components/select_field_input.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/check_box.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditUserPage extends StatefulWidget {
   final User user;
@@ -41,9 +47,30 @@ class _EditUserPageState extends State<EditUserPage> {
     fullnameController.text = widget.user.fullname!;
     usernameController.text = widget.user.username;
 
-
     // Optionally, you can set initial values for other fields if needed
-    widget.user.role;
+    type = widget.user.role;
+
+    // _selectedPagesTemp = widget.user.pages ?? [];
+
+    // // Initialize the selected commande types based on the user's existing selections
+    // _selectedCommandeTypesTemp = widget.user.commandeTypes ?? [];
+    log(widget.user.pages.toString());
+    log(widget.user.commandeTypes.toString());
+
+    for (int i = 0; i < widget.pages.length; i++) {
+      if (widget.user.pages!.contains(widget.pages[i].id)) {
+        // Add the index of the page to the selected pages list
+        _selectedPages.add(i);
+      }
+    }
+    log(_selectedPages.toString());
+
+    for (int i = 0; i < commandeTypes.length; i++) {
+      if (widget.user.commandeTypes!.contains(commandeTypes[i])) {
+        // Add the index of the command type to the selected command types list
+        _selectedCommandeTypes.add(i);
+      }
+    }
   }
 
   @override
@@ -75,8 +102,16 @@ class _EditUserPageState extends State<EditUserPage> {
     // Check if any of the input fields are empty
     if (fullnameController.text.isEmpty ||
         usernameController.text.isEmpty ||
-        passwordController.text.isEmpty ||
         type == null) {
+      hasEmptyFields = true;
+    }
+
+    if (type == 'pageAdmin' && _selectedPages.isEmpty) {
+      hasEmptyFields = true;
+    }
+
+    // Check if user type is pageAdmin and at least one command type is selected
+    if (type == 'pageAdmin' && _selectedCommandeTypes.isEmpty) {
       hasEmptyFields = true;
     }
 
@@ -94,7 +129,11 @@ class _EditUserPageState extends State<EditUserPage> {
     _submitForm(context);
   }
 
-  void _submitForm(context) {
+  void _submitForm(context) async {
+    UserModel userModel;
+    String password = passwordController.text.isEmpty
+        ? widget.user.password!
+        : passwordController.text;
     if (type == "pageAdmin") {
       List<String> selectedPages = _selectedPages.map((index) {
         return widget.pages[index].id!;
@@ -104,33 +143,47 @@ class _EditUserPageState extends State<EditUserPage> {
       List<String> selectedCommandeTypes = _selectedCommandeTypes.map((index) {
         return commandeTypes[index];
       }).toList();
-      UserModel userModel = UserModel(
+      userModel = UserModel(
         username: usernameController.text,
-        password: passwordController.text,
+        password: password,
         fullname: fullnameController.text,
         role: type,
         pages: selectedPages,
         commandeTypes: commandeTypes,
       );
-      BlocProvider.of<UserBloc>(context).add(
-        CreateUserEvent(
-          user: userModel,
-        ),
-      );
     } else {
-      UserModel userModel = UserModel(
+      userModel = UserModel(
         username: usernameController.text,
-        password: passwordController.text,
+        password: password,
         fullname: fullnameController.text,
         role: type,
         pages: const [],
         commandeTypes: const [],
       );
-      BlocProvider.of<UserBloc>(context).add(
-        CreateUserEvent(
-          user: userModel,
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final response = await Dio().patch(ApiConstance.editUser(widget.user.id!),
+        data: userModel.toJson(),
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ));
+    log("response");
+    if (response.statusCode == 200) {
+      Navigator.of(context).pushReplacementNamed('/accountManager');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content:
+              CustomStyledSnackBar(message: "Compte Modifier", success: true),
         ),
       );
+    } else {
+      log("failed");
     }
   }
 
@@ -179,34 +232,12 @@ class _EditUserPageState extends State<EditUserPage> {
                   buildInputField(
                     label: "Mot de passe",
                     hintText: "Entrez le mot de passe du compte",
-                    errorText: "Vous devez entrer un mot de passe",
+                    errorText: "",
                     controller: passwordController,
                     formSubmitted: _formSubmitted,
                   ),
                   const SizedBox(
                     height: 30,
-                  ),
-                  BlocListener<UserBloc, UserBlocState>(
-                    listener: (context, state) {
-                      if (state is ErrorUserBlocState) {
-                        setState(() {
-                          error = state.message;
-                        });
-                      } else if (state is MessageUserBlocState) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => const AccountManager()),
-                            (Route<dynamic> route) => false);
-                      }
-                    },
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        error,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
                   ),
                   if (type == 'pageAdmin')
                     Column(
@@ -344,7 +375,7 @@ class _EditUserPageState extends State<EditUserPage> {
                     color: Colors.white,
                   )
                 : const Text(
-                    "Ajouter le compte",
+                    "Enregister le compte",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,

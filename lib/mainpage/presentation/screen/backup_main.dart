@@ -43,16 +43,6 @@ class _MainPageState extends State<MainPage> {
     12: 'déc',
   };
 
-  ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(() {
-      setState(() {}); // Trigger a rebuild when scrolling
-    });
-  }
-
   @override
   void dispose() {
     controller.dispose();
@@ -73,154 +63,134 @@ class _MainPageState extends State<MainPage> {
               builder: (context, state) {
                 return Scaffold(
                   backgroundColor: Colors.white,
-                  body: NestedScrollView(
-                    headerSliverBuilder: (context, innerBoxIsScrolled) {
-                      return [
-                        SliverOverlapAbsorber(
-                          handle:
-                              NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                  context),
-                          sliver: SliverPersistentHeader(
-                            delegate: _TopContainerDelegate(),
-                            pinned: true,
-                            floating: true,
-                          ),
-                        ),
-                      ];
-                    },
-                    body: Builder(builder: (context) {
-                      return CustomScrollView(
-                        // controller: _scrollController,
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Column(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    height: 3,
-                                    width: 43,
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(22),
-                                      ),
-                                    ),
+                  body: CustomScrollView(
+                    slivers: [
+                      SliverAppBar(
+                        expandedHeight: 170, // Adjust this value as needed
+                        floating: false,
+                        pinned: true,
+                        flexibleSpace: _topContainer(context),
+                      ),
+                      SliverList(
+                        delegate: SliverChildListDelegate(
+                          [
+                            Center(
+                              child: Container(
+                                height: 3,
+                                width: 43,
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                decoration: const BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(22),
                                   ),
                                 ),
-                                if (state.getCommandsStatsState ==
-                                    RequestState.loading)
-                                  const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                if (state.getCommandsStatsState ==
-                                    RequestState.error)
-                                  Text(
-                                    state.getAdminUserStatsmessage,
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
-                                if (state.getCommandsStatsState ==
-                                    RequestState.loaded) ...[
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 10.0),
-                                      child: Row(
-                                        children: [
-                                          for (var i = 0;
-                                              i < state.getCommandsStats.length;
-                                              i++) ...[
-                                            dateFilter(
-                                                i,
-                                                frenchMonthAbbreviations[state
-                                                    .getCommandsStats[i]
-                                                    .month]),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                              ),
+                            ),
+                            if (state.getCommandsStatsState ==
+                                RequestState.loading)
+                              const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            if (state.getCommandsStatsState ==
+                                RequestState.error)
+                              Text(
+                                state.getAdminUserStatsmessage,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            if (state.getCommandsStatsState ==
+                                RequestState.loaded) ...[
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left : 10.0),
+                                  child: Row(
                                     children: [
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      SizedBox(
-                                        height: 330,
-                                        child: PageView(
-                                          controller: controller,
-                                          onPageChanged: (index) {
-                                            log("page ${index + 1} ");
-                                            pageindex = index;
-                                            setState(() {
-                                              index;
-                                            });
-                                          },
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          children: [
-                                            for (var i = 0;
-                                                i <
-                                                    state.getCommandsStats
-                                                        .length;
-                                                i++) ...[
-                                              _commandsStats(
-                                                  state.getCommandsStats[i]),
-                                              // const SizedBox(height: 24),
-                                            ],
-                                          ],
+                                      for (var i = 0;
+                                          i < state.getCommandsStats.length;
+                                          i++) ...[
+                                        dateFilter(
+                                            i,
+                                            frenchMonthAbbreviations[
+                                                state.getCommandsStats[i].month]),
+                                        const SizedBox(
+                                          width: 10,
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      if (state.getAdminUserStatsState ==
-                                          RequestState.loading)
-                                        const Center(
-                                          child: CircularProgressIndicator(
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      if (state.getAdminUserStatsState ==
-                                          RequestState.error)
-                                        Text(
-                                          state.getAdminUserStatsmessage,
-                                          style: const TextStyle(
-                                              color: Colors.red),
-                                        ),
-                                      if (state.getAdminUserStatsState ==
-                                          RequestState.loaded)
-                                        usersList(state.getAdminUserStats),
-                                      // usersList(),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      pagesList(),
-                                      const SizedBox(
-                                        height: 50,
-                                      ),
+                                      ],
                                     ],
                                   ),
                                 ),
-                              ],
+                              ),
+                            ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  SizedBox(
+                                    height: 330,
+                                    child: PageView(
+                                      controller: controller,
+                                      onPageChanged: (index) {
+                                        log("page ${index + 1} ");
+                                        pageindex = index;
+                                        setState(() {
+                                          index;
+                                        });
+                                      },
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      children: [
+                                        for (var i = 0;
+                                            i < state.getCommandsStats.length;
+                                            i++) ...[
+                                          _commandsStats(
+                                              state.getCommandsStats[i]),
+                                          // const SizedBox(height: 24),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  if (state.getAdminUserStatsState ==
+                                      RequestState.loading)
+                                    const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  if (state.getAdminUserStatsState ==
+                                      RequestState.error)
+                                    Text(
+                                      state.getAdminUserStatsmessage,
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                  if (state.getAdminUserStatsState ==
+                                      RequestState.loaded)
+                                    usersList(state.getAdminUserStats),
+                                  // usersList(),
+                                  const SizedBox(
+                                    height: 30,
+                                  ),
+                                  pagesList(),
+                                  const SizedBox(
+                                    height: 50,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    }),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -542,6 +512,7 @@ class _MainPageState extends State<MainPage> {
               for (var i = 0; i < command.status.length; i++)
                 _progressItem(command.status[i].name, command.status[i].count,
                     command.status[i].percentage.toInt()),
+  
             ],
           ),
         ),
@@ -649,18 +620,7 @@ class _TopContainerDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-Widget _topContainer(
-  context,
-) {
-  // double maxScrollExtent = _scrollController.position.maxScrollExtent;
-  // double scrollOffset = _scrollController.offset;
-
-  // double opacity = 1.0;
-  // if (scrollOffset > 0) {
-  //   opacity = 1.0 - (scrollOffset / maxScrollExtent);
-  //   opacity = opacity.clamp(0.0, 1.0);
-  // }
-
+Widget _topContainer(context) {
   return Container(
     width: MediaQuery.of(context).size.width,
     child: Stack(
@@ -757,8 +717,8 @@ Widget _topContainer(
                             color: Colors.white,
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 4),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0 , vertical: 4),
                             child: Text(" @${state.getUserInfo!.username}"),
                           ),
                         ),

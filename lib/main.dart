@@ -1,3 +1,4 @@
+import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
@@ -6,6 +7,7 @@ import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/facture/page/pdf_page.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/edit_use_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_livreur_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_user_page.dart';
@@ -49,6 +51,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: title,
       // theme: ThemeData(primarySwatch: Colors.deepOrange),
+      theme: ThemeData(
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Colors.transparent,
+          contentTextStyle: TextStyle(
+            color: Colors.black,
+            fontFamily: "Inter",
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            height: 1.0,
+          ),
+        ),
+      ),
       initialRoute: (isLoggedIn == 1)
           ? ((type == "admin")
               ? '/pageAdministrator'
@@ -73,6 +87,13 @@ class MyApp extends StatelessWidget {
               as Map<String, dynamic>;
           List<FacePage> pages = args['pages'];
           return NewUserPage(pages: pages);
+        },
+        '/editUser': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          User user = args['user'];
+          List<FacePage> pages = args['pages'];
+          return EditUserPage(user: user, pages: pages);
         },
       },
     );

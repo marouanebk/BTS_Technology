@@ -5,9 +5,6 @@ import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/ac
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/livreurs_page_view.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_livreur_page.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_user_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/pages_view.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/user_page_view.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +71,8 @@ class _AccountManagerState extends State<AccountManager> {
                             ));
                           } else if (state.getAccountState ==
                               RequestState.loaded) {
-                            return UsersInfoPageVIew(users: state.getAccount);
+                            return UsersInfoPageVIew(
+                                users: state.getAccount, pages: state.getPages);
                           } else if (state.getAccountState ==
                               RequestState.error) {
                             return Container();
@@ -129,16 +127,26 @@ class _AccountManagerState extends State<AccountManager> {
               onItemSelected: (value) {
                 if (value == 'Ajouter une page') {
                   Navigator.of(context, rootNavigator: true)
-                      .pushNamed('/createPage');
+                      .pushNamed('/createPage')
+                      .then((_) {
+                    BlocProvider.of<AccountBloc>(context).add(GetPagesEvent());
+                  });
                 } else if (value == 'Ajouter un utilisateur') {
                   final accountBloc = BlocProvider.of<AccountBloc>(context);
                   final state = accountBloc.state;
                   Navigator.of(context, rootNavigator: true).pushNamed(
                       '/createUser',
-                      arguments: {'pages': state.getPages});
+                      arguments: {'pages': state.getPages}).then((_) {
+                    BlocProvider.of<AccountBloc>(context)
+                        .add(GetAllAccountsEvent());
+                  });
                 } else if (value == 'Ajouter un livreur') {
                   Navigator.of(context, rootNavigator: true)
-                      .pushNamed('/createLivreur');
+                      .pushNamed('/createLivreur')
+                      .then((_) {
+                    BlocProvider.of<AccountBloc>(context)
+                        .add(GetLivreursEvent());
+                  });
                 }
 
                 setState(() {

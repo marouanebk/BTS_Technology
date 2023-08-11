@@ -31,7 +31,7 @@ class _PrixSoutraitancePageState extends State<PrixSoutraitancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(titleText: "ajouter des charges"),
+      appBar: const CustomAppBar(titleText: "Ajouter le prix soutraitance"),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

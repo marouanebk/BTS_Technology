@@ -7,7 +7,7 @@ class User extends Equatable {
 
   final List<String?>? commandeTypes;
   final String username;
-  final String password;
+  final String? password;
   final String? role;
 
   const User({
@@ -17,7 +17,7 @@ class User extends Equatable {
     this.pages,
     this.commandeTypes,
     required this.username,
-    required this.password,
+     this.password,
   });
 
   @override

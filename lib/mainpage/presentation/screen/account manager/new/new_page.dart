@@ -86,9 +86,10 @@ class _NewPageAccountState extends State<NewPageAccount> {
                   ));
               log("response");
               if (response.statusCode == 200) {
+                // Navigator.popUntil(context,
+                //     (route) => route.settings.name == '/accountManager');
 
-                Navigator.popUntil(context,
-                    (route) => route.settings.name == '/accountManager');
+                Navigator.of(context).pushReplacementNamed('/accountManager');
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

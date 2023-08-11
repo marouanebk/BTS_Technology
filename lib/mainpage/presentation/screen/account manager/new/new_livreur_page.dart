@@ -45,7 +45,7 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
                 controller: livreurNameController,
                 formSubmitted: _formSubmitted,
               ),
-              registerButton(context ),
+              registerButton(context),
               const SizedBox(
                 height: 30,
               ),
@@ -56,7 +56,7 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
     );
   }
 
-  Widget registerButton(context ) {
+  Widget registerButton(context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -85,8 +85,7 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
               log("response");
               if (response.statusCode == 200) {
                 // ignore: use_build_context_synchronously
-                Navigator.popUntil(context,
-                    (route) => route.settings.name == '/accountManager');
+                Navigator.of(context).pushReplacementNamed('/accountManager');
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

@@ -12,6 +12,7 @@ import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/orders/presentation/screen/edit_order.dart';
 import 'package:bts_technologie/orders/presentation/screen/new_factor.dart';
 import 'package:bts_technologie/orders/presentation/screen/prix_soutraitance.dart';
+import 'package:bts_technologie/orders/presentation/screen/select_livreur.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +33,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   void initState() {
     super.initState();
     type = widget.command.status;
+    log(widget.command.toString());
     // type = "Pas confirmé";
   }
 
@@ -95,50 +97,61 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   }
 
   Future<void> _updateStatus(String? newStatus, context) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString("token");
-      final response = await Dio().patch(
-        ApiConstance.updateCommandStatus(
-            widget.command.id!), // Replace with your API URL
-        data: {'status': newStatus},
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
+    if (newStatus == "Expidié") {
+      Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (_) => SelectLivreur(
+            id: widget.command.id!,
+            role: widget.role,
+          ),
         ),
       );
-      if (response.statusCode == 200) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) {
-            return OrdersPage(role: widget.role);
-            // if (widget.role == "financier") {
-            //   return const FinancesBaseScreen(initialIndex: 0);
-            // } else if (widget.role == "pageAdmin") {
-            //   return const AdminPageBaseScreen(initialIndex: 0);
-            // } else if (widget.role == "logistics") {
-            //   return const LogistiquesBaseScreen(initialIndex: 0);
-            // } else {
-            //   return const PageAdministratorBaseScreen(initialIndex: 1);
-            // }
-          }),
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.transparent,
-            content:
-                CustomStyledSnackBar(message: "Status Modifier", success: true),
+    } else {
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString("token");
+        final response = await Dio().patch(
+          ApiConstance.updateCommandStatus(
+              widget.command.id!), // Replace with your API URL
+          data: {'status': newStatus},
+          options: Options(
+            headers: {'Authorization': 'Bearer $token'},
           ),
         );
-      } else {
-        SnackBar(
-          backgroundColor: Colors.transparent,
-          content: CustomStyledSnackBar(
-              message: response.data['err'], success: false),
-        );
+        if (response.statusCode == 200) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return OrdersPage(role: widget.role);
+              // if (widget.role == "financier") {
+              //   return const FinancesBaseScreen(initialIndex: 0);
+              // } else if (widget.role == "pageAdmin") {
+              //   return const AdminPageBaseScreen(initialIndex: 0);
+              // } else if (widget.role == "logistics") {
+              //   return const LogistiquesBaseScreen(initialIndex: 0);
+              // } else {
+              //   return const PageAdministratorBaseScreen(initialIndex: 1);
+              // }
+            }),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.transparent,
+              content: CustomStyledSnackBar(
+                  message: "Status Modifier", success: true),
+            ),
+          );
+        } else {
+          SnackBar(
+            backgroundColor: Colors.transparent,
+            content: CustomStyledSnackBar(
+                message: response.data['err'], success: false),
+          );
+        }
+      } catch (error) {
+        log('Error updating status: $error');
       }
-    } catch (error) {
-      log('Error updating status: $error');
     }
   }
 
@@ -270,10 +283,11 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 textAlign: TextAlign.center,
               ),
             ),
-            const Center(
+            if( widget.command.livreur != null)
+             Center(
               child: Text(
-                "Livré par Yalidine",
-                style: TextStyle(
+                "Livré par ${widget.command.livreur}",
+                style: const TextStyle(
                   color: Color(0xFF9F9F9F),
                   fontFamily: "Inter",
                   fontSize: 16,
@@ -297,6 +311,11 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     int totalPrice = command.articleList.fold(0, (sum, article) {
       return sum + (article!.quantity * article.unityPrice.toInt());
     });
+
+    String totalPriceMessage = command.sommePaid == 0
+        ? totalPrice.toString()
+        : "$totalPrice - ${command.sommePaid.toString()} ";
+
     String st;
     if (command.prixSoutraitant == null) {
       st = "non définie";
@@ -364,7 +383,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 ),
               ),
               TextSpan(
-                text: totalPriceText,
+                text: totalPriceMessage,
                 style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF9F9F9F),

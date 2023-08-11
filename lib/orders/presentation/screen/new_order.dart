@@ -14,12 +14,14 @@ import 'package:bts_technologie/logistiques/presentation/controller/article_bloc
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_state.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_event.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_state.dart';
-import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,6 +48,15 @@ class _AddOrderPageState extends State<AddOrderPage> {
 
   List<ArticleItem> variants = [];
   int count = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.role == "pageAdmin") {
+      commandTypesEnum = []; // Initialize it to an empty list
+      selectedPage = null; // Initialize it to null
+    }
+  }
 
   @override
   void dispose() {
@@ -151,9 +162,34 @@ class _AddOrderPageState extends State<AddOrderPage> {
         BlocProvider(
           create: (context) => sl<CommandBloc>(),
         ),
+        BlocProvider(
+          create: (context) => sl<AccountBloc>()..add(GetUserInfoEvent()),
+        ),
       ],
       child: MultiBlocListener(
         listeners: [
+          BlocListener<AccountBloc, AccountState>(
+            listener: (context, state) {
+              if (state.getUserInfoState == RequestState.loaded) {
+                if (widget.role == "pageAdmin") {
+                  // Retrieve userInfo.pages and userInfo.commandTypes
+                  log(state.getUserInfo.toString());
+                  final admin_pages = state.getUserInfo!.pages;
+                  final admin_commandTypes = state.getUserInfo!.commandeTypes;
+
+                  log(admin_pages.toString() +
+                      " " +
+                      admin_commandTypes.toString());
+
+                  // Update your page and commandType lists accordingly
+                  // For example:
+                  // commandTypesEnum = commandTypes.map((type) {
+                  //   return {"label": type, "value": type};
+                  // }).toList();
+                }
+              }
+            },
+          ),
           BlocListener<ArticleBloc, ArticleState>(
             listener: (context, state) {
               if (state.getArticlesState == RequestState.loaded) {
@@ -258,19 +294,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
                         isNumeric: false,
                         isMoney: false,
                       ),
-                      // if (widget.role == "admin" ||
-                      //     widget.role == "financier") ...[
-                      //   const SizedBox(height: 15),
-                      //   buildInputField(
-                      //     label: "Prix SousTraiant",
-                      //     hintText: "Entrer le prix de soutraitant",
-                      //     errorText: "",
-                      //     controller: prixSoutraitantController,
-                      //     formSubmitted: _formSubmitted,
-                      //     isNumeric: true,
-                      //     isMoney: true,
-                      //   ),
-                      // ],
                       const SizedBox(height: 15),
                       if (widget.role == "pageAdmin") ...[
                         buildSelectField(
