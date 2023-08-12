@@ -253,6 +253,7 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
               padding: const EdgeInsets.only(left: 15, top: 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   RichText(
                     overflow: TextOverflow.ellipsis,
@@ -283,59 +284,8 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: "mot de passe: ",
-                          style: TextStyle(
-                            color: Color(0xFF9F9F9F),
-                            fontFamily: "Inter",
-                            fontSize: 16,
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w400,
-                            height: 1.0,
-                          ),
-                        ),
-                        TextSpan(
-                          text:
-                              _isPasswordVisible ? user.password : " ********",
-                          style: const TextStyle(
-                            color: Color(0xFF9F9F9F),
-                            fontFamily: "Inter",
-                            fontSize: 16,
-                            fontStyle: FontStyle.normal,
-                            fontWeight: FontWeight.w400,
-                            height: 1.0,
-                          ),
-                        ),
-                        const WidgetSpan(
-                            child: SizedBox(
-                          width: 4,
-                        )),
-                        WidgetSpan(
-                          child: InkWell(
-                            child: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: const Color(0xFF9F9F9F),
-                              size: 16,
-                            ),
-                            onTap: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 10,),
+           
                 ],
               ),
             ),

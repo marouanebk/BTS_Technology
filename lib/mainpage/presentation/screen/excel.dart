@@ -236,9 +236,45 @@ class _ExcelFilesState extends State<ExcelFiles> {
   Future<void> generateCommandsExcel() async {
     final Workbook workbook = Workbook();
     final Worksheet sheet = workbook.worksheets[0];
-    sheet.getRangeByName('A1').setText('Date');
-    sheet.getRangeByName('B1').setText('Command Number');
-    sheet.getRangeByName('C1').setText('Note Client');
+        sheet.getRangeByName('A1').columnWidth = 20;
+    sheet.getRangeByName('B1').columnWidth = 20;
+    sheet.getRangeByName('C1').columnWidth = 20;
+    sheet.getRangeByName('D1').columnWidth = 20;
+    sheet.getRangeByName('E1').columnWidth = 20;
+    sheet.getRangeByName('F1').columnWidth = 20;
+    sheet.getRangeByName('G1').columnWidth = 20;
+    sheet.getRangeByName('H1').columnWidth = 20;
+    sheet.getRangeByName('I1').columnWidth = 20;
+
+    sheet.getRangeByName('J1').columnWidth = 20;
+    sheet.getRangeByName('K1').columnWidth = 20;
+    sheet.getRangeByName('L1').columnWidth = 20;
+    sheet.getRangeByName('M1').columnWidth = 20;
+    sheet.getRangeByName('N1').columnWidth = 20;
+    sheet.getRangeByName('O1').columnWidth = 20;
+    sheet.getRangeByName('P1').columnWidth = 20;
+    sheet.getRangeByName('Q1').columnWidth = 20;
+    sheet.getRangeByName('R1').columnWidth = 20;
+
+    sheet.getRangeByName('A1').setText('Commande');
+    sheet.getRangeByName('B1').setText('Etat');
+    sheet.getRangeByName('C1').setText('Nom Client ');
+    sheet.getRangeByName('D1').setText('Adress ');
+    sheet.getRangeByName('E1').setText('Numero de telephone  ');
+    sheet.getRangeByName('F1').setText('Prix Total ');
+    sheet.getRangeByName('G1').setText('Somme Verse ');
+    sheet.getRangeByName('H1').setText('Prix Soust raitance  ');
+    sheet.getRangeByName('I1').setText('note client  ');
+    sheet.getRangeByName('J1').setText('Saisi par  ');
+    sheet.getRangeByName('K1').setText('Livre avec  ');
+    sheet.getRangeByName('L1').setText('Historique de modifications ');
+    sheet.getRangeByName('M1').setText('Article ');
+    sheet.getRangeByName('N1').setText('Couleur ');
+    sheet.getRangeByName('O1').setText('taille ');
+    sheet.getRangeByName('P1').setText('famille ');
+    sheet.getRangeByName('Q1').setText('type ');
+    sheet.getRangeByName('R1').setText('nombre ');
+
     // ... Add more headers as needed
 
     // Populate the Excel sheet with command data
