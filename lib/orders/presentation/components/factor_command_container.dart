@@ -245,6 +245,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
               height: 10,
             ),
             //add the generate factor
+            if (widget.role == 'admin'  || widget.role =='logistics')
             containerButton(
                 "Générer une facture",
                 NewFactorPage(

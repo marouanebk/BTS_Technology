@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 
@@ -6,18 +7,21 @@ class ArticleModel extends Article {
     String? id,
     String? name,
     String? unity,
+    File? photo,
     List<Variant?> variants = const [],
     required num buyingPrice,
     required num grosPrice,
     required int alertQuantity,
   }) : super(
-            id: id,
-            name: name,
-            unity: unity,
-            buyingPrice: buyingPrice,
-            grosPrice: grosPrice,
-            alertQuantity: alertQuantity,
-            variants: variants);
+          id: id,
+          name: name,
+          unity: unity,
+          photo: photo,
+          buyingPrice: buyingPrice,
+          grosPrice: grosPrice,
+          alertQuantity: alertQuantity,
+          variants: variants,
+        );
 
   factory ArticleModel.fromJson(Map<String, dynamic> json) {
     var variantList = json['variants'] as List<dynamic>?;
@@ -48,17 +52,18 @@ class ArticleModel extends Article {
   }
   Map<String, dynamic> toJson() {
     List<Map<String, dynamic>> variantList = [];
-      variantList = variants.map((variant) {
-        return {
-          'colour': variant!.colour,
-          'colourCode': variant.colourCode,
-          'taille': variant.taille,
-          'quantity': variant.quantity,
-          'family': variant.family,
-        };
-      }).toList();
+    variantList = variants.map((variant) {
+      return {
+        'colour': variant!.colour,
+        'colourCode': variant.colourCode,
+        'taille': variant.taille,
+        'quantity': variant.quantity,
+        'family': variant.family,
+      };
+    }).toList();
 
     return {
+      // "photo": photo,
       "name": name,
       "Unity": unity,
       "buyingPrice": buyingPrice,

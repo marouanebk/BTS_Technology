@@ -17,6 +17,7 @@ class CommandModel extends Command {
     num? prixSoutraitant,
     String? page,
     String? livreur,
+    String? createdAt,
     required String nomClient,
     required String adresse,
     required num phoneNumber,
@@ -40,6 +41,7 @@ class CommandModel extends Command {
           date: date,
           articleList: articleList,
           livreur: livreur,
+          createdAt: createdAt
         );
 
   static List<CommandModel> fromJsonList(Map<String, dynamic> json) {
@@ -100,22 +102,47 @@ class CommandModel extends Command {
     return commandModels;
   }
 
-  // factory CommandModel.fromJson(Map<String, dynamic> json) {
-  //   return CommandModel(
-  //     id: json["_id"],
-  //     comNumber: json["comNumber"],
-  //     noteClient: json["noteClient"],
-  //     prixSoutraitant: json["prixSoutraitant"],
-  //     // articles: json["articles"],
-  //     sommePaid: json["sommePaid"],
-  //     user: json["user"],
-  //     nomClient: json["nomClient"],
-  //     adresse: json["adresse"],
-  //     page: json["page"]["name"],
-  //     phoneNumber: json["phoneNumber"],
-  //     status: json["status"],
-  //   );
-  // }
+  factory CommandModel.fromJson(Map<String, dynamic> json) {
+    var articleList = json['articles'] as List<dynamic>?;
+
+    List<CommandArticle> variants = [];
+    if (articleList != null) {
+      variants = articleList.map((variantJson) {
+        return CommandArticle(
+          // articleId: variantJson['_id'],
+          articleId: variantJson['articleId'],
+
+          variantId: variantJson['variantID'],
+          commandType: variantJson['commandType'],
+          unityPrice: variantJson['unityPrice'],
+          colour: variantJson['colour'],
+          taille: variantJson['taille'],
+          quantity: variantJson['quantity'],
+          family: variantJson['family'],
+          articleName: variantJson['articleName'],
+        );
+      }).toList();
+    }
+    String? page;
+    String? livreur;
+
+    return CommandModel(
+      id: json["_id"],
+      comNumber: json["comNumber"],
+      noteClient: json["noteClient"],
+      sommePaid: json["sommePaid"],
+      prixSoutraitant: json["sousTraitance"],
+      user: json["user"]["username"],
+      nomClient: json["nomClient"],
+      adresse: json["adresse"],
+      page: page,
+      phoneNumber: json["phoneNumber"],
+      status: json["status"],
+      articleList: variants,
+      livreur: livreur,
+      createdAt: json["createdAt"],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     List<Map<String, dynamic>> articles = [];

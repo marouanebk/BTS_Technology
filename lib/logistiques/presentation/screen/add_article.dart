@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
@@ -9,6 +11,7 @@ import 'package:bts_technologie/logistiques/presentation/components/select_field
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_state.dart';
+import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +35,7 @@ class _NewArticleState extends State<NewArticle> {
 
   List<VariantItem> variants = [];
   int count = 1;
+  File? selectedImage;
 
   @override
   void dispose() {
@@ -59,7 +63,6 @@ class _NewArticleState extends State<NewArticle> {
       hasEmptyFields = true;
     }
 
-    // Check if any variant is added and if any of the variant fields are empty
     if (variants.isEmpty) {
       hasEmptyFields = true;
     } else {
@@ -75,7 +78,6 @@ class _NewArticleState extends State<NewArticle> {
       }
     }
 
-    // If there are empty fields, do not proceed with the submission
     if (hasEmptyFields) {
       setState(() {
         _formSubmitted = true;
@@ -91,23 +93,45 @@ class _NewArticleState extends State<NewArticle> {
   }
 
   void _submitForm(context) {
-    final articleModel = ArticleModel(
-      name: nomArticleController.text,
-      unity: uniteController.text,
-      buyingPrice: double.parse(prixAchatController.text),
-      grosPrice: double.parse(prixGrosController.text),
-      alertQuantity: int.parse(quanAlertController.text),
-      variants: variants.map((variant) {
-        return Variant(
-          colour: variant.nomCouleurController.text,
-          colourCode: variant.codeCouleurController.text,
-          taille: variant.tailleController.text,
-          quantity: int.parse(variant.quantiteController
-              .text), // Note: this should be a String, not int.parse
-          family: variant.family!,
-        );
-      }).toList(),
-    );
+    ArticleModel articleModel;
+    if (selectedImage != null) {
+      articleModel = ArticleModel(
+        name: nomArticleController.text,
+        unity: uniteController.text,
+        photo: selectedImage,
+        buyingPrice: double.parse(prixAchatController.text),
+        grosPrice: double.parse(prixGrosController.text),
+        alertQuantity: int.parse(quanAlertController.text),
+        variants: variants.map((variant) {
+          return Variant(
+            colour: variant.nomCouleurController.text,
+            colourCode: variant.codeCouleurController.text,
+            taille: variant.tailleController.text,
+            quantity: int.parse(variant.quantiteController
+                .text), // Note: this should be a String, not int.parse
+            family: variant.family!,
+          );
+        }).toList(),
+      );
+    } else {
+      articleModel = ArticleModel(
+          name: nomArticleController.text,
+          unity: uniteController.text,
+          // photo: selectedImage,
+          buyingPrice: double.parse(prixAchatController.text),
+          grosPrice: double.parse(prixGrosController.text),
+          alertQuantity: int.parse(quanAlertController.text),
+          variants: variants.map((variant) {
+            return Variant(
+              colour: variant.nomCouleurController.text,
+              colourCode: variant.codeCouleurController.text,
+              taille: variant.tailleController.text,
+              quantity: int.parse(variant.quantiteController
+                  .text), // Note: this should be a String, not int.parse
+              family: variant.family!,
+            );
+          }).toList());
+    }
 
     BlocProvider.of<ArticleBloc>(context).add(
       CreateArticleEvent(
@@ -141,35 +165,17 @@ class _NewArticleState extends State<NewArticle> {
               ),
             );
           } else if (state.createArticleState == RequestState.error) {
-            SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.transparent,
               content: CustomStyledSnackBar(
                   message: state.createArticleMessage, success: true),
-            );
+            ));
           }
         },
         child: Builder(builder: (context) {
           return Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              centerTitle: true, // Align the title to the center
-
-              title: const Text(
-                "Ajouter un article",
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black),
-              ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              // backgroundColor:
-              //     Colors.blue.withOpacity(0.3), //You can make this transparent
-              elevation: 0.0,
-            ),
+            appBar: const CustomAppBar(titleText: "Ajouter un article"),
             body: Stack(
               children: [
                 SingleChildScrollView(
@@ -199,6 +205,7 @@ class _NewArticleState extends State<NewArticle> {
                           errorText: "Vous devez entrer le prix d'achat",
                           controller: prixAchatController,
                           isNumeric: true,
+                          isMoney: true,
                           formSubmitted: _formSubmitted),
                       const SizedBox(height: 20),
                       buildInputField(
@@ -208,6 +215,7 @@ class _NewArticleState extends State<NewArticle> {
                               "Vous devez entrer le prix de vente en gros",
                           controller: prixGrosController,
                           isNumeric: true,
+                          isMoney: true,
                           formSubmitted: _formSubmitted),
                       const SizedBox(height: 20),
                       buildInputField(
@@ -218,7 +226,10 @@ class _NewArticleState extends State<NewArticle> {
                           isNumeric: true,
                           formSubmitted: _formSubmitted),
                       const SizedBox(height: 20),
-                      _imagePickerContainer(),
+                      _selectedImage(context),
+                      const SizedBox(height: 20),
+
+                      _imagePickerContainer(context),
                       const SizedBox(
                         height: 30,
                       ),
@@ -275,6 +286,17 @@ class _NewArticleState extends State<NewArticle> {
     );
   }
 
+  Widget _selectedImage(context) {
+    return selectedImage != null
+        ? Image.file(
+            selectedImage!,
+            width: double.infinity,
+            height: 150,
+            fit: BoxFit.cover,
+          )
+        : Container();
+  }
+
   Widget _variantContainerList() {
     return ListView.builder(
       shrinkWrap: true,
@@ -316,7 +338,7 @@ class _NewArticleState extends State<NewArticle> {
     );
   }
 
-  Widget _imagePickerContainer() {
+  Widget _imagePickerContainer(context) {
     return InkWell(
       onTap: () => _selectImage(context),
       child: Container(
@@ -451,7 +473,9 @@ class _NewArticleState extends State<NewArticle> {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      // Perform operations with the selected image.
+      setState(() {
+        selectedImage = File(image.path);
+      });
     }
   }
 }

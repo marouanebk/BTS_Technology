@@ -42,9 +42,47 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
   Future<Unit> createCommand(CommandModel command) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
+    var formData = FormData();
+    formData.fields.addAll([
+      MapEntry('prixSoutraitant', command.prixSoutraitant.toString()),
+      MapEntry('nomClient', command.nomClient),
+      MapEntry('adresse', command.adresse),
+      MapEntry('phoneNumber', command.phoneNumber.toString()),
+      MapEntry('sommePaid', command.sommePaid.toString()),
+    ]);
+
+    if (command.noteClient != null) {
+      formData.fields.add(MapEntry('noteClient', command.noteClient!));
+    }
+    if (command.page != null) {
+      formData.fields.add(MapEntry('page', command.page!));
+    }
+
+    // Add the article data to the FormData object
+    for (int i = 0; i < command.articleList.length; i++) {
+      final article = command.articleList[i];
+      formData.fields.addAll([
+        MapEntry('articles[$i][articleId]', article!.articleId!),
+
+        MapEntry('articles[$i][commandType]', article.commandType!),
+        MapEntry('articles[$i][variantId]', article.variantId),
+        MapEntry('articles[$i][quantity]', article.quantity.toString()),
+        MapEntry('articles[$i][unityPrice]', article.unityPrice.toString()),
+      ]);
+
+      // Add the photo files to the FormData object
+      if (article.files != null) {
+        for (int j = 0; j < article.files!.length; j++) {
+          final photo = await MultipartFile.fromFile(article.files![j].path);
+          formData.files.add(MapEntry('articles[$i][files][$j]', photo));
+        }
+      }
+    }
+
     final response = await Dio().post(
       ApiConstance.createCommandes,
-      data: command.toJson(),
+      // data: command.toJson(),
+      data: formData,
       options: Options(
         followRedirects: false,
         headers: {

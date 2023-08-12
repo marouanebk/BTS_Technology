@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/error/failure.dart';
 import 'package:bts_technologie/logistiques/data/model/article_model.dart';
@@ -13,15 +15,28 @@ class ArticleRepository implements BaseArticleRepository {
 
   @override
   Future<Either<Failure, Unit>> addArticle(Article article) async {
-    final ArticleModel articleModel = ArticleModel(
-      buyingPrice: article.buyingPrice,
-      grosPrice: article.grosPrice,
-      alertQuantity: article.alertQuantity,
-      name: article.name,
-      unity: article.unity,
-      variants: article.variants
-    );
-    
+    ArticleModel articleModel;
+    log("in data source for");
+    print(article.photo);
+    if (article.photo != null) {
+      articleModel = ArticleModel(
+          buyingPrice: article.buyingPrice,
+          grosPrice: article.grosPrice,
+          alertQuantity: article.alertQuantity,
+          name: article.name,
+          photo: article.photo,
+          unity: article.unity,
+          variants: article.variants);
+    } else {
+      articleModel = ArticleModel(
+        buyingPrice: article.buyingPrice,
+        grosPrice: article.grosPrice,
+        alertQuantity: article.alertQuantity,
+        name: article.name,
+        unity: article.unity,
+        variants: article.variants,
+      );
+    }
 
     try {
       final result = await baseArticleRemoteDateSource.addArticle(articleModel);

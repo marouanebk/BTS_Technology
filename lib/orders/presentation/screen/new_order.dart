@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
@@ -144,6 +145,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
             unityPrice: double.parse(variant.prixController.text),
             commandType: variant.type!,
             variantId: variant.variant!,
+            files: variant.files.map((xFile) => File(xFile.path)).toList(),
           );
         }).toList(),
       );
@@ -161,6 +163,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
             unityPrice: double.parse(variant.prixController.text),
             commandType: variant.type!,
             variantId: variant.variant!,
+            files: variant.files.map((xFile) => File(xFile.path)).toList(),
           );
         }).toList(),
       );
@@ -482,7 +485,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                       article.variants =
                           selectedArticle.variants.map((variant) {
                         return {
-                          'label': variant?.family ?? "",
+                          'label':
+                              "${variant?.family} | ${variant?.taille} | ${variant?.colour} ",
                           'value': variant?.id ?? "",
                         };
                       }).toList();
@@ -542,30 +546,55 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
               ),
-              _imagePickerContainer(),
+              _imagePickerContainer(article),
+              const SizedBox(
+                height: 10,
+              ),
               Wrap(
                 spacing: 8.0, // Adjust spacing between images
                 runSpacing: 8.0, // Adjust spacing between lines
                 children: [
-                  ...List.generate(
-                    5,
-                    (index) => InkWell(
-                      onTap: () {},
-                      child: Container(
-                        height: 72,
-                        width: 72,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: const Color(0xFFECECEC),
-                            width: 1,
+                  ...article.files.map(
+                    (xFile) => Stack(
+                      children: [
+                        Container(
+                          height: 72,
+                          width: 72,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: const Color(0xFFECECEC),
+                              width: 1,
+                            ),
+                          ),
+                          child: Image.file(
+                            File(xFile.path),
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        child: Image.asset(
-                          "assets/images/tshirt_2.png",
-                          fit: BoxFit.cover,
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                article.files.remove(xFile);
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -626,9 +655,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
     );
   }
 
-  Widget _imagePickerContainer() {
+  Widget _imagePickerContainer(ArticleItem articleItem) {
     return InkWell(
-      onTap: () => _selectImage(context),
+      onTap: () => _selectImage(context, articleItem),
       child: Container(
         width: double.infinity,
         height: 50,
@@ -662,11 +691,13 @@ class _AddOrderPageState extends State<AddOrderPage> {
     );
   }
 
-  void _selectImage(BuildContext context) async {
+  void _selectImage(BuildContext context, ArticleItem articleItem) async {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      // Perform operations with the selected image.
+      setState(() {
+        articleItem.files.add(image);
+      });
     }
   }
 }
@@ -678,4 +709,5 @@ class ArticleItem {
   String? type;
   String? variant;
   List<Map<String, String>> variants = []; // Add this line
+  List<XFile> files = [];
 }

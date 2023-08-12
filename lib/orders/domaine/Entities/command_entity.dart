@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:equatable/equatable.dart';
 
@@ -11,6 +13,7 @@ class Command extends Equatable {
   final String? status;
   final num? prixSoutraitant;
   final String? livreur;
+  final String? createdAt;
 
   final String? page;
   final String nomClient;
@@ -30,6 +33,7 @@ class Command extends Equatable {
     this.prixSoutraitant,
     this.page,
     this.livreur,
+    this.createdAt,
     required this.nomClient,
     required this.adresse,
     required this.phoneNumber,
@@ -67,6 +71,7 @@ class CommandArticle extends Equatable {
   final String variantId;
   final int quantity;
   final num unityPrice;
+  final List<File>? files;
 
   const CommandArticle({
     this.id,
@@ -75,8 +80,8 @@ class CommandArticle extends Equatable {
     this.colour,
     this.family,
     this.commandType,
-
-         this.articleId,
+    this.files,
+    this.articleId,
 
     // required this.articleId,
     required this.variantId,

@@ -35,6 +35,9 @@ dependencies:
   animations: ^2.0.7
   flutter_downloader: ^1.11.1
   syncfusion_flutter_charts: ^22.2.8
+  syncfusion_flutter_xlsio: ^22.2.8
+  excel: ^2.1.0
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

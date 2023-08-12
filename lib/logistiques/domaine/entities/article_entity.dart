@@ -1,4 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 class Article extends Equatable {
@@ -9,11 +10,13 @@ class Article extends Equatable {
   final num grosPrice;
   final int alertQuantity;
   final List<Variant?> variants;
+  final File? photo;
 
   const Article({
     this.id,
     this.name,
     this.unity,
+    this.photo,
     required this.variants,
     required this.buyingPrice,
     required this.grosPrice,
@@ -21,8 +24,16 @@ class Article extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [id, name, unity, buyingPrice, grosPrice, alertQuantity, variants];
+  List<Object?> get props => [
+        id,
+        name,
+        unity,
+        buyingPrice,
+        grosPrice,
+        photo,
+        alertQuantity,
+        variants,
+      ];
 }
 
 class Variant extends Equatable {

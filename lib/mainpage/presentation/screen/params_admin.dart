@@ -1,3 +1,4 @@
+import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/company_informations.dart';
 import 'package:flutter/material.dart';
@@ -15,22 +16,7 @@ class _AdminParamsState extends State<AdminParams> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true, // Align the title to the center
-
-        title: const Text(
-          "Paramètres d'admin",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-
-        elevation: 0.0,
-      ),
+      appBar: const CustomAppBar(titleText: "Paramètres d'admin"),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
@@ -38,84 +24,33 @@ class _AdminParamsState extends State<AdminParams> {
             const SizedBox(
               height: 30,
             ),
-            // adminParamsContainer("Gestionnaire des compte",
-            //     "assets/images/compte.svg", const AccountManager()),
-
-            ///////////////////////////////
-
-            InkWell(
-              onTap: () {
-                Navigator.of(context, rootNavigator: true)
-                    .pushNamed('/accountManager');
-                // Navigator.of(context, rootNavigator: true).push(
-                //   MaterialPageRoute(
-                //     builder: (_) => page,
-                //   ),
-                // );
-              },
-              child: Container(
-                height: 70,
-                width: double.infinity,
-                padding: const EdgeInsets.only(left: 18),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: const Color(0xFFFFFFFF),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x26000000),
-                      offset: Offset(0, 0),
-                      blurRadius: 12,
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/images/compte.svg",
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    const Text(
-                      "Gestionnaire des compte",
-                      style: TextStyle(
-                        color: Colors.black,
-                        height: 1.0,
-                        fontFamily: 'Inter',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            /////////////////////////
+            adminParamsContainer("Gestionnaire des compte",
+                "assets/images/compte.svg", "/accountManager"),
             const SizedBox(
               height: 10,
             ),
             adminParamsContainer("Téléchargeement Excel",
-                "assets/images/excel.svg", const CompanyInformations()),
+                "assets/images/excel.svg", "/excelFiles"),
             const SizedBox(
               height: 10,
             ),
             adminParamsContainer("Informations de l'entreprise",
-                "assets/images/entreprise.svg", const CompanyInformations()),
+                "assets/images/entreprise.svg", "/companyInformations"),
           ],
         ),
       ),
     );
   }
 
-  Widget adminParamsContainer(String text, String link, Widget page) {
+  Widget adminParamsContainer(String text, String link, String route) {
     return InkWell(
       onTap: () {
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (_) => page,
-          ),
-        );
+        // Navigator.of(context, rootNavigator: true).push(
+        //   MaterialPageRoute(
+        //     builder: (_) => page,
+        //   ),
+        // );
+        Navigator.of(context, rootNavigator: true).pushNamed(route);
       },
       child: Container(
         height: 70,

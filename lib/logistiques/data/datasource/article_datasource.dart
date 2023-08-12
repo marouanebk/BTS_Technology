@@ -1,3 +1,5 @@
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/logistiques/data/model/article_model.dart';
@@ -21,9 +23,34 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
   Future<Unit> addArticle(ArticleModel article) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
+    var formData = FormData.fromMap(article.toJson());
+    if (article.photo != null) {
+      log("there is a picture in the");
+      formData.files.add(MapEntry(
+        'photo',
+        await MultipartFile.fromFile(article.photo!.path),
+      ));
+    }
+    final photoEntry = formData.files.firstWhere(
+      (entry) => entry.key == 'photo',
+      orElse: () => MapEntry('', MultipartFile.fromString('')),
+    );
+    if (photoEntry.key == 'photo') {
+      log('Photo: ${photoEntry.value}');
+    } else {
+      log('No photo found in formData');
+    }
+
+    final imageFile = File(article.photo!.path);
+    if (imageFile.existsSync()) {
+      log("correct");
+    } else {
+      log("false");
+    }
+
     final response = await Dio().post(
       ApiConstance.createArticle,
-      data: article.toJson(),
+      data: formData,
       options: Options(
         followRedirects: false,
         headers: {
@@ -40,7 +67,7 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
               statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+              statusMessage: response.data['err']));
     }
   }
 

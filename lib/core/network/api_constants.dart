@@ -57,4 +57,14 @@ class ApiConstance {
   static const String getFinancesChart = "$baseUrl$financeApi/chart";
 
   static const String getNotificaitonsApi = "$baseUrl/api/notification/";
+
+
+
+
+  //excel 
+    static const String getCommandsExcel = "$baseUrl$commandApi/excel";
+    static const String getLogsExcel = "$baseUrl$articleApi/excel";
+    static const String getFinancesExcel= "$baseUrl$financeApi/excel";
+
+
 }

@@ -10,6 +10,8 @@ import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/n
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_livreur_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/new/new_user_page.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/company_informations.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/excel.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,6 +81,9 @@ class MyApp extends StatelessWidget {
         '/finances': (context) => const FinancesBaseScreen(),
         '/accountManager': (context) => const AccountManager(),
         '/adminParams': (context) => const AdminParams(),
+        '/excelFiles': (context) => const ExcelFiles(),
+        '/companyInformations': (context) => const CompanyInformations(),
+        
         '/createPage': (context) => const NewPageAccount(),
         '/createLivreur': (context) => const NewLivreurAccount(),
         '/createUser': (context) {
