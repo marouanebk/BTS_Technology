@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
@@ -68,6 +69,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
     super.dispose();
   }
 
+  List<Map<String, String>> selectedPagesEnum = [];
+
   List<Map<String, String>> commandTypesEnum = [
     {"label": "Vierge détail", "value": "Vierge détail"},
     {"label": "Personnalisé détail", "value": "Personnalisé détail"},
@@ -125,31 +128,46 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   void _submitForm(context) {
-    final commandModel = CommandModel(
-      adresse: adresssController.text,
-      nomClient: fullnameController.text,
-      phoneNumber: int.parse(phonenumberController.text),
-      noteClient: noteClientController.text,
-      // page: article.page,
-      // page: "dsdf",
-      sommePaid: double.parse(sommePaidController.text),
-      // articleList: article.articleList,
-      articleList: variants.map((variant) {
-        return CommandArticle(
-          quantity: int.parse(variant.nbrArticlesController.text),
-          articleId: variant.article!,
-          unityPrice: double.parse(variant.prixController.text),
-          commandType: variant.type!,
-          variantId: variant.variant!,
-        );
-      }).toList(),
-    );
+    CommandModel commandModel;
+    if (selectedPage != null) {
+      commandModel = CommandModel(
+        adresse: adresssController.text,
+        nomClient: fullnameController.text,
+        phoneNumber: int.parse(phonenumberController.text),
+        noteClient: noteClientController.text,
+        page: selectedPage,
+        sommePaid: double.parse(sommePaidController.text),
+        articleList: variants.map((variant) {
+          return CommandArticle(
+            quantity: int.parse(variant.nbrArticlesController.text),
+            articleId: variant.article!,
+            unityPrice: double.parse(variant.prixController.text),
+            commandType: variant.type!,
+            variantId: variant.variant!,
+          );
+        }).toList(),
+      );
+    } else {
+      commandModel = CommandModel(
+        adresse: adresssController.text,
+        nomClient: fullnameController.text,
+        phoneNumber: int.parse(phonenumberController.text),
+        noteClient: noteClientController.text,
+        sommePaid: double.parse(sommePaidController.text),
+        articleList: variants.map((variant) {
+          return CommandArticle(
+            quantity: int.parse(variant.nbrArticlesController.text),
+            articleId: variant.article!,
+            unityPrice: double.parse(variant.prixController.text),
+            commandType: variant.type!,
+            variantId: variant.variant!,
+          );
+        }).toList(),
+      );
+    }
 
-    BlocProvider.of<CommandBloc>(context).add(
-      CreateCommandEvent(
-        command: commandModel,
-      ),
-    );
+    BlocProvider.of<CommandBloc>(context)
+        .add(CreateCommandEvent(command: commandModel));
   }
 
   @override
@@ -171,21 +189,25 @@ class _AddOrderPageState extends State<AddOrderPage> {
           BlocListener<AccountBloc, AccountState>(
             listener: (context, state) {
               if (state.getUserInfoState == RequestState.loaded) {
+                log("state loaded");
                 if (widget.role == "pageAdmin") {
                   // Retrieve userInfo.pages and userInfo.commandTypes
-                  log(state.getUserInfo.toString());
-                  final admin_pages = state.getUserInfo!.pages;
-                  final admin_commandTypes = state.getUserInfo!.commandeTypes;
+                  final admin_pages = state.getUserInfo!.populatedpages!;
+                  final admin_commandTypes = state.getUserInfo!.commandeTypes!;
+                  final validCommandTypes =
+                      admin_commandTypes.where((type) => type != null).toList();
 
-                  log(admin_pages.toString() +
-                      " " +
-                      admin_commandTypes.toString());
+                  selectedPagesEnum = admin_pages.map((page) {
+                    return {
+                      "label": page.pageName.toString(),
+                      "value": page.id.toString()
+                    };
+                  }).toList();
 
-                  // Update your page and commandType lists accordingly
-                  // For example:
-                  // commandTypesEnum = commandTypes.map((type) {
-                  //   return {"label": type, "value": type};
-                  // }).toList();
+                  commandTypesEnum = validCommandTypes.map((type) {
+                    return {"label": type!, "value": type};
+                  }).toList();
+                  setState(() {});
                 }
               }
             },
@@ -297,21 +319,17 @@ class _AddOrderPageState extends State<AddOrderPage> {
                       const SizedBox(height: 15),
                       if (widget.role == "pageAdmin") ...[
                         buildSelectField(
-                          label: "Sélectionner une page",
-                          hintText: "- Sélectionnez une page -",
-                          errorText: "Vous devez entrer une page",
-                          value: selectedPage,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedPage = value;
-                            });
-                          },
-                          formSubmitted: _formSubmitted,
-                          items: [
-                            {"label": "1", "value": "1"},
-                            {"label": "1", "value": "2"},
-                          ],
-                        ),
+                            label: "Sélectionner une page",
+                            hintText: "- Sélectionnez une page -",
+                            errorText: "Vous devez entrer une page",
+                            value: selectedPage,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedPage = value;
+                              });
+                            },
+                            formSubmitted: _formSubmitted,
+                            items: selectedPagesEnum),
                       ],
                       const SizedBox(height: 15),
                       const Text(

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 

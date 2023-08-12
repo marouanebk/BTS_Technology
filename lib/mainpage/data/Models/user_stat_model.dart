@@ -1,4 +1,3 @@
-import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/user_stat_entity.dart';
 
 class UserStatModel extends UserStatEntity {

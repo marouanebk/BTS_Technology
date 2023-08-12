@@ -2,7 +2,6 @@ import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/finances/domaine/entities/cashflow_entity.dart';
 import 'package:bts_technologie/finances/domaine/entities/finance_entity.dart';
 import 'package:equatable/equatable.dart';
-import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 
 class FinancesState extends Equatable {
   final List<FinanceEntity> getFinances;

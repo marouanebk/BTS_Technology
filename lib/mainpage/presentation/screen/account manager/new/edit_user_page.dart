@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
-import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_event.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_state.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
@@ -13,7 +12,6 @@ import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/check_box.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -131,9 +129,6 @@ class _EditUserPageState extends State<EditUserPage> {
 
   void _submitForm(context) async {
     UserModel userModel;
-    String password = passwordController.text.isEmpty
-        ? widget.user.password!
-        : passwordController.text;
     if (type == "pageAdmin") {
       List<String> selectedPages = _selectedPages.map((index) {
         return widget.pages[index].id!;
@@ -143,23 +138,43 @@ class _EditUserPageState extends State<EditUserPage> {
       List<String> selectedCommandeTypes = _selectedCommandeTypes.map((index) {
         return commandeTypes[index];
       }).toList();
-      userModel = UserModel(
-        username: usernameController.text,
-        password: password,
-        fullname: fullnameController.text,
-        role: type,
-        pages: selectedPages,
-        commandeTypes: commandeTypes,
-      );
+      if (passwordController.text.isNotEmpty) {
+        userModel = UserModel(
+          username: usernameController.text,
+          password: passwordController.text,
+          fullname: fullnameController.text,
+          role: type,
+          pages: selectedPages,
+          commandeTypes: selectedCommandeTypes,
+        );
+      } else {
+        userModel = UserModel(
+          username: usernameController.text,
+          fullname: fullnameController.text,
+          role: type,
+          pages: selectedPages,
+          commandeTypes: selectedCommandeTypes,
+        );
+      }
     } else {
-      userModel = UserModel(
-        username: usernameController.text,
-        password: password,
-        fullname: fullnameController.text,
-        role: type,
-        pages: const [],
-        commandeTypes: const [],
-      );
+      if (passwordController.text.isNotEmpty) {
+        userModel = UserModel(
+          username: usernameController.text,
+          password: passwordController.text,
+          fullname: fullnameController.text,
+          role: type,
+          pages: const [],
+          commandeTypes: const [],
+        );
+      } else {
+        userModel = UserModel(
+          username: usernameController.text,
+          fullname: fullnameController.text,
+          role: type,
+          pages: const [],
+          commandeTypes: const [],
+        );
+      }
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();

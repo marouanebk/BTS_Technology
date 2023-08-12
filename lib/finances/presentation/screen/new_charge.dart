@@ -1,16 +1,12 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
-import 'package:bts_technologie/finances/presentation/screen/finances.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewFinanceCharge extends StatefulWidget {

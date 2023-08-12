@@ -34,7 +34,11 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
         role: "pageAdmin",
       ),
       const Notifications(),
-      Container(),
+      Builder(
+        builder: (context) {
+          return Container();
+        }
+      ),
     ];
   }
 

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
@@ -72,10 +71,9 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
   Future<UserModel> getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    final id = prefs.getString("id");
 
     final response = await Dio().get(
-      ApiConstance.getUser(id!),
+      ApiConstance.getUser,
       options: Options(
         followRedirects: false,
         validateStatus: (status) {

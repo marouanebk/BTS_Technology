@@ -23,18 +23,33 @@ class CommandesRepository implements BaseCommandRepository {
 
   @override
   Future<Either<Failure, Unit>> createCommand(Command command) async {
-    final CommandModel articleModel = CommandModel(
-      adresse: command.adresse,
-      nomClient: command.nomClient,
-      phoneNumber: command.phoneNumber,
-      noteClient: command.noteClient,
-      page: command.page,
-      prixSoutraitant: command.prixSoutraitant,
-      // page: article.page,
-      status: command.status,
-      sommePaid: command.sommePaid,
-      articleList: command.articleList,
-    );
+    CommandModel articleModel;
+    if (command.page != null) {
+      articleModel = CommandModel(
+        adresse: command.adresse,
+        nomClient: command.nomClient,
+        phoneNumber: command.phoneNumber,
+        noteClient: command.noteClient,
+        page: command.page,
+        prixSoutraitant: command.prixSoutraitant,
+        // page: article.page,
+        status: command.status,
+        sommePaid: command.sommePaid,
+        articleList: command.articleList,
+      );
+    } else {
+      articleModel = CommandModel(
+        adresse: command.adresse,
+        nomClient: command.nomClient,
+        phoneNumber: command.phoneNumber,
+        noteClient: command.noteClient,
+        prixSoutraitant: command.prixSoutraitant,
+        // page: article.page,
+        status: command.status,
+        sommePaid: command.sommePaid,
+        articleList: command.articleList,
+      );
+    }
 
     try {
       final result =

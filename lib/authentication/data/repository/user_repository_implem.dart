@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/authentication/data/datasource/user_datasource.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';

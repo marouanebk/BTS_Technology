@@ -1,5 +1,4 @@
 import 'package:bts_technologie/finances/domaine/entities/cashflow_entity.dart';
-import 'package:bts_technologie/finances/domaine/entities/finance_entity.dart';
 
 class CashFlowModel extends CashFlow {
   const CashFlowModel({

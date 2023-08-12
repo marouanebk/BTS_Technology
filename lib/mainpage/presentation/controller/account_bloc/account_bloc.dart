@@ -43,6 +43,10 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getUserInfoEvent(
       GetUserInfoEvent event, Emitter<AccountState> emit) async {
     final result = await getUserInfoUseCase();
+    emit(state.copyWith(
+      getUserInfoState: RequestState.loading,
+    ));
+
     result.fold(
         (l) => emit(state.copyWith(
             getUserInfoState: RequestState.error,
@@ -66,6 +70,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getAllAccountsEvent(
       GetAllAccountsEvent event, Emitter<AccountState> emit) async {
     final result = await getAllUsersUseCase();
+    emit(state.copyWith(
+      getAccountState: RequestState.loading,
+    ));
     result.fold(
         (l) => emit(state.copyWith(
             getAccountState: RequestState.error, getAccountmessage: l.message)),
@@ -76,6 +83,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getPagesEvent(
       GetPagesEvent event, Emitter<AccountState> emit) async {
     final result = await getPagesUseCase();
+    emit(state.copyWith(
+      getPagesState: RequestState.loading,
+    ));
     result.fold(
         (l) => emit(state.copyWith(
             getPagesState: RequestState.error, getPagesmessage: l.message)),
@@ -86,6 +96,10 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getCommandsStatsEvent(
       GetCommandsStatsEvent event, Emitter<AccountState> emit) async {
     final result = await getCommandsStatsUseCase();
+    emit(state.copyWith(
+      getCommandsStatsState: RequestState.loading,
+    ));
+
     result.fold(
         (l) => emit(state.copyWith(
             getCommandsStatsState: RequestState.error,
@@ -97,6 +111,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getAdminUsersStatsEvent(
       GetAdminUserStatsEvent event, Emitter<AccountState> emit) async {
     final result = await getAdminUserStatsUseCase();
+    emit(state.copyWith(
+      getAdminUserStatsState: RequestState.loading,
+    ));
     result.fold(
         (l) => emit(state.copyWith(
             getAdminUserStatsState: RequestState.error,
@@ -109,6 +126,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getLivreursEvent(
       GetLivreursEvent event, Emitter<AccountState> emit) async {
     final result = await getLivreurUseCase();
+    emit(state.copyWith(
+      getLivreursState: RequestState.loading,
+    ));
     result.fold(
         (l) => emit(state.copyWith(
             getLivreursState: RequestState.error,

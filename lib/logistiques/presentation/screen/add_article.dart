@@ -1,6 +1,4 @@
-import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
-import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -11,7 +9,6 @@ import 'package:bts_technologie/logistiques/presentation/components/select_field
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_state.dart';
-import 'package:bts_technologie/logistiques/presentation/screen/logistiques.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

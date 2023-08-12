@@ -7,6 +7,7 @@ import 'package:bts_technologie/mainpage/presentation/components/screen_header.d
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
+import 'package:bts_technologie/mainpage/presentation/screen/admin_facebookpages_stats.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/admin_stats_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
@@ -65,7 +66,8 @@ class _MainPageState extends State<MainPage> {
       create: (context) => sl<AccountBloc>()
         ..add(GetAdminUserStatsEvent())
         ..add(GetCommandsStatsEvent())
-        ..add(GetUserInfoEvent()),
+        ..add(GetUserInfoEvent())
+        ..add(GetPagesEvent()),
       child: Builder(
         builder: (context) {
           return Builder(builder: (context) {
@@ -73,154 +75,188 @@ class _MainPageState extends State<MainPage> {
               builder: (context, state) {
                 return Scaffold(
                   backgroundColor: Colors.white,
-                  body: NestedScrollView(
-                    headerSliverBuilder: (context, innerBoxIsScrolled) {
-                      return [
-                        SliverOverlapAbsorber(
-                          handle:
-                              NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                  context),
-                          sliver: SliverPersistentHeader(
-                            delegate: _TopContainerDelegate(),
-                            pinned: true,
-                            floating: true,
-                          ),
-                        ),
-                      ];
+                  body: RefreshIndicator(
+                    onRefresh: () async {
+                      // Reload the page here
+                      // For example, you can call a method on your bloc to fetch new data
+                      context.read<AccountBloc>()
+                        ..add(GetAdminUserStatsEvent())
+                        ..add(GetCommandsStatsEvent())
+                        ..add(GetUserInfoEvent());
                     },
-                    body: Builder(builder: (context) {
-                      return CustomScrollView(
-                        // controller: _scrollController,
-                        slivers: [
-                          SliverToBoxAdapter(
-                            child: Column(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    height: 3,
-                                    width: 43,
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(22),
+                    child: NestedScrollView(
+                      headerSliverBuilder: (context, innerBoxIsScrolled) {
+                        return [
+                          SliverOverlapAbsorber(
+                            handle:
+                                NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                    context),
+                            sliver: SliverPersistentHeader(
+                              delegate: _TopContainerDelegate(),
+                              pinned: true,
+                              floating: true,
+                            ),
+                          ),
+                        ];
+                      },
+                      body: Builder(builder: (context) {
+                        return CustomScrollView(
+                          // controller: _scrollController,
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 3,
+                                      width: 43,
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(22),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                if (state.getCommandsStatsState ==
-                                    RequestState.loading)
-                                  const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                if (state.getCommandsStatsState ==
-                                    RequestState.error)
-                                  Text(
-                                    state.getAdminUserStatsmessage,
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
-                                if (state.getCommandsStatsState ==
-                                    RequestState.loaded) ...[
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 10.0),
-                                      child: Row(
-                                        children: [
-                                          for (var i = 0;
-                                              i < state.getCommandsStats.length;
-                                              i++) ...[
-                                            dateFilter(
-                                                i,
-                                                frenchMonthAbbreviations[state
-                                                    .getCommandsStats[i]
-                                                    .month]),
-                                            const SizedBox(
-                                              width: 10,
-                                            ),
-                                          ],
-                                        ],
+                                  if (state.getCommandsStatsState ==
+                                      RequestState.loading)
+                                    const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
                                       ),
                                     ),
-                                  ),
-                                ],
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      SizedBox(
-                                        height: 330,
-                                        child: PageView(
-                                          controller: controller,
-                                          onPageChanged: (index) {
-                                            log("page ${index + 1} ");
-                                            pageindex = index;
-                                            setState(() {
-                                              index;
-                                            });
-                                          },
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
+                                  if (state.getCommandsStatsState ==
+                                      RequestState.error)
+                                    Text(
+                                      state.getAdminUserStatsmessage,
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                  if (state.getCommandsStatsState ==
+                                      RequestState.loaded) ...[
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Row(
                                           children: [
                                             for (var i = 0;
                                                 i <
                                                     state.getCommandsStats
                                                         .length;
                                                 i++) ...[
-                                              _commandsStats(
-                                                  state.getCommandsStats[i]),
-                                              // const SizedBox(height: 24),
+                                              dateFilter(
+                                                  i,
+                                                  frenchMonthAbbreviations[state
+                                                      .getCommandsStats[i]
+                                                      .month]),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
                                             ],
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      if (state.getAdminUserStatsState ==
-                                          RequestState.loading)
-                                        const Center(
-                                          child: CircularProgressIndicator(
-                                            color: Colors.red,
+                                    ),
+                                  ],
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+                                        SizedBox(
+                                          height: 330,
+                                          child: PageView(
+                                            controller: controller,
+                                            onPageChanged: (index) {
+                                              log("page ${index + 1} ");
+                                              pageindex = index;
+                                              setState(() {
+                                                index;
+                                              });
+                                            },
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            children: [
+                                              for (var i = 0;
+                                                  i <
+                                                      state.getCommandsStats
+                                                          .length;
+                                                  i++) ...[
+                                                _commandsStats(
+                                                    state.getCommandsStats[i]),
+                                                // const SizedBox(height: 24),
+                                              ],
+                                            ],
                                           ),
                                         ),
-                                      if (state.getAdminUserStatsState ==
-                                          RequestState.error)
-                                        Text(
-                                          state.getAdminUserStatsmessage,
-                                          style: const TextStyle(
-                                              color: Colors.red),
+                                        const SizedBox(
+                                          height: 30,
                                         ),
-                                      if (state.getAdminUserStatsState ==
-                                          RequestState.loaded)
-                                        usersList(state.getAdminUserStats),
-                                      // usersList(),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      pagesList(),
-                                      const SizedBox(
-                                        height: 50,
-                                      ),
-                                    ],
+                                        if (state.getAdminUserStatsState ==
+                                            RequestState.loading)
+                                          const Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        if (state.getAdminUserStatsState ==
+                                            RequestState.error)
+                                          Text(
+                                            state.getAdminUserStatsmessage,
+                                            style: const TextStyle(
+                                                color: Colors.red),
+                                          ),
+                                        if (state.getAdminUserStatsState ==
+                                            RequestState.loaded)
+                                          usersList(state.getAdminUserStats),
+                                        //
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+
+                                        if (state.getPagesState ==
+                                            RequestState.loading)
+                                          const Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        if (state.getPagesState ==
+                                            RequestState.error)
+                                          Text(
+                                            state.getAdminUserStatsmessage,
+                                            style: const TextStyle(
+                                                color: Colors.red),
+                                          ),
+                                        if (state.getPagesState ==
+                                            RequestState.loaded)
+                                          pagesList(state.getPages),
+
+                                        const SizedBox(
+                                          height: 30,
+                                        ),
+                                        // pagesList(),
+                                        const SizedBox(
+                                          height: 50,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    }),
+                          ],
+                        );
+                      }),
+                    ),
                   ),
                 );
               },
@@ -231,7 +267,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget pagesList() {
+  Widget pagesList(pages) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -255,35 +291,44 @@ class _MainPageState extends State<MainPage> {
           ),
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: 4,
+          itemCount: pages.length > 4 ? 4 : pages.length,
           itemBuilder: (context, index) {
-            return pageContainer();
+            return pageContainer(pages[index]);
           },
         ),
         const SizedBox(
           height: 10,
         ),
-        const Center(
-          child: Text(
-            "voir tous",
-            style: TextStyle(
-              decoration: TextDecoration.underline,
-              color:
-                  Color(0xFF9F9F9F), // Replace with your custom color if needed
-              fontFamily: "Inter", // Replace with the desired font family
-              fontSize: 16,
-              fontStyle: FontStyle.normal,
-              fontWeight: FontWeight.w400,
-              height: 1.0, // Default line height is normal (1.0)
+        Center(
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(
+                  builder: (_) => AdminPagesStatsPage(pages: pages),
+                ),
+              );
+            },
+            child: const Text(
+              "voir tous",
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: Color(
+                    0xFF9F9F9F), // Replace with your custom color if needed
+                fontFamily: "Inter", // Replace with the desired font family
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w400,
+                height: 1.0, // Default line height is normal (1.0)
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ],
     );
   }
 
-  Widget pageContainer() {
+  Widget pageContainer(page) {
     return Container(
       width: double.infinity,
       height: 70,
@@ -303,9 +348,9 @@ class _MainPageState extends State<MainPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Mouloud Bari",
-            style: TextStyle(
+          Text(
+            page.pageName,
+            style: const TextStyle(
               color: Color(0xFF111111),
               fontFamily: "Inter",
               fontSize: 18,
@@ -318,9 +363,9 @@ class _MainPageState extends State<MainPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text(
-                "15,000DA",
-                style: TextStyle(
+              Text(
+                "${page.totalMoneyMade ?? "0"}  DA",
+                style: const TextStyle(
                   color: Color(0xFF111111),
                   fontFamily: "Inter",
                   fontSize: 20,
@@ -332,8 +377,8 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(
                 height: 2,
               ),
-              smallRichText(
-                  "82", 'assets/images/navbar/commandes_activated.svg'),
+              smallRichText(page.numberOfCommands.toString(),
+                  'assets/images/navbar/commandes_activated.svg'),
             ],
           ),
         ],

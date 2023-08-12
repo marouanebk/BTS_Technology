@@ -1,9 +1,5 @@
 import 'dart:developer';
 
-import 'package:bts_technologie/base_screens/admin_base_screen.dart';
-import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
-import 'package:bts_technologie/base_screens/finances_base_screen.dart';
-import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
