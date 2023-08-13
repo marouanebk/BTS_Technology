@@ -26,23 +26,22 @@ class CommandModel extends Command {
     //
     List<CommandArticle?> articleList = const [],
   }) : super(
-          id: id,
-          comNumber: comNumber,
-          noteClient: noteClient,
-          articles: articles,
-          prixSoutraitant: prixSoutraitant,
-          user: user,
-          nomClient: nomClient,
-          adresse: adresse,
-          page: page,
-          phoneNumber: phoneNumber,
-          sommePaid: sommePaid,
-          status: status,
-          date: date,
-          articleList: articleList,
-          livreur: livreur,
-          createdAt: createdAt
-        );
+            id: id,
+            comNumber: comNumber,
+            noteClient: noteClient,
+            articles: articles,
+            prixSoutraitant: prixSoutraitant,
+            user: user,
+            nomClient: nomClient,
+            adresse: adresse,
+            page: page,
+            phoneNumber: phoneNumber,
+            sommePaid: sommePaid,
+            status: status,
+            date: date,
+            articleList: articleList,
+            livreur: livreur,
+            createdAt: createdAt);
 
   static List<CommandModel> fromJsonList(Map<String, dynamic> json) {
     final dateKeys = json.keys.toList();
@@ -125,6 +124,8 @@ class CommandModel extends Command {
     }
     String? page;
     String? livreur;
+    if (json["page"] != null) page = json["page"]["name"];
+    if (json["livreur"] != null) livreur = json["livreur"]["name"];
 
     return CommandModel(
       id: json["_id"],

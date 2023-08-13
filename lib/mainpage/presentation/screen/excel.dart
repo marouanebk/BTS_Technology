@@ -236,7 +236,7 @@ class _ExcelFilesState extends State<ExcelFiles> {
   Future<void> generateCommandsExcel() async {
     final Workbook workbook = Workbook();
     final Worksheet sheet = workbook.worksheets[0];
-        sheet.getRangeByName('A1').columnWidth = 20;
+    sheet.getRangeByName('A1').columnWidth = 20;
     sheet.getRangeByName('B1').columnWidth = 20;
     sheet.getRangeByName('C1').columnWidth = 20;
     sheet.getRangeByName('D1').columnWidth = 20;
@@ -280,16 +280,54 @@ class _ExcelFilesState extends State<ExcelFiles> {
     // Populate the Excel sheet with command data
     for (var rowIndex = 0; rowIndex < commands.length; rowIndex++) {
       final command = commands[rowIndex];
+      int totalPrice = command.articleList.fold(0, (sum, article) {
+        return sum + (article!.quantity * article.unityPrice.toInt());
+      });
 
       sheet
           .getRangeByName('A${rowIndex + 2}')
-          .setText(convertDateTime(command.createdAt!) ?? '');
-      sheet
-          .getRangeByName('B${rowIndex + 2}')
           .setText(command.comNumber.toString());
       sheet
-          .getRangeByName('C${rowIndex + 2}')
-          .setText(command.noteClient ?? '');
+          .getRangeByName('B${rowIndex + 2}')
+          .setText(command.status.toString());
+      sheet.getRangeByName('C${rowIndex + 2}').setText(command.nomClient);
+      sheet.getRangeByName('D${rowIndex + 2}').setText(command.adresse);
+      sheet
+          .getRangeByName('E${rowIndex + 2}')
+          .setText(command.phoneNumber.toString());
+      sheet.getRangeByName('F${rowIndex + 2}').setText(totalPrice.toString());
+      sheet
+          .getRangeByName('G${rowIndex + 2}')
+          .setText(command.sommePaid.toString());
+      sheet
+          .getRangeByName('H${rowIndex + 2}')
+          .setText(command.prixSoutraitant.toString());
+      sheet.getRangeByName('I${rowIndex + 2}').setText(command.noteClient);
+      sheet.getRangeByName('J${rowIndex + 2}').setText(command.user);
+      sheet.getRangeByName('K${rowIndex + 2}').setText(command.livreur ?? '');
+      sheet.getRangeByName('L${rowIndex + 2}').setText(" / ");
+      String articleName = "";
+      String color = "";
+      String taille = "";
+      String famille = "";
+      String type = "";
+      String nombre = "";
+
+      for (var variant in command.articleList) {
+        articleName += "\n ${variant!.articleName}";
+        color += "\n ${variant.colour}";
+        taille += "\n ${variant.taille}";
+        famille += "\n ${variant.family}";
+        type += "\n ${variant.commandType}";
+        nombre += "\n ${variant.quantity}";
+      }
+
+      sheet.getRangeByName('M${rowIndex + 2}').setText(articleName);
+      sheet.getRangeByName('N${rowIndex + 2}').setText(color);
+      sheet.getRangeByName('O${rowIndex + 2}').setText(taille);
+      sheet.getRangeByName('P${rowIndex + 2}').setText(famille);
+      sheet.getRangeByName('Q${rowIndex + 2}').setText(type);
+      sheet.getRangeByName('R${rowIndex + 2}').setText(nombre);
       // ... Populate more columns as needed
     }
 

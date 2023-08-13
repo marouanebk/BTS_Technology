@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
@@ -18,7 +21,17 @@ class Logistiques extends StatefulWidget {
 }
 
 class _LogistiquesState extends State<Logistiques> {
-  List<bool> isDropDownVisibleList = List.generate(15, (index) => false);
+  late List<bool> isDropDownVisibleList;
+  bool isListInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isDropDownVisibleList = List.generate(
+      15, // You can replace this with any initial length you want
+      (index) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +41,8 @@ class _LogistiquesState extends State<Logistiques> {
 
     return BlocProvider(
       create: (context) => sl<ArticleBloc>()..add(GetArticlesEvent()),
-      child: BlocBuilder<ArticleBloc, ArticleState>(
-        builder: (context, state) {
+      child: Builder(
+        builder: (context) {
           return Scaffold(
             body: SingleChildScrollView(
               child: Padding(
@@ -44,25 +57,38 @@ class _LogistiquesState extends State<Logistiques> {
                     const SizedBox(
                       height: 30,
                     ),
-                    if (state.getArticlesState == RequestState.loading)
-                      const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.red,
-                        ),
-                      ),
-                    if (state.getArticlesState == RequestState.loaded)
-                      ListView.separated(
-                        scrollDirection: Axis.vertical,
-                        separatorBuilder: (context, index) => const SizedBox(
-                          height: 7,
-                        ),
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: state.getArticles.length,
-                        itemBuilder: (context, index) {
-                          return logiItem(state.getArticles[index], index);
-                        },
-                      ),
+                    BlocBuilder<ArticleBloc, ArticleState>(
+                        builder: (context, state) {
+                      if (state.getArticlesState == RequestState.loading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.red,
+                          ),
+                        );
+                      }
+                      if (state.getArticlesState == RequestState.loaded) {
+                        if (isListInitialized == false) {
+                          isDropDownVisibleList = List.generate(
+                            state.getArticles.length,
+                            (index) => false,
+                          );
+                          isListInitialized = true;
+                        }
+                        return ListView.separated(
+                          scrollDirection: Axis.vertical,
+                          separatorBuilder: (context, index) => const SizedBox(
+                            height: 7,
+                          ),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: state.getArticles.length,
+                          itemBuilder: (context, index) {
+                            return logiItem(state.getArticles[index], index);
+                          },
+                        );
+                      }
+                      return Container();
+                    }),
                     const SizedBox(
                       height: 30,
                     ),
@@ -109,9 +135,11 @@ class _LogistiquesState extends State<Logistiques> {
 
     return GestureDetector(
       onTap: () {
+        log(isDropDownVisibleList[index].toString());
         setState(() {
           isDropDownVisibleList[index] = !isDropDownVisibleList[index];
         });
+        log(isDropDownVisibleList[index].toString());
       },
       child: Container(
         decoration: BoxDecoration(
@@ -284,56 +312,86 @@ class _LogistiquesState extends State<Logistiques> {
 
   Widget logExpandedVariant(article, alertQuantity) {
     Color articlesColor = alertQuantity < 5 ? Colors.red : Colors.black;
+    Color containerColor;
+    try {
+      containerColor = Color(int.parse(article.codeColour, radix: 16));
+    } catch (e) {
+      containerColor = Colors.transparent;
+    }
 
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
-      child: RichText(
-        text: TextSpan(
-          children: [
-            WidgetSpan(
-                child: Container(
-              height: 10,
-              width: 10,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                height: 10,
+                width: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: containerColor,
+                  border: Border.all(
+                    color: Colors.black, // You can change the border color here
+                    width: 1, // You can adjust the border width here
+                  ),
+                ),
               ),
-            )),
-            TextSpan(
-              text: "   ${article.colour}",
-              style: const TextStyle(
-                color: Color(0xFF9F9F9F), // Use var(--text-grey, #9F9F9F) here
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0,
+              const SizedBox(width: 4), // Add some spacing
+              AutoSizeText(
+                article.colour,
+                style: const TextStyle(
+                  color:
+                      Color(0xFF9F9F9F), // Use var(--text-grey, #9F9F9F) here
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+                maxLines: 1, // Adjust this based on your design
               ),
-            ),
-            TextSpan(
-              text: " | ${article.taille} | ${article.family} ----- ",
-              style: const TextStyle(
-                color: Color(0xFF9F9F9F),
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0,
+              const SizedBox(width: 4), // Add some spacing
+              const Text(
+                "|",
+                style: TextStyle(
+                  color: Color(0xFF9F9F9F),
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
               ),
-            ),
-            TextSpan(
-              text: "${article.quantity} articles",
-              style: TextStyle(
-                color: articlesColor,
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w500,
-                height: 1.0,
+              const SizedBox(width: 4), // Add some spacing
+              AutoSizeText(
+                "${article.taille} | ${article.family} ----- ",
+                style: const TextStyle(
+                  color: Color(0xFF9F9F9F),
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+                maxLines: 1, // Adjust this based on your design
               ),
-            ),
-          ],
-        ),
+              AutoSizeText(
+                "${article.quantity} articles",
+                style: TextStyle(
+                  color: articlesColor,
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w500,
+                  height: 1.0,
+                ),
+                maxLines: 1, // Adjust this based on your design
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

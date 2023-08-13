@@ -9,7 +9,11 @@ import 'package:bts_technologie/finances/presentation/controller/finance_bloc/fi
 import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_event.dart';
 import 'package:bts_technologie/finances/presentation/controller/finance_bloc/finance_state.dart';
 import 'package:bts_technologie/finances/presentation/screen/new_charge.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,6 +59,7 @@ class _FinancesPageState extends State<FinancesPage> {
         final List<String> dateParts = entry.key.split('-');
         final String month = dateParts[0];
         final double value = entry.value.toDouble();
+        log(value.toString());
         return _ChartData('$month-${dateParts[1]}', value);
       }).toList();
       log(data.toString());
@@ -67,10 +72,17 @@ class _FinancesPageState extends State<FinancesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<FinanceBloc>()
-        ..add(GetFinancesEvent())
-        ..add(GetCashFlowEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<FinanceBloc>()
+            ..add(GetFinancesEvent())
+            ..add(GetCashFlowEvent()),
+        ),
+        BlocProvider(
+          create: (context) => sl<AccountBloc>()..add(GetLivreursEvent()),
+        ),
+      ],
       child: Builder(builder: (context) {
         return SafeArea(
           child: Scaffold(
@@ -89,7 +101,29 @@ class _FinancesPageState extends State<FinancesPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    _topContainer(),
+                    BlocBuilder<AccountBloc, AccountState>(
+                      builder: (context, state) {
+                        if (state.getLivreursState == RequestState.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ),
+                          );
+                        }
+                        if (state.getLivreursState == RequestState.error) {
+                          log("error: " );
+                          return Text(
+                            state.getLivreursmessage,
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
+                        if (state.getLivreursState == RequestState.loaded) {
+                          return _topContainer(state.getLivreurs);
+                        }
+
+                        return Container();
+                      },
+                    ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -118,30 +152,41 @@ class _FinancesPageState extends State<FinancesPage> {
                     const SizedBox(
                       height: 24,
                     ),
-                    SfCartesianChart(
-                      primaryXAxis: CategoryAxis(),
-                      primaryYAxis:
-                          NumericAxis(minimum: 0, maximum: 40, interval: 10),
-                      tooltipBehavior: _tooltip,
-                      series: <ChartSeries<_ChartData, String>>[
-                        ColumnSeries<_ChartData, String>(
-                          dataSource: data,
-                          xValueMapper: (_ChartData data, _) => data.x,
-                          yValueMapper: (_ChartData data, _) => data.y,
-                          name: 'Gold',
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(25)),
-                          color: const Color(0xFFECECEC),
-                          selectionBehavior: SelectionBehavior(
-                            enable: true,
-                            unselectedOpacity: 1.0,
-                            selectedColor: Colors.black,
-                            unselectedColor: const Color(0xFFECECEC),
-                          ),
-                        )
-                        // color: Color.fromRGBO(8, 142, 255, 1))
-                      ],
-                    ),
+                    if (data.isNotEmpty)
+                      SfCartesianChart(
+                        primaryXAxis: CategoryAxis(),
+                        primaryYAxis: NumericAxis(
+                            // minimum: -40,
+                            // maximum: 40,
+                            // interval: 10,
+                            ), // Adjust the axis range as needed
+                        tooltipBehavior: _tooltip,
+
+                        series: <ChartSeries<_ChartData, String>>[
+                          ColumnSeries<_ChartData, String>(
+                            dataSource: data,
+                            xValueMapper: (_ChartData data, _) => data.x,
+                            yValueMapper: (_ChartData data, _) => data.y,
+                            name: 'Gold',
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(25)),
+                            color: const Color(0xFFECECEC),
+                            selectionBehavior: SelectionBehavior(
+                              enable: true,
+                              unselectedOpacity: 1.0,
+                              selectedColor: Colors.black,
+                              unselectedColor: const Color(0xFFECECEC),
+                            ),
+                          )
+                        ],
+                      )
+                    else if (data
+                        .isEmpty) // Check if data is empty (not fetched yet)
+                      const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.black,
+                        ),
+                      ),
 
                     //put the bar charts here :
 
@@ -447,7 +492,18 @@ class _FinancesPageState extends State<FinancesPage> {
     );
   }
 
-  Widget _topContainer() {
+  Widget _topContainer(livreurs) {
+    double totalMoney = 0;
+    List<Livreur> profitableLivreurs = [];
+
+    for (Livreur livreur in livreurs) {
+      totalMoney += livreur.money!;
+
+      if (livreur.money! > 0) {
+        profitableLivreurs.add(livreur);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -485,9 +541,9 @@ class _FinancesPageState extends State<FinancesPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "48,000 DA",
-                style: TextStyle(
+              Text(
+                "$totalMoney DA",
+                style: const TextStyle(
                   color:
                       Color(0xFF111111), // Replace with your desired text color
                   fontFamily: "Inter",
@@ -501,18 +557,13 @@ class _FinancesPageState extends State<FinancesPage> {
               const SizedBox(
                 height: 10,
               ),
-              _livreurComp(),
-              const SizedBox(
-                height: 10,
-              ),
-              _livreurComp(),
-              const SizedBox(
-                height: 10,
-              ),
-              _livreurComp(),
-              const SizedBox(
-                height: 10,
-              ),
+              for (Livreur livreur in profitableLivreurs) ...[
+                _livreurComp(livreur),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+          
             ],
           ),
         ),
@@ -520,13 +571,13 @@ class _FinancesPageState extends State<FinancesPage> {
     );
   }
 
-  Widget _livreurComp() {
-    return const Row(
+  Widget _livreurComp(Livreur livreur) {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Livreur 1",
-          style: TextStyle(
+          livreur.livreurName,
+          style: const TextStyle(
             color: Color(0xFF111111), // Replace with your desired text color
             fontFamily: "Inter",
             fontSize: 14,
@@ -537,8 +588,8 @@ class _FinancesPageState extends State<FinancesPage> {
           textAlign: TextAlign.right,
         ),
         Text(
-          "5,000",
-          style: TextStyle(
+          "${livreur.money} DA",
+          style: const TextStyle(
             color: Color(0xFF9F9F9F), // Replace with your desired text color
             fontFamily: "Inter",
             fontSize: 14,
