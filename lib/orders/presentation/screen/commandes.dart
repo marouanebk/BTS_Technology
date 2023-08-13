@@ -1,8 +1,11 @@
-
+import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/factor_command_container.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
@@ -11,6 +14,7 @@ import 'package:bts_technologie/orders/presentation/controller/command_bloc/comm
 import 'package:bts_technologie/orders/presentation/screen/new_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrdersPage extends StatefulWidget {
   final String role;
@@ -61,14 +65,19 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<CommandBloc>()..add(GetCommandesEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<CommandBloc>()..add(GetCommandesEvent()),
+        ),
+        BlocProvider(
+          create: (context) => sl<AccountBloc>()..add(GetUserInfoEvent()),
+        ),
+      ],
       child: Builder(builder: (context) {
         return SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
-              // Reload the page here
-              // For example, you can call a method on your bloc to fetch new data
               context.read<CommandBloc>().add(GetCommandesEvent());
             },
             child: Scaffold(
@@ -89,6 +98,28 @@ class _OrdersPageState extends State<OrdersPage> {
                         searchQuery = query;
                       });
                     }),
+                  ),
+                  BlocListener<AccountBloc, AccountState>(
+                    listener: (context, state) async {
+                      if (state.getUserInfoState == RequestState.error) {
+                        final prefs = await SharedPreferences.getInstance();
+
+                        await prefs.setInt('is logged in', 0);
+                        await prefs.remove("id");
+                        await prefs.remove('type');
+                        await prefs.remove("token");
+                        Navigator.of(context, rootNavigator: true)
+                            .pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return const LoginPage();
+                            },
+                          ),
+                          (_) => false,
+                        );
+                      }
+                    },
+                    child: const SizedBox(),
                   ),
                   const SizedBox(
                     height: 15,

@@ -64,10 +64,13 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
     if (response.statusCode == 200) {
       return Future.value(unit);
     } else {
+     String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['err']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -86,10 +89,13 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
         (e) => ArticleModel.fromJson(e),
       ));
     } else {
+     String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -116,10 +122,13 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
         (e) => ArticleModel.fromJson(e),
       ));
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 }

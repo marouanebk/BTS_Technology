@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bts_technologie/authentication/domaine/usecases/get_all_users_usecase.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -47,10 +48,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       getUserInfoState: RequestState.loading,
     ));
 
-    result.fold(
-        (l) => emit(state.copyWith(
-            getUserInfoState: RequestState.error,
-            getUserInfomessage: l.message)),
+    result.fold((l) {
+      log("Error message: "); // Log the error message
+      emit(state.copyWith(
+          getUserInfoState: RequestState.error, getUserInfomessage: l.message));
+    },
         (r) => emit(state.copyWith(
             getUserInfo: r, getUserInfoState: RequestState.loaded)));
   }

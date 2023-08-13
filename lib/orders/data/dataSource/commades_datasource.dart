@@ -31,10 +31,13 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
 
       return CommandModel.fromJsonList(response.data);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -63,7 +66,6 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
       final article = command.articleList[i];
       formData.fields.addAll([
         MapEntry('articles[$i][articleId]', article!.articleId!),
-
         MapEntry('articles[$i][commandType]', article.commandType!),
         MapEntry('articles[$i][variantId]', article.variantId),
         MapEntry('articles[$i][quantity]', article.quantity.toString()),
@@ -96,10 +98,13 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
     if (response.statusCode == 200) {
       return Future.value(unit);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['err']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -125,10 +130,13 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
     if (response.statusCode == 200) {
       return Future.value(unit);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['err']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 }

@@ -41,10 +41,13 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
       // return UserModel.fromJson(response.data['userid']);
       return UserModel.fromJson(response.data['user']);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['error']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -75,10 +78,13 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
 
       return UserModel.fromJson(response.data['user']);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['error']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -109,10 +115,13 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
         (e) => UserModel.fromJson(e),
       ));
     } else {
+     String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 }

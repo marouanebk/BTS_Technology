@@ -10,7 +10,7 @@
 
     <application
         android:name="${applicationName}"
-        android:label="bts_technologie"
+        android:label="VOY Pro"
         android:icon="@mipmap/ic_launcher">
 
         <!-- <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.fileProvider" android:exported="false" android:grantUriPermissions="true" tools:replace="android:authorities">

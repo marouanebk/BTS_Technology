@@ -42,11 +42,9 @@ class _MainPageState extends State<MainPage> {
     12: 'déc',
   };
 
-
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -114,6 +112,32 @@ class _MainPageState extends State<MainPage> {
                                         ),
                                       ),
                                     ),
+                                  ),
+                                  BlocListener<AccountBloc, AccountState>(
+                                    listener: (context, state) async {
+                                      if (state.getUserInfoState ==
+                                          RequestState.error) {
+                                        final prefs = await SharedPreferences
+                                            .getInstance();
+
+                                        await prefs.setInt('is logged in', 0);
+                                        await prefs.remove("id");
+                                        await prefs.remove('type');
+                                        await prefs.remove("token");
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) {
+                                              return const LoginPage();
+                                            },
+                                          ),
+                                          (_) => false,
+                                        );
+                                      }
+                                      
+                                    },
+                                    child: const SizedBox(),
                                   ),
                                   if (state.getCommandsStatsState ==
                                       RequestState.loading)
@@ -689,18 +713,7 @@ class _TopContainerDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-Widget _topContainer(
-  context,
-) {
-  // double maxScrollExtent = _scrollController.position.maxScrollExtent;
-  // double scrollOffset = _scrollController.offset;
-
-  // double opacity = 1.0;
-  // if (scrollOffset > 0) {
-  //   opacity = 1.0 - (scrollOffset / maxScrollExtent);
-  //   opacity = opacity.clamp(0.0, 1.0);
-  // }
-
+Widget _topContainer(context) {
   return SizedBox(
     width: MediaQuery.of(context).size.width,
     child: Stack(

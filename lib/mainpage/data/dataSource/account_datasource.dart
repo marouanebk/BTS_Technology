@@ -38,10 +38,13 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
         (e) => PageModel.fromJson(e),
       ));
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -88,10 +91,14 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
     if (response.statusCode == 200) {
       return UserModel.fromJson(response.data);
     } else {
+      String errorMessage = response.data['err'] ??
+          "Unknown error"; // Use a default message if 'err' is null
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['error']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -116,10 +123,13 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
     if (response.statusCode == 200) {
       return EntrepriseModel.fromJson(response.data);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['error']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -138,10 +148,11 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
         (e) => CommandStatsModel.fromJson(e),
       ));
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
+
       throw ServerException(
           errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+              statusCode: response.statusCode, statusMessage: errorMessage));
     }
   }
 
@@ -160,10 +171,14 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
         (e) => UserStatModel.fromJson(e),
       ));
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
+
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['message']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 }

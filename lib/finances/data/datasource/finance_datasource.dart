@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class BaseFinanceRemoteDateSource {
   Future<List<FinanceModel>> getFinances();
   Future<CashFlowModel> getCashFlow();
-  
 }
 
 class FinanceRemoteDataSource extends BaseFinanceRemoteDateSource {
@@ -26,13 +25,16 @@ class FinanceRemoteDataSource extends BaseFinanceRemoteDateSource {
     if (response.statusCode == 200) {
       return FinanceModel.fromJsonList(response.data);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['err']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
-  
+
   @override
   Future<CashFlowModel> getCashFlow() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -46,10 +48,13 @@ class FinanceRemoteDataSource extends BaseFinanceRemoteDateSource {
     if (response.statusCode == 200) {
       return CashFlowModel.fromJson(response.data);
     } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
       throw ServerException(
-          errorMessageModel: ErrorMessageModel(
-              statusCode: response.statusCode,
-              statusMessage: response.data['err']));
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
     }
   }
 }
