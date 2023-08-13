@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/notifications/domaine/UseCase/get_notifications_usecase.dart';

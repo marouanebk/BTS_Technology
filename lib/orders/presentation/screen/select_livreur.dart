@@ -1,11 +1,9 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
-import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
@@ -26,7 +24,6 @@ class SelectLivreur extends StatefulWidget {
 }
 
 class _SelectLivreurState extends State<SelectLivreur> {
-  bool _formSubmitted = false;
   int? _groupValue ;
   final List<String> options = ['Option 1', 'Option 2', 'Option 3'];
 

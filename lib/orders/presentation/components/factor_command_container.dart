@@ -245,12 +245,12 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
               height: 10,
             ),
             //add the generate factor
-            if (widget.role == 'admin'  || widget.role =='logistics')
-            containerButton(
-                "Générer une facture",
-                NewFactorPage(
-                  command: widget.command,
-                )),
+            if (widget.role == 'admin' || widget.role == 'logistics')
+              containerButton(
+                  "Générer une facture",
+                  NewFactorPage(
+                    command: widget.command,
+                  )),
             const SizedBox(
               height: 10,
             ),
@@ -280,20 +280,20 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 textAlign: TextAlign.center,
               ),
             ),
-            if( widget.command.livreur != null)
-             Center(
-              child: Text(
-                "Livré par ${widget.command.livreur}",
-                style: const TextStyle(
-                  color: Color(0xFF9F9F9F),
-                  fontFamily: "Inter",
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w400,
+            if (widget.command.livreur != null)
+              Center(
+                child: Text(
+                  "Livré par ${widget.command.livreur}",
+                  style: const TextStyle(
+                    color: Color(0xFF9F9F9F),
+                    fontFamily: "Inter",
+                    fontSize: 16,
+                    fontStyle: FontStyle.normal,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
           ],
         ),
       );
@@ -301,10 +301,6 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   }
 
   Widget clientInfo(Command command, isModificationAllowed) {
-    String totalPriceText = command.articleList
-        .map((article) => "${article!.quantity} x ${article.unityPrice}DA")
-        .join(" + ");
-
     int totalPrice = command.articleList.fold(0, (sum, article) {
       return sum + (article!.quantity * article.unityPrice.toInt());
     });
@@ -389,37 +385,36 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             ],
           ),
         ),
-        Container(
-          child: Row(
-            children: [
-              Flexible(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      const WidgetSpan(
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 8),
-                          child: Icon(
-                            Icons.event_note,
-                            color: Colors.black,
-                            size: 16,
-                          ),
+        Row(
+          children: [
+            Flexible(
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    const WidgetSpan(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 8),
+                        child: Icon(
+                          Icons.event_note,
+                          color: Colors.black,
+                          size: 16,
                         ),
                       ),
-                      TextSpan(
-                        text: command.noteClient,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF9F9F9F),
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
+                    ),
+                    TextSpan(
+                      text: command.noteClient,
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF9F9F9F),
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
+
         // Prix Soutraitant
         if (isModificationAllowed) ...[
           RichText(

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';

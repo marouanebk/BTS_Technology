@@ -102,13 +102,20 @@ Widget factorContainer(context, Command command) {
 }
 
 Widget clientInfo(Command command) {
-  String totalPriceText = command.articleList
-      .map((article) => "${article!.quantity} x ${article.unityPrice}DA")
-      .join(" + ");
-
   int totalPrice = command.articleList.fold(0, (sum, article) {
     return sum + (article!.quantity * article.unityPrice.toInt());
   });
+
+  String totalPriceMessage = command.sommePaid == 0
+      ? totalPrice.toString()
+      : "$totalPrice - ${command.sommePaid.toString()} ";
+
+  String st;
+  if (command.prixSoutraitant == null) {
+    st = "non définie";
+  } else {
+    st = command.prixSoutraitant.toString();
+  }
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -170,7 +177,7 @@ Widget clientInfo(Command command) {
               ),
             ),
             TextSpan(
-              text: totalPriceText,
+              text: totalPriceMessage,
               style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xFF9F9F9F),
@@ -179,37 +186,36 @@ Widget clientInfo(Command command) {
           ],
         ),
       ),
-      Container(
-        child: Row(
-          children: [
-            Flexible(
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    const WidgetSpan(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8),
-                        child: Icon(
-                          Icons.event_note,
-                          color: Colors.black,
-                          size: 16,
-                        ),
+      Row(
+        children: [
+          Flexible(
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  const WidgetSpan(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Icon(
+                        Icons.event_note,
+                        color: Colors.black,
+                        size: 16,
                       ),
                     ),
-                    TextSpan(
-                      text: command.noteClient,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF9F9F9F),
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
-                ),
+                  ),
+                  TextSpan(
+                    text: command.noteClient,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF9F9F9F),
+                        fontWeight: FontWeight.w400),
+                  ),
+                ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
+
       // Prix Soutraitant
       RichText(
         text: TextSpan(
@@ -218,14 +224,15 @@ Widget clientInfo(Command command) {
               child: Padding(
                 padding: EdgeInsets.only(right: 8),
                 child: Icon(
-                  Icons.event_note,
+                  // Icons.event_note,
+                  Icons.numbers,
                   color: Colors.black,
                   size: 16,
                 ),
               ),
             ),
             TextSpan(
-              text: "prix Soutraitant  : ${command.prixSoutraitant}",
+              text: st,
               style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xFF9F9F9F),

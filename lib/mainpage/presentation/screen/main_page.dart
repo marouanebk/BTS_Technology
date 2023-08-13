@@ -10,13 +10,11 @@ import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/ac
 import 'package:bts_technologie/mainpage/presentation/screen/admin_facebookpages_stats.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/admin_stats_page.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/clients_page.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math' as math;
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -44,14 +42,11 @@ class _MainPageState extends State<MainPage> {
     12: 'déc',
   };
 
-  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-      setState(() {}); // Trigger a rebuild when scrolling
-    });
+
   }
 
   @override
@@ -706,7 +701,7 @@ Widget _topContainer(
   //   opacity = opacity.clamp(0.0, 1.0);
   // }
 
-  return Container(
+  return SizedBox(
     width: MediaQuery.of(context).size.width,
     child: Stack(
       children: [

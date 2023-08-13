@@ -30,7 +30,6 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
       List.generate(45, (index) => false);
   List<bool> isFinancierDropDownVisibleList =
       List.generate(45, (index) => false);
-  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {

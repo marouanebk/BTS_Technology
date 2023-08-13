@@ -16,8 +16,6 @@ class ArticleRepository implements BaseArticleRepository {
   @override
   Future<Either<Failure, Unit>> addArticle(Article article) async {
     ArticleModel articleModel;
-    log("in data source for");
-    print(article.photo);
     if (article.photo != null) {
       articleModel = ArticleModel(
           buyingPrice: article.buyingPrice,

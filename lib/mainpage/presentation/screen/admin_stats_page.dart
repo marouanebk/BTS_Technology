@@ -1,7 +1,6 @@
 import 'package:bts_technologie/mainpage/domaine/Entities/user_stat_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
-import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
 import 'package:flutter/material.dart';
 
 class AdminUsersStatsPage extends StatefulWidget {

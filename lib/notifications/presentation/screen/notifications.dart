@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';

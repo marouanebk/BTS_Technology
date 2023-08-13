@@ -9,7 +9,6 @@ import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/check_box.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
-import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/account_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

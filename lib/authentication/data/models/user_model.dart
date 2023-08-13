@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
 

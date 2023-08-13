@@ -24,7 +24,6 @@ class FinanceRepository implements BaseFinanceRepository {
 
   @override
   Future<Either<Failure, Unit>> addArticle(Article article) {
-    // TODO: implement addArticle
     throw UnimplementedError();
   }
 

@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
@@ -195,12 +194,12 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 log("state loaded");
                 if (widget.role == "pageAdmin") {
                   // Retrieve userInfo.pages and userInfo.commandTypes
-                  final admin_pages = state.getUserInfo!.populatedpages!;
-                  final admin_commandTypes = state.getUserInfo!.commandeTypes!;
+                  final adminPages = state.getUserInfo!.populatedpages!;
+                  final adminCommandTypes = state.getUserInfo!.commandeTypes!;
                   final validCommandTypes =
-                      admin_commandTypes.where((type) => type != null).toList();
+                      adminCommandTypes.where((type) => type != null).toList();
 
-                  selectedPagesEnum = admin_pages.map((page) {
+                  selectedPagesEnum = adminPages.map((page) {
                     return {
                       "label": page.pageName.toString(),
                       "value": page.id.toString()

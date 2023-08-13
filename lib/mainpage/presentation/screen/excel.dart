@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/network/error_message_model.dart';
@@ -12,8 +10,6 @@ import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
-import 'package:path/path.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
@@ -430,7 +426,7 @@ class _ExcelFilesState extends State<ExcelFiles> {
     for (var rowIndex = 0; rowIndex < finances.length; rowIndex++) {
       final finance = finances[rowIndex];
 
-      sheet.getRangeByName('A${rowIndex + 2}').setText(finance.date! ?? '');
+      sheet.getRangeByName('A${rowIndex + 2}').setText(finance.date! );
       sheet
           .getRangeByName('B${rowIndex + 2}')
           .setText(finance.money.toString());
