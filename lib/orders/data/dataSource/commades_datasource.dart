@@ -6,6 +6,7 @@ import 'package:bts_technologie/core/network/error_message_model.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class BaseCommandRemoteDatasource {
@@ -75,8 +76,16 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
       // Add the photo files to the FormData object
       if (article.files != null) {
         for (int j = 0; j < article.files!.length; j++) {
-          final photo = await MultipartFile.fromFile(article.files![j].path);
-          formData.files.add(MapEntry('articles[$i][files][$j]', photo));
+          final file = article.files![j];
+          final originalFilename =
+              basename(file.path); // Get the original filename
+          final newFilename =
+              'article${i + 1}_$originalFilename'; // Create the new filename
+          final photo = await MultipartFile.fromFile(
+            file.path,
+            filename: newFilename, // Set the filename here
+          );
+          formData.files.add(MapEntry('photos', photo));
         }
       }
     }
@@ -112,11 +121,52 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
   Future<Unit> editCommand(CommandModel command) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    log("in data source for");
-    log(command.id.toString());
+    var formData = FormData();
+    formData.fields.addAll([
+      MapEntry('prixSoutraitant', command.prixSoutraitant.toString()),
+      MapEntry('nomClient', command.nomClient),
+      MapEntry('adresse', command.adresse),
+      MapEntry('phoneNumber', command.phoneNumber.toString()),
+      MapEntry('sommePaid', command.sommePaid.toString()),
+    ]);
+
+    if (command.noteClient != null) {
+      formData.fields.add(MapEntry('noteClient', command.noteClient!));
+    }
+    if (command.page != null) {
+      formData.fields.add(MapEntry('page', command.page!));
+    }
+
+    // Add the article data to the FormData object
+    for (int i = 0; i < command.articleList.length; i++) {
+      final article = command.articleList[i];
+      formData.fields.addAll([
+        MapEntry('articles[$i][articleId]', article!.articleId!),
+        MapEntry('articles[$i][commandType]', article.commandType!),
+        MapEntry('articles[$i][variantId]', article.variantId),
+        MapEntry('articles[$i][quantity]', article.quantity.toString()),
+        MapEntry('articles[$i][unityPrice]', article.unityPrice.toString()),
+      ]);
+
+      // Add the photo files to the FormData object
+      if (article.files != null) {
+        for (int j = 0; j < article.files!.length; j++) {
+          final file = article.files![j];
+          final originalFilename =
+              basename(file.path); // Get the original filename
+          final newFilename =
+              'article${i + 1}_$originalFilename'; // Create the new filename
+          final photo = await MultipartFile.fromFile(
+            file.path,
+            filename: newFilename,
+          );
+          formData.files.add(MapEntry('photos', photo));
+        }
+      }
+    }
     final response = await Dio().patch(
       ApiConstance.updateCommand(command.id!),
-      data: command.toJson(),
+      data: formData,
       options: Options(
         followRedirects: false,
         headers: {

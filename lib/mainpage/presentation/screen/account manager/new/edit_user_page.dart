@@ -198,7 +198,14 @@ class _EditUserPageState extends State<EditUserPage> {
         ),
       );
     } else {
-      log("failed");
+      String errorMessage = response.data['err'] ?? "Unknown error";
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(message: errorMessage, success: false),
+        ),
+      );
     }
   }
 

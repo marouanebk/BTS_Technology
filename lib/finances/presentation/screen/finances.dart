@@ -11,6 +11,7 @@ import 'package:bts_technologie/finances/presentation/controller/finance_bloc/fi
 import 'package:bts_technologie/finances/presentation/screen/new_charge.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/livreur_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
@@ -59,14 +60,17 @@ class _FinancesPageState extends State<FinancesPage> {
         final List<String> dateParts = entry.key.split('-');
         final String month = dateParts[0];
         final double value = entry.value.toDouble();
-        log(value.toString());
         return _ChartData('$month-${dateParts[1]}', value);
       }).toList();
-      log(data.toString());
 
       setState(() {}); // Trigger a rebuild to update the chart data
     } catch (error) {
-      print('Error fetching finances chart data: $error');
+      SnackBar(
+        backgroundColor: Colors.transparent,
+        content: CustomStyledSnackBar(
+            message: "Error fetching finances chart data: $error'",
+            success: false),
+      );
     }
   }
 
@@ -111,7 +115,7 @@ class _FinancesPageState extends State<FinancesPage> {
                           );
                         }
                         if (state.getLivreursState == RequestState.error) {
-                          log("error: " );
+                          log("error: ");
                           return Text(
                             state.getLivreursmessage,
                             style: const TextStyle(color: Colors.red),
@@ -563,7 +567,6 @@ class _FinancesPageState extends State<FinancesPage> {
                   height: 10,
                 ),
               ],
-          
             ],
           ),
         ),

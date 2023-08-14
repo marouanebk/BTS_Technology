@@ -35,6 +35,7 @@ class ApiConstance {
   static const String getArticles = "$baseUrl$articleApi/get";
   static const String createArticle = "$baseUrl$articleApi/create";
   static String editArticle(String id) => '$baseUrl$articleApi/update/$id';
+  static String deleteArticle(String id) => '$baseUrl$articleApi/delete/$id';
 
   static const String getCommandes = "$baseUrl$commandApi/get";
   static const String createCommandes = "$baseUrl$commandApi/create";

@@ -57,15 +57,22 @@ class _EditOrderPageState extends State<EditOrderPage> {
   @override
   void initState() {
     super.initState();
+    // Initialize the controllers with command details
     fullnameController.text = widget.command.nomClient;
     adresssController.text = widget.command.adresse;
     phonenumberController.text = widget.command.phoneNumber.toString();
     sommePaidController.text = widget.command.sommePaid.toString();
     noteClientController.text = widget.command.noteClient ?? "";
-
+    // if (widget.command.prixSoutraitant != null) {
+    //   prixSoutraitantController.text =
+    //       widget.command.prixSoutraitant.toString();
+    // } else {
+    //   prixSoutraitantController.text = "0";
+    // }
+    // selectedPage = widget.command.page;
     if (widget.role == "pageAdmin") {
-      commandTypesEnum = [];
-      selectedPage = null;
+      commandTypesEnum = []; // Initialize it to an empty list
+      selectedPage = null; // Initialize it to null
     }
   }
 
@@ -97,12 +104,14 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
   void _checkFormValidation(context) {
     bool hasEmptyFields = false;
-    bool hasInvalidNumericFields = false;
+    bool hasInvalidNumericFields = false; // Add this line
 
+    // Check if any of the input fields are empty
     if (fullnameController.text.isEmpty ||
         adresssController.text.isEmpty ||
         phonenumberController.text.isEmpty ||
         sommePaidController.text.isEmpty) {
+      // noteClientController.text.isEmpty ) {
       hasEmptyFields = true;
     }
 
@@ -110,6 +119,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
       hasEmptyFields = true;
       hasInvalidNumericFields = true;
     }
+
+    // Check if any variant is added and if any of the variant fields are empty
     if (variants.isEmpty) {
       hasEmptyFields = true;
     } else {
@@ -136,12 +147,16 @@ class _EditOrderPageState extends State<EditOrderPage> {
         }
       }
     }
+
+    // If there are empty fields, do not proceed with the submission
     if (hasEmptyFields || hasInvalidNumericFields) {
       setState(() {
         _formSubmitted = true;
       });
       return;
     }
+
+    // If all fields are filled, proceed with the submission
     setState(() {
       _formSubmitted = true;
     });
@@ -211,331 +226,338 @@ class _EditOrderPageState extends State<EditOrderPage> {
           create: (context) => sl<AccountBloc>(),
         ),
       ],
-      child: Builder(
-        builder: (context) {
-          return MultiBlocListener(
-            listeners: [
-              BlocListener<AccountBloc, AccountState>(
-                listener: (context, state) {
-                  log("state account listener: ");
-                  if (state.getUserInfoState == RequestState.loaded) {
-                    log("state loaded");
-                    if (widget.role == "pageAdmin") {
-                      // Retrieve userInfo.pages and userInfo.commandTypes
-                      final adminPages = state.getUserInfo!.populatedpages!;
-                      final adminCommandTypes =
-                          state.getUserInfo!.commandeTypes!;
-                      final validCommandTypes = adminCommandTypes
-                          .where((type) => type != null)
-                          .toList();
+      child: Builder(builder: (context) {
+        return MultiBlocListener(
+          listeners: [
+            BlocListener<AccountBloc, AccountState>(
+              listener: (context, state) {
+                log("state account listener: ");
+                if (state.getUserInfoState == RequestState.loaded) {
+                  log("state loaded");
+                  if (widget.role == "pageAdmin") {
+                    // Retrieve userInfo.pages and userInfo.commandTypes
+                    final adminPages = state.getUserInfo!.populatedpages!;
+                    final adminCommandTypes = state.getUserInfo!.commandeTypes!;
+                    final validCommandTypes = adminCommandTypes
+                        .where((type) => type != null)
+                        .toList();
 
-                      selectedPagesEnum = adminPages.map((page) {
-                        return {
-                          "label": page.pageName.toString(),
-                          "value": page.id.toString()
-                        };
-                      }).toList();
+                    selectedPagesEnum = adminPages.map((page) {
+                      return {
+                        "label": page.pageName.toString(),
+                        "value": page.id.toString()
+                      };
+                    }).toList();
 
-                      commandTypesEnum = validCommandTypes.map((type) {
-                        return {"label": type!, "value": type};
-                      }).toList();
-                      setState(() {});
-                    }
+                    commandTypesEnum = validCommandTypes.map((type) {
+                      return {"label": type!, "value": type};
+                    }).toList();
+                    setState(() {});
                   }
-                },
-              ),
-              BlocListener<CommandBloc, CommandesState>(
-                listener: (context, state) {
-                  log("state command listener: ");
+                }
+              },
+            ),
+            BlocListener<CommandBloc, CommandesState>(
+              listener: (context, state) {
+                log("state command listener: ");
 
-                  if (state.editCommandState == RequestState.loaded) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        if (widget.role == "financier") {
-                          return const FinancesBaseScreen(initialIndex: 0);
-                        } else if (widget.role == "pageAdmin") {
-                          return const AdminPageBaseScreen(initialIndex: 0);
-                        } else if (widget.role == "logistics") {
-                          return const LogistiquesBaseScreen(initialIndex: 0);
-                        } else {
-                          return const PageAdministratorBaseScreen(
-                              initialIndex: 1);
-                        }
-                      }),
-                    );
+                if (state.editCommandState == RequestState.loaded) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      if (widget.role == "financier") {
+                        return const FinancesBaseScreen(initialIndex: 0);
+                      } else if (widget.role == "pageAdmin") {
+                        return const AdminPageBaseScreen(initialIndex: 0);
+                      } else if (widget.role == "logistics") {
+                        return const LogistiquesBaseScreen(initialIndex: 0);
+                      } else {
+                        return const PageAdministratorBaseScreen(
+                            initialIndex: 1);
+                      }
+                    }),
+                  );
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.transparent,
-                        content: CustomStyledSnackBar(
-                            message: "Modified", success: true),
-                      ),
-                    );
-                  } else if (state.editCommandState == RequestState.error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       backgroundColor: Colors.transparent,
                       content: CustomStyledSnackBar(
-                          message: state.editCommandMessage, success: false),
+                          message: "Modified", success: true),
+                    ),
+                  );
+                } else if (state.editCommandState == RequestState.error) {
+                  SnackBar(
+                    backgroundColor: Colors.transparent,
+                    content: CustomStyledSnackBar(
+                        message: state.editCommandMessage, success: false),
+                  );
+                }
+              },
+            ),
+          ],
+          child: Builder(
+            builder: (context) {
+              return BlocBuilder<ArticleBloc, ArticleState>(
+                builder: (context, state) {
+                  log("state article listener: ");
+
+                  if (state.getArticlesState == RequestState.loading) {
+                                      log("loading event : ");
+
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.black,
+                      ),
                     );
                   }
-                },
-              ),
-            ],
-            child: Builder(
-              builder: (context) {
-                return BlocBuilder<ArticleBloc, ArticleState>(
-                  builder: (context, state) {
-                    if (state.getArticlesState == RequestState.loading) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.black,
-                        ),
+                  
+                   else 
+                   
+                   
+                   if (state.getArticlesState == RequestState.error) {
+                    return Container();
+                  } else {
+                    log("here ");
+                    articles = state.getArticles;
+                    articlesList = articles.map((article) {
+                      return {
+                        'label': article.name ?? "",
+                        'value': article.id ?? "",
+                      };
+                    }).toList();
+
+                    variants = widget.command.articleList.map((commandArticle) {
+                      final variant = ArticleItem();
+
+                      variant.article = commandArticle!.articleId;
+                      variant.variant = commandArticle.variantId;
+                      variant.type = commandArticle.commandType;
+                      variant.prixController.text =
+                          commandArticle.unityPrice.toString();
+                      variant.nbrArticlesController.text =
+                          commandArticle.quantity.toString();
+                      log("before selected  article  ");
+
+                      // log(variant.article.toString());
+                      // log(articles.toString());
+
+                      // Find the selected article in the articles list
+                      final selectedArticle = articles.firstWhere(
+                        (item) => item.id == variant.article,
                       );
-                    } else {
-                      articles = state.getArticles;
-                      articlesList = articles.map((article) {
-                        return {
-                          'label': article.name ?? "",
-                          'value': article.id ?? "",
-                        };
-                      }).toList();
 
-                      variants =
-                          widget.command.articleList.map((commandArticle) {
-                        log("before photos");
-                        print(commandArticle!.photos);
-                        final variant = ArticleItem();
+                      // Update the variants list of the selected article
+                      if (selectedArticle.variants != null) {
+                        variant.variants = selectedArticle.variants.map((variant) {
+                          return {
+                            'label': variant?.family ?? "",
+                            'value': variant?.id ?? "",
+                          };
+                        }).toList();
+                      } else {
+                        variant.variants.clear();
+                      }
 
-                        variant.article = commandArticle!.articleId;
-                        variant.variant = commandArticle.variantId;
-                        variant.type = commandArticle.commandType;
-                        variant.prixController.text =
-                            commandArticle.unityPrice.toString();
-                        variant.nbrArticlesController.text =
-                            commandArticle.quantity.toString();
-                        if (commandArticle.photos != null) {
-                          log("init photos");
-                          variant.files =
-                              commandArticle.photos!.map((photoPath) {
-                            return XFile(photoPath);
-                          }).toList();
-                        }
+                      return variant;
+                    }).toList();
 
-                        // Find the selected article in the articles list
-                        final selectedArticle = articles.firstWhere(
-                          (item) => item.id == variant.article,
-                        );
-                        log(selectedArticle.toString());
+                    // Initialize the list of articles for dropdown options
+                    articlesList = articles.map((article) {
+                      return {
+                        'label': article.name ?? "",
+                        'value': article.id ?? "",
+                      };
+                    }).toList();
 
-                        // Update the variants list of the selected article
-                        if (selectedArticle.variants != null) {
-                          variant.variants =
-                              selectedArticle.variants.map((variant) {
-                            return {
-                              'label': variant?.family ?? "",
-                              'value': variant?.id ?? "",
-                            };
-                          }).toList();
-                        } else {
-                          variant.variants.clear();
-                        }
+                    log("before the builder");
 
-                        return variant;
-                      }).toList();
-
-                      articlesList = articles.map((article) {
-                        return {
-                          'label': article.name ?? "",
-                          'value': article.id ?? "",
-                        };
-                      }).toList();
-
-                      return Scaffold(
-                        backgroundColor: Colors.white,
-                        appBar: const CustomAppBar(
-                            titleText: "Modifier la Commande"),
-                        body: Stack(
-                          children: [
-                            SingleChildScrollView(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 20),
-                                  buildInputField(
-                                    label: "Nom complet",
-                                    hintText: "Entrez le nom du client",
-                                    errorText: "Vous devez entrer le nom",
-                                    controller: fullnameController,
-                                    formSubmitted: _formSubmitted,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  buildInputField(
-                                    label: "Adresse",
-                                    hintText: "Entrez l'adresse de livraison",
-                                    errorText: "Vous devez entrer une adresse",
-                                    controller: adresssController,
-                                    formSubmitted: _formSubmitted,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  buildInputField(
-                                    label: "Numéro de téléphone",
-                                    hintText: "Entrez un numéro de téléphone",
-                                    errorText:
-                                        "Vous devez entrer un numéro de téléphone",
-                                    controller: phonenumberController,
-                                    formSubmitted: _formSubmitted,
-                                    isNumeric: true,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  buildInputField(
-                                    label: "Somme versée",
-                                    hintText: "Entrez une somme versée",
-                                    errorText:
-                                        "Vous devez entrer une somme versée",
-                                    controller: sommePaidController,
-                                    formSubmitted: _formSubmitted,
-                                    isNumeric: true,
-                                    isMoney: true,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  buildInputField(
-                                    label: "note Client",
-                                    hintText: "Entrez la note du client",
-                                    errorText: "",
-                                    controller: noteClientController,
-                                    formSubmitted: _formSubmitted,
-                                    isNumeric: false,
-                                    isMoney: false,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  if (widget.role == "pageAdmin") ...[
-                                    buildSelectField(
-                                      label: "Sélectionner une page",
-                                      hintText: "- Sélectionnez une page -",
-                                      errorText: "Vous devez entrer une page",
-                                      value: selectedPage,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedPage = value;
-                                        });
-                                      },
+                    return Builder(
+                      builder: (context) {
+                        return Scaffold(
+                          backgroundColor: Colors.white,
+                          appBar:
+                              const CustomAppBar(titleText: "Modifier la Commande"),
+                          body: Stack(
+                            children: [
+                              SingleChildScrollView(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    buildInputField(
+                                      label: "Nom complet",
+                                      hintText: "Entrez le nom du client",
+                                      errorText: "Vous devez entrer le nom",
+                                      controller: fullnameController,
                                       formSubmitted: _formSubmitted,
-                                      items: [
-                                        {"label": "1", "value": "1"},
-                                        {"label": "1", "value": "2"},
-                                      ],
                                     ),
-                                  ],
-                                  const SizedBox(height: 15),
-                                  const Text(
-                                    "Liste d'articles",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF9F9F9F)),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  _variantContainerList(),
-                                  // articleContainer(),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  _addArticleItem(),
-                                  const SizedBox(height: 80),
-                                ],
-                              ),
-                            ),
-                            BlocBuilder<CommandBloc, CommandesState>(
-                                builder: (context, state) {
-                              if (state.createCommandState ==
-                                  RequestState.error) {
-                                return Text(
-                                  state.createCommandMessage,
-                                  style: const TextStyle(color: Colors.red),
-                                );
-                              }
-                              return Container();
-                            }),
-                            BlocBuilder<CommandBloc, CommandesState>(
-                              builder: (context, state) {
-                                if (state.editCommandState ==
-                                    RequestState.loading) {
-                                  return Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Container(
-                                        height: 50,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          color: Colors.black,
-                                        ),
-                                        child: const Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Colors.white),
-                                          ),
-                                        ),
+                                    const SizedBox(height: 15),
+                                    buildInputField(
+                                      label: "Adresse",
+                                      hintText: "Entrez l'adresse de livraison",
+                                      errorText: "Vous devez entrer une adresse",
+                                      controller: adresssController,
+                                      formSubmitted: _formSubmitted,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    buildInputField(
+                                      label: "Numéro de téléphone",
+                                      hintText: "Entrez un numéro de téléphone",
+                                      errorText:
+                                          "Vous devez entrer un numéro de téléphone",
+                                      controller: phonenumberController,
+                                      formSubmitted: _formSubmitted,
+                                      isNumeric: true,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    buildInputField(
+                                      label: "Somme versée",
+                                      hintText: "Entrez une somme versée",
+                                      errorText:
+                                          "Vous devez entrer une somme versée",
+                                      controller: sommePaidController,
+                                      formSubmitted: _formSubmitted,
+                                      isNumeric: true,
+                                      isMoney: true,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    buildInputField(
+                                      label: "note Client",
+                                      hintText: "Entrez la note du client",
+                                      errorText: "",
+                                      controller: noteClientController,
+                                      formSubmitted: _formSubmitted,
+                                      isNumeric: false,
+                                      isMoney: false,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    if (widget.role == "pageAdmin") ...[
+                                      buildSelectField(
+                                        label: "Sélectionner une page",
+                                        hintText: "- Sélectionnez une page -",
+                                        errorText: "Vous devez entrer une page",
+                                        value: selectedPage,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            selectedPage = value;
+                                          });
+                                        },
+                                        formSubmitted: _formSubmitted,
+                                        items: [
+                                          {"label": "1", "value": "1"},
+                                          {"label": "1", "value": "2"},
+                                        ],
                                       ),
+                                    ],
+                                    const SizedBox(height: 15),
+                                    const Text(
+                                      "Liste d'articles",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xFF9F9F9F)),
                                     ),
+                                    const SizedBox(height: 10),
+                                    // _variantContainerList(),
+                                    // articleContainer(),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    _addArticleItem(),
+                                    const SizedBox(height: 80),
+                                  ],
+
+                                ),
+                              ),
+                              BlocBuilder<CommandBloc, CommandesState>(
+                                  builder: (context, state) {
+                                if (state.createCommandState ==
+                                    RequestState.error) {
+                                  return Text(
+                                    state.createCommandMessage,
+                                    style: const TextStyle(color: Colors.red),
                                   );
-                                } else {
-                                  return Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Container(
-                                        height: 50,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            _checkFormValidation(context);
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all(
-                                                    Colors.black),
+                                }
+                                return Container();
+                              }),
+                              BlocBuilder<CommandBloc, CommandesState>(
+                                builder: (context, state) {
+                                  if (state.editCommandState ==
+                                      RequestState.loading) {
+                                    return Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Container(
+                                          height: 50,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(5),
+                                            color: Colors.black,
                                           ),
-                                          child: const Text(
-                                            "Enregistrer la commande",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white,
+                                          child: const Center(
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                }
-                                // When not in loading state, show the button
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                );
-              },
-            ),
-          );
-        },
-      ),
+                                    );
+                                  } else {
+                                    return Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Container(
+                                          height: 50,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              _checkFormValidation(context);
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.black),
+                                            ),
+                                            child: const Text(
+                                              "Enregistrer la commande",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  // When not in loading state, show the button
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              );
+            }
+          ),
+        );
+      }),
     );
   }
 
   Widget _variantContainerList() {
-    log("variants : " + variants.toString());
     return ListView.separated(
       separatorBuilder: (context, index) => const SizedBox(
         height: 12,
@@ -816,5 +838,4 @@ class ArticleItem {
   String? variant;
   List<Map<String, String>> variants = [];
   List<XFile> files = [];
-  List<String> cachedNetworkImageUrls = []; // Store cached network image URLs
 }

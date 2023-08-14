@@ -8,6 +8,7 @@ class ArticleModel extends Article {
     String? name,
     String? unity,
     File? photo,
+    String? photoUrl,
     List<Variant?> variants = const [],
     required num buyingPrice,
     required num grosPrice,
@@ -17,6 +18,7 @@ class ArticleModel extends Article {
           name: name,
           unity: unity,
           photo: photo,
+          photoUrl:photoUrl,
           buyingPrice: buyingPrice,
           grosPrice: grosPrice,
           alertQuantity: alertQuantity,
@@ -47,6 +49,7 @@ class ArticleModel extends Article {
       buyingPrice: json["buyingPrice"],
       grosPrice: json["grosPrice"],
       alertQuantity: json["alertQuantity"],
+      photoUrl: json["photo"],
       variants: variants,
     );
   }

@@ -82,9 +82,7 @@ class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
         title: 'Logout',
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
-                onPressed: (context) => performLogout(context),
-
-    
+        onPressed: (context) => performLogout(context),
       ),
     ];
   }
@@ -134,11 +132,13 @@ class _LogistiquesBaseScreenState extends State<LogistiquesBaseScreen> {
     await prefs.remove("id");
     await prefs.remove('type');
     await prefs.remove("token");
-    pushNewScreen(
-      context,
-      screen: const LoginPage(),
-      withNavBar: false,
-      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return const LoginPage();
+        },
+      ),
+      (_) => false,
     );
   }
 }

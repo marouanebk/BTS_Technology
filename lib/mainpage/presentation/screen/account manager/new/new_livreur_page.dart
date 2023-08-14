@@ -95,7 +95,15 @@ class _NewLivreurAccountState extends State<NewLivreurAccount> {
                   ),
                 );
               } else {
-                log("failed");
+                String errorMessage = response.data['err'] ?? "Unknown error";
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.transparent,
+                    content: CustomStyledSnackBar(
+                        message: errorMessage, success: false),
+                  ),
+                );
               }
             },
             style: ButtonStyle(

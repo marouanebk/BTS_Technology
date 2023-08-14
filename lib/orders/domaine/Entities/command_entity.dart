@@ -72,6 +72,7 @@ class CommandArticle extends Equatable {
   final int quantity;
   final num unityPrice;
   final List<File>? files;
+  final List<String>? photos;
 
   const CommandArticle({
     this.id,
@@ -82,6 +83,7 @@ class CommandArticle extends Equatable {
     this.commandType,
     this.files,
     this.articleId,
+    this.photos,
 
     // required this.articleId,
     required this.variantId,
@@ -99,6 +101,7 @@ class CommandArticle extends Equatable {
         variantId,
         commandType,
         quantity,
-        unityPrice
+        unityPrice,
+        photos
       ];
 }

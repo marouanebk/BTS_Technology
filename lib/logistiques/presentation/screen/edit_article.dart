@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
@@ -7,7 +10,9 @@ import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/logistiques/presentation/components/select_field_input.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +38,7 @@ class _EditArticleState extends State<EditArticle> {
 
   List<VariantItem> variants = [];
   int count = 1;
+  File? selectedImage;
 
   @override
   void dispose() {
@@ -45,6 +51,8 @@ class _EditArticleState extends State<EditArticle> {
 
     super.dispose();
   }
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -69,6 +77,13 @@ class _EditArticleState extends State<EditArticle> {
       ));
     }
 
+    // if (widget.article.photoUrl != null) {
+    //   selectedImage = File(widget.article.photoUrl!);
+    //   setState(() {
+    //     selectedImage;
+    //   });
+    // }
+
     // Ensure at least one variant is always displayed
     if (variants.isEmpty) {
       variants.add(VariantItem());
@@ -77,8 +92,16 @@ class _EditArticleState extends State<EditArticle> {
 
   bool _formSubmitted = false;
 
+  bool isNumeric(String value) {
+    if (value == null) {
+      return false;
+    }
+    return double.tryParse(value) != null;
+  }
+
   void _checkFormValidation(context) {
     bool hasEmptyFields = false;
+    bool hasInvalidNumericFields = false; // Add this line
 
     // Check if any of the input fields are empty
     if (nomArticleController.text.isEmpty ||
@@ -87,6 +110,13 @@ class _EditArticleState extends State<EditArticle> {
         prixGrosController.text.isEmpty ||
         quanAlertController.text.isEmpty) {
       hasEmptyFields = true;
+    }
+
+    if (!isNumeric(prixAchatController.text) ||
+        !isNumeric(prixGrosController.text) ||
+        !isNumeric(quanAlertController.text)) {
+      hasEmptyFields = true;
+      hasInvalidNumericFields = true;
     }
 
     // Check if any variant is added and if any of the variant fields are empty
@@ -105,8 +135,21 @@ class _EditArticleState extends State<EditArticle> {
       }
     }
 
+    if (variants.isEmpty) {
+      hasEmptyFields = true;
+    } else {
+      for (var variant in variants) {
+        if (!isNumeric(variant.quantiteController.text)) {
+          hasEmptyFields = true;
+          hasInvalidNumericFields = true;
+
+          break;
+        }
+      }
+    }
+
     // If there are empty fields, do not proceed with the submission
-    if (hasEmptyFields) {
+    if (hasEmptyFields || hasInvalidNumericFields) {
       setState(() {
         _formSubmitted = true;
       });
@@ -121,29 +164,77 @@ class _EditArticleState extends State<EditArticle> {
   }
 
   void _submitForm(context) async {
-    final articleModel = ArticleModel(
-      name: nomArticleController.text,
-      unity: uniteController.text,
-      buyingPrice: double.parse(prixAchatController.text),
-      grosPrice: double.parse(prixGrosController.text),
-      alertQuantity: int.parse(quanAlertController.text),
-      variants: variants.map((variant) {
-        return Variant(
-          colour: variant.nomCouleurController.text,
-          colourCode: variant.codeCouleurController.text,
-          taille: variant.tailleController.text,
-          quantity: int.parse(variant.quantiteController
-              .text), // Note: this should be a String, not int.parse
-          family: variant.family!,
-        );
-      }).toList(),
-    );
+    setState(() {
+      isLoading = true; // Set isLoading to true when submitting
+    });
+    ArticleModel articleModel;
+    if (selectedImage != null) {
+      articleModel = ArticleModel(
+        name: nomArticleController.text,
+        unity: uniteController.text,
+        photo: selectedImage,
+        buyingPrice: double.parse(prixAchatController.text),
+        grosPrice: double.parse(prixGrosController.text),
+        alertQuantity: int.parse(quanAlertController.text),
+        variants: variants.map((variant) {
+          return Variant(
+            colour: variant.nomCouleurController.text,
+            colourCode: variant.codeCouleurController.text,
+            taille: variant.tailleController.text,
+            quantity: int.parse(variant.quantiteController
+                .text), // Note: this should be a String, not int.parse
+            family: variant.family!,
+          );
+        }).toList(),
+      );
+    } else {
+      articleModel = ArticleModel(
+        name: nomArticleController.text,
+        unity: uniteController.text,
+        buyingPrice: double.parse(prixAchatController.text),
+        grosPrice: double.parse(prixGrosController.text),
+        alertQuantity: int.parse(quanAlertController.text),
+        variants: variants.map((variant) {
+          return Variant(
+            colour: variant.nomCouleurController.text,
+            colourCode: variant.codeCouleurController.text,
+            taille: variant.tailleController.text,
+            quantity: int.parse(variant.quantiteController.text),
+            family: variant.family!,
+          );
+        }).toList(),
+      );
+    }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    final response = await Dio().post(
+    var formData = FormData.fromMap(articleModel.toJson());
+    if (articleModel.photo != null) {
+      formData.files.add(MapEntry(
+        'photo',
+        await MultipartFile.fromFile(articleModel.photo!.path),
+      ));
+    }
+
+    final photoEntry = formData.files.firstWhere(
+      (entry) => entry.key == 'photo',
+      orElse: () => MapEntry('', MultipartFile.fromString('')),
+    );
+    if (photoEntry.key == 'photo') {
+      log('Photo: ${photoEntry.value}');
+    } else {
+      log('No photo found in formData');
+    }
+
+    final imageFile = File(articleModel.photo!.path);
+    if (imageFile.existsSync()) {
+      log("correct");
+    } else {
+      log("false");
+    }
+    final response = await Dio().patch(
       ApiConstance.editArticle(widget.article.id!),
-      data: articleModel.toJson(),
+      data: formData,
       options: Options(
         followRedirects: false,
         headers: {
@@ -173,10 +264,16 @@ class _EditArticleState extends State<EditArticle> {
         ),
       );
     } else {
-      SnackBar(
-        backgroundColor: Colors.transparent,
-        content:
-            CustomStyledSnackBar(message: response.data['err'], success: true),
+      setState(() {
+        isLoading = false;
+      });
+      String errorMessage = response.data['err'] ?? "Unknown error";
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(message: errorMessage, success: false),
+        ),
       );
     }
   }
@@ -188,25 +285,7 @@ class _EditArticleState extends State<EditArticle> {
       child: Builder(builder: (context) {
         return Scaffold(
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            centerTitle: true, // Align the title to the center
-
-            title: const Text(
-              "Ajouter un article",
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.grey),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            // backgroundColor:
-            //     Colors.blue.withOpacity(0.3), //You can make this transparent
-            elevation: 0.0,
-          ),
+          appBar: const CustomAppBar(titleText: "Modifier l'article"),
           body: Stack(
             children: [
               SingleChildScrollView(
@@ -253,6 +332,7 @@ class _EditArticleState extends State<EditArticle> {
                         controller: quanAlertController,
                         isNumeric: true,
                         formSubmitted: _formSubmitted),
+                    _selectedImage(context),
                     const SizedBox(height: 20),
                     _imagePickerContainer(),
                     const SizedBox(
@@ -284,21 +364,27 @@ class _EditArticleState extends State<EditArticle> {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(5)),
                     child: ElevatedButton(
-                      onPressed: () {
-                        _checkFormValidation(context);
-                      },
+                      onPressed: isLoading
+                          ? null // Disable the button when isLoading is true
+                          : () {
+                              _checkFormValidation(context);
+                            },
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Colors.black),
                       ),
-                      child: const Text(
-                        "Ajouter l'article",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            ) // Show loading indicator instead of text
+                          : const Text(
+                              "Modifier l'article",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -385,6 +471,28 @@ class _EditArticleState extends State<EditArticle> {
         ),
       ),
     );
+  }
+
+  Widget _selectedImage(context) {
+    if (selectedImage != null) {
+      return Image.file(
+        selectedImage!,
+        width: double.infinity,
+        height: 150,
+        fit: BoxFit.cover,
+      );
+    } else if (widget.article.photoUrl != null) {
+      return CachedNetworkImage(
+        imageUrl: widget.article.photoUrl!,
+        width: double.infinity,
+        height: 150,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Widget _variantContainer(VariantItem variant) {
@@ -487,7 +595,9 @@ class _EditArticleState extends State<EditArticle> {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      // Perform operations with the selected image.
+      setState(() {
+        selectedImage = File(image.path);
+      });
     }
   }
 }

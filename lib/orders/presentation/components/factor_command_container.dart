@@ -49,7 +49,6 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     {'label': 'Numero erroné', "value": "Numero erroné"},
     {'label': 'Annulé', "value": "Annulé"},
     {'label': 'Pas confirmé', "value": "Pas confirmé"},
-    {'label': 'Préparé', "value": "Préparé"},
   ];
 
   List<Map<String, String>> statusListPageAdmin = [
@@ -91,6 +90,10 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
         return [];
     }
   }
+
+  bool _containsStatus(List<Map<String, String>> statusList, String? status) {
+  return statusList.any((map) => map['value'] == status);
+}
 
   Future<void> _updateStatus(String? newStatus, context) async {
     if (newStatus == "Expidié") {
@@ -156,6 +159,14 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     bool isModificationAllowed = widget.role == "admin" ||
         widget.role == "financier" ||
         getStatusListBasedOnRole().contains(type);
+    bool showModifyButton = false;;
+
+    if (widget.role == "admin" ||
+        (widget.role == "pageAdmin" && _containsStatus(modificationsRights, type))  ||
+        (widget.role == "logistics" && _containsStatus(modificationsRights, type)) ) {
+      showModifyButton = true;
+    }
+
     return Builder(builder: (context) {
       return Padding(
         padding: const EdgeInsets.only(left: 16.0, bottom: 20),
@@ -234,7 +245,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
               ),
             ],
 
-            if (isModificationAllowed)
+            if (showModifyButton)
               containerButton(
                   "Modifier la commande",
                   EditOrderPage(

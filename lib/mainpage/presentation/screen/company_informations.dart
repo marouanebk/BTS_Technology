@@ -95,11 +95,19 @@ class _CompanyInformationsState extends State<CompanyInformations> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.transparent,
-          content: CustomStyledSnackBar(message: "Information Modifier", success: true),
+          content: CustomStyledSnackBar(
+              message: "Information Modifier", success: true),
         ),
       );
     } else {
-      CustomStyledSnackBar(message: response.data['err'], success: false);
+      String errorMessage = response.data['err'] ?? "Unknown error";
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(message: errorMessage, success: false),
+        ),
+      );
     }
   }
 

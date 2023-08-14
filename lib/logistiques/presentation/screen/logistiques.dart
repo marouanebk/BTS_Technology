@@ -1,6 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
@@ -9,8 +12,14 @@ import 'package:bts_technologie/logistiques/presentation/controller/article_bloc
 import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart';
 import 'package:bts_technologie/logistiques/presentation/screen/edit_article.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
+import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Logistiques extends StatefulWidget {
   final String role;
@@ -44,55 +53,62 @@ class _LogistiquesState extends State<Logistiques> {
       child: Builder(
         builder: (context) {
           return Scaffold(
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    screenHeader("Logistiques",
-                        'assets/images/navbar/logis_activated.svg'),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    BlocBuilder<ArticleBloc, ArticleState>(
-                        builder: (context, state) {
-                      if (state.getArticlesState == RequestState.loading) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.red,
-                          ),
-                        );
-                      }
-                      if (state.getArticlesState == RequestState.loaded) {
-                        if (isListInitialized == false) {
-                          isDropDownVisibleList = List.generate(
-                            state.getArticles.length,
-                            (index) => false,
+            body: RefreshIndicator(
+              onRefresh: () async {
+                context.read<ArticleBloc>().add(GetArticlesEvent());
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      screenHeader("Logistiques",
+                          'assets/images/navbar/logis_activated.svg'),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      BlocBuilder<ArticleBloc, ArticleState>(
+                          builder: (context, state) {
+                        if (state.getArticlesState == RequestState.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.red,
+                            ),
                           );
-                          isListInitialized = true;
                         }
-                        return ListView.separated(
-                          scrollDirection: Axis.vertical,
-                          separatorBuilder: (context, index) => const SizedBox(
-                            height: 7,
-                          ),
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.getArticles.length,
-                          itemBuilder: (context, index) {
-                            return logiItem(state.getArticles[index], index);
-                          },
-                        );
-                      }
-                      return Container();
-                    }),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                  ],
+                        if (state.getArticlesState == RequestState.loaded) {
+                          if (isListInitialized == false) {
+                            isDropDownVisibleList = List.generate(
+                              state.getArticles.length,
+                              (index) => false,
+                            );
+                            isListInitialized = true;
+                          }
+                          return ListView.separated(
+                            scrollDirection: Axis.vertical,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 7,
+                            ),
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: state.getArticles.length,
+                            itemBuilder: (context, index) {
+                              return logiItem(
+                                  state.getArticles[index], index, context);
+                            },
+                          );
+                        }
+                        return Container();
+                      }),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -129,17 +145,17 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget logiItem(article, int index) {
+  Widget logiItem(article, int index, context) {
     int totalQuantity =
         article.variants.fold(0, (sum, variant) => sum + variant.quantity);
 
+    bool hasPhoto = article.photoUrl != null && article.photoUrl.isNotEmpty;
+
     return GestureDetector(
       onTap: () {
-        log(isDropDownVisibleList[index].toString());
         setState(() {
           isDropDownVisibleList[index] = !isDropDownVisibleList[index];
         });
-        log(isDropDownVisibleList[index].toString());
       },
       child: Container(
         decoration: BoxDecoration(
@@ -174,20 +190,35 @@ class _LogistiquesState extends State<Logistiques> {
                   SizedBox(
                     width: 40,
                     height: 52,
-                    child: Image.asset(
-                        "assets/images/logistiques/sweat_oversize.png"),
+                    child: hasPhoto
+                        ? Image.network(article.photoUrl)
+                        // ? FutureBuilder<Uint8List>(
+                        //     future: _fetchImage(article.photoUrl),
+                        //     builder: (context, snapshot) {
+                        //       if (snapshot.connectionState ==
+                        //           ConnectionState.waiting) {
+                        //         return CircularProgressIndicator();
+                        //       } else if (snapshot.hasError) {
+                        //         return Text('Error loading image');
+                        //       } else {
+                        //         return Image.memory(snapshot.data!);
+                        //       }
+                        //     },
+                        //   )
+                        : Image.asset(
+                            "assets/images/logistiques/sweat_oversize.png"), // Fallback asset image
                   ),
                 ],
               ),
             ),
-            if (isDropDownVisibleList[index]) articleDropDown(article),
+            if (isDropDownVisibleList[index]) articleDropDown(article, context),
           ],
         ),
       ),
     );
   }
 
-  Widget articleDropDown(article) {
+  Widget articleDropDown(article, context) {
     return Padding(
       padding: const EdgeInsets.only(left: 15),
       child: Column(
@@ -235,7 +266,7 @@ class _LogistiquesState extends State<Logistiques> {
           const SizedBox(
             height: 5,
           ),
-          deleteButton(context),
+          deleteButton(context, article.id),
           const SizedBox(
             height: 20,
           ),
@@ -244,7 +275,7 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget deleteButton(context) {
+  Widget deleteButton(context, id) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Container(
@@ -254,7 +285,46 @@ class _LogistiquesState extends State<Logistiques> {
           borderRadius: BorderRadius.circular(5),
         ),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            final token = prefs.getString("token");
+            final response = await Dio().delete(ApiConstance.deleteArticle(id),
+                options: Options(
+                  headers: {
+                    "Authorization": "Bearer $token",
+                  },
+                ));
+            if (response.statusCode == 200) {
+              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return Logistiques(
+                      role: widget.role,
+                    );
+                  },
+                ),
+                (_) => false,
+              );
+              // BlocProvider.of<ArticleBloc>(context).add(GetArticlesEvent());
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: Colors.transparent,
+                  content: CustomStyledSnackBar(
+                      message: "Article Deleted", success: true),
+                ),
+              );
+
+              // Navigator.of(context).pushReplacementNamed('/accountManager');
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: Colors.transparent,
+                  content:
+                      CustomStyledSnackBar(message: "Error", success: false),
+                ),
+              );
+            }
+          },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.red),
           ),
@@ -425,5 +495,14 @@ class _LogistiquesState extends State<Logistiques> {
         ],
       ),
     );
+  }
+
+  Future<Uint8List> _fetchImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to load image');
+    }
   }
 }

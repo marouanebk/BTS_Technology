@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/add_article_usecase.dart';
@@ -30,6 +31,9 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   FutureOr<void> _getArticlesEvent(
       GetArticlesEvent event, Emitter<ArticleState> emit) async {
     final result = await getArticlesUseCase();
+    // log("article event ");
+    // emit(state.copyWith(
+    //         getArticlesState: RequestState.loading));
     result.fold(
         (l) => emit(state.copyWith(
             getArticlesState: RequestState.error,
@@ -40,6 +44,9 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   FutureOr<void> _createArticlesEvent(
       CreateArticleEvent event, Emitter<ArticleState> emit) async {
     final result = await createArticleUseCase(event.article);
+     emit(state.copyWith(
+            createArticleState: RequestState.loading));
+
     result.fold(
         (l) => emit(state.copyWith(
             createArticleState: RequestState.error, createArticleMessage: l.message)),

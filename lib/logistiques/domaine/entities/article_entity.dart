@@ -11,12 +11,14 @@ class Article extends Equatable {
   final int alertQuantity;
   final List<Variant?> variants;
   final File? photo;
+  final String? photoUrl;
 
   const Article({
     this.id,
     this.name,
     this.unity,
     this.photo,
+    this.photoUrl,
     required this.variants,
     required this.buyingPrice,
     required this.grosPrice,

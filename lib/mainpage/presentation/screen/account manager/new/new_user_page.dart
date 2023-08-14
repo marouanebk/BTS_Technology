@@ -191,6 +191,15 @@ class _NewUserPageState extends State<NewUserPage> {
                         setState(() {
                           error = state.message;
                         });
+             
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.transparent,
+                            content: CustomStyledSnackBar(
+                                message: error, success: false),
+                          ),
+                        );
                       } else if (state is MessageUserBlocState) {
                         Navigator.of(context)
                             .pushReplacementNamed('/accountManager');

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -191,7 +192,7 @@ class _MainPageState extends State<MainPage> {
                                           height: 30,
                                         ),
                                         SizedBox(
-                                          height: 330,
+                                          height: 350,
                                           child: PageView(
                                             controller: controller,
                                             onPageChanged: (index) {
@@ -639,10 +640,10 @@ class _MainPageState extends State<MainPage> {
             percent: progress / 100,
             progressColor: Colors.black,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           SizedBox(
-            width: 50, // adjust this value to your needs
-            child: Text(
+            width: 60, // adjust this value to your needs
+            child: AutoSizeText(
               '$number - $progress%',
               style: const TextStyle(
                   fontSize: 12,

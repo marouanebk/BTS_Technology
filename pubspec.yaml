@@ -41,6 +41,7 @@ dependencies:
   auto_size_text: ^3.0.0
   persistent_bottom_nav_bar_v2: ^4.2.8
   flutter_launcher_icons: ^0.13.1
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -61,11 +62,11 @@ flutter_launcher_icons:
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/images/app_log.jpg"
+    image_path: "assets/images/app_logo.jpg"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: assets/images/app_log.jpg"
+    image_path: assets/images/app_logo.jpg"
 
 flutter:
 

@@ -50,9 +50,16 @@ class _NewArticleState extends State<NewArticle> {
   }
 
   bool _formSubmitted = false;
+  bool isNumeric(String value) {
+    if (value == null) {
+      return false;
+    }
+    return double.tryParse(value) != null;
+  }
 
   void _checkFormValidation(context) {
     bool hasEmptyFields = false;
+    bool hasInvalidNumericFields = false; // Add this line
 
     // Check if any of the input fields are empty
     if (nomArticleController.text.isEmpty ||
@@ -63,6 +70,14 @@ class _NewArticleState extends State<NewArticle> {
       hasEmptyFields = true;
     }
 
+    if (!isNumeric(prixAchatController.text) ||
+        !isNumeric(prixGrosController.text) ||
+        !isNumeric(quanAlertController.text)) {
+      hasEmptyFields = true;
+      hasInvalidNumericFields = true;
+    }
+
+    // Check if any variant is added and if any of the variant fields are empty
     if (variants.isEmpty) {
       hasEmptyFields = true;
     } else {
@@ -78,7 +93,21 @@ class _NewArticleState extends State<NewArticle> {
       }
     }
 
-    if (hasEmptyFields) {
+    if (variants.isEmpty) {
+      hasEmptyFields = true;
+    } else {
+      for (var variant in variants) {
+        if (!isNumeric(variant.quantiteController.text)) {
+          hasEmptyFields = true;
+          hasInvalidNumericFields = true;
+
+          break;
+        }
+      }
+    }
+
+    // If there are empty fields, do not proceed with the submission
+    if (hasEmptyFields || hasInvalidNumericFields) {
       setState(() {
         _formSubmitted = true;
       });
@@ -249,34 +278,64 @@ class _NewArticleState extends State<NewArticle> {
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      height: 50, // Set the height to 50
-                      width: double.infinity,
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _checkFormValidation(context);
-                        },
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.black),
-                        ),
-                        child: const Text(
-                          "Ajouter l'article",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                BlocBuilder<ArticleBloc, ArticleState>(
+                  builder: (context, state) {
+                    if (state.createArticleState == RequestState.loading) {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.black,
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
+                      );
+                    } else if (state.createArticleState == RequestState.initial) {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            height: 50, // Set the height to 50
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5)),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _checkFormValidation(context);
+                              },
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.black),
+                              ),
+                              child: const Text(
+                                "Ajouter l'article",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else{ 
+                      return Container();
+                    }
+                
+                  },
                 ),
               ],
             ),

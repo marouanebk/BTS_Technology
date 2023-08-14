@@ -24,7 +24,7 @@ class ArticleState extends Equatable {
     this.getUnDoneTodoState = RequestState.loading,
     this.getUnDoneTodomessage = "",
     //
-    this.createArticleState = RequestState.loading,
+    this.createArticleState = RequestState.initial,
     this.createArticleMessage = "",
   });
 

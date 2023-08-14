@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
@@ -55,6 +56,7 @@ class CommandModel extends Command {
         List<CommandArticle> variants = [];
         if (articleList != null) {
           variants = articleList.map((variantJson) {
+            log("photos : " + variantJson['photos'].toString());
             return CommandArticle(
               // articleId: variantJson['_id'],
               articleId: variantJson['articleId'],
@@ -67,9 +69,12 @@ class CommandModel extends Command {
               quantity: variantJson['quantity'],
               family: variantJson['family'],
               articleName: variantJson['articleName'],
+              photos: List<String>.from(variantJson["photos"] ?? []),
             );
           }).toList();
+
         }
+
         String? page;
         String? livreur;
         if (data["page"] != null) page = data["page"]["name"];

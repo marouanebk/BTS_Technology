@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,11 +34,13 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
       await prefs.remove("id");
       await prefs.remove('type');
       await prefs.remove("token");
-      pushNewScreen(
-        context,
-        screen: const LoginPage(),
-        withNavBar: false,
-        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (BuildContext context) {
+            return const LoginPage();
+          },
+        ),
+        (_) => false,
       );
     }
 

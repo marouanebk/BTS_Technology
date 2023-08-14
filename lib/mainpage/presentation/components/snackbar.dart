@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class CustomStyledSnackBar extends StatelessWidget {
@@ -31,7 +32,7 @@ class CustomStyledSnackBar extends StatelessWidget {
               color: iconColor,
             ),
             const SizedBox(width: 10),
-            Text(
+            AutoSizeText(
               message,
               style: const TextStyle(
                 color: Colors.black,
