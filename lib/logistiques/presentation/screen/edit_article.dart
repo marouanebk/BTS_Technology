@@ -218,22 +218,6 @@ class _EditArticleState extends State<EditArticle> {
       ));
     }
 
-    final photoEntry = formData.files.firstWhere(
-      (entry) => entry.key == 'photo',
-      orElse: () => MapEntry('', MultipartFile.fromString('')),
-    );
-    if (photoEntry.key == 'photo') {
-      log('Photo: ${photoEntry.value}');
-    } else {
-      log('No photo found in formData');
-    }
-
-    final imageFile = File(articleModel.photo!.path);
-    if (imageFile.existsSync()) {
-      log("correct");
-    } else {
-      log("false");
-    }
     final response = await Dio().patch(
       ApiConstance.editArticle(widget.article.id!),
       data: formData,

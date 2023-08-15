@@ -92,8 +92,8 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   }
 
   bool _containsStatus(List<Map<String, String>> statusList, String? status) {
-  return statusList.any((map) => map['value'] == status);
-}
+    return statusList.any((map) => map['value'] == status);
+  }
 
   Future<void> _updateStatus(String? newStatus, context) async {
     if (newStatus == "Expidié") {
@@ -159,11 +159,14 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     bool isModificationAllowed = widget.role == "admin" ||
         widget.role == "financier" ||
         getStatusListBasedOnRole().contains(type);
-    bool showModifyButton = false;;
+    bool showModifyButton = false;
+    ;
 
     if (widget.role == "admin" ||
-        (widget.role == "pageAdmin" && _containsStatus(modificationsRights, type))  ||
-        (widget.role == "logistics" && _containsStatus(modificationsRights, type)) ) {
+        (widget.role == "pageAdmin" &&
+            _containsStatus(modificationsRights, type)) ||
+        (widget.role == "logistics" &&
+            _containsStatus(modificationsRights, type))) {
       showModifyButton = true;
     }
 
@@ -201,34 +204,58 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
               spacing: 8.0, // Adjust spacing between images
               runSpacing: 8.0, // Adjust spacing between lines
               children: [
-                ...List.generate(
-                  5,
-                  (index) => InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        _createRoute("assets/images/tshirt_${index + 1}.png"),
-                      );
-                    },
-                    child: Container(
-                      height: 72,
-                      width: 72,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: const Color(0xFFECECEC),
-                          width: 1,
-                        ),
-                      ),
-                      child: Image.asset(
-                        "assets/images/tshirt_2.png",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
+                ...widget.command.articleList
+                    .where((article) => article?.photos != null)
+                    .expand((article) => article!.photos!)
+                    .map((photoUrl) => InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              _createRoute(photoUrl),
+                            );
+                          },
+                          child: Container(
+                            height: 72,
+                            width: 72,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                color: const Color(0xFFECECEC),
+                                width: 1,
+                              ),
+                            ),
+                            child: Image.network(
+                              photoUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return Icon(Icons
+                                    .error); // You can display an error icon here if loading fails
+                              },
+                            ),
+                          ),
+                        ))
+                    .toList(),
               ],
             ),
+
             const SizedBox(
               height: 10,
             ),

@@ -194,19 +194,6 @@ class _LogistiquesState extends State<Logistiques> {
                     height: 52,
                     child: hasPhoto
                         ? Image.network(article.photoUrl)
-                        // ? FutureBuilder<Uint8List>(
-                        //     future: _fetchImage(article.photoUrl),
-                        //     builder: (context, snapshot) {
-                        //       if (snapshot.connectionState ==
-                        //           ConnectionState.waiting) {
-                        //         return CircularProgressIndicator();
-                        //       } else if (snapshot.hasError) {
-                        //         return Text('Error loading image');
-                        //       } else {
-                        //         return Image.memory(snapshot.data!);
-                        //       }
-                        //     },
-                        //   )
                         : Image.asset(
                             "assets/images/logistiques/sweat_oversize.png"), // Fallback asset image
                   ),
@@ -297,39 +284,6 @@ class _LogistiquesState extends State<Logistiques> {
                   },
                 ));
             if (response.statusCode == 200) {
-              // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              //   MaterialPageRoute(
-              //     builder: (BuildContext context) {
-              //       return Logistiques(
-              //         role: widget.role,
-              //       );
-              //     },
-              //   ),
-              //   (_) => false,
-              // );
-
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (context) {
-              //     if (widget.role == "logistics") {
-              //       return const LogistiquesBaseScreen(initialIndex: 2);
-              //     } else {
-              //       return const PageAdministratorBaseScreen(initialIndex: 3);
-              //     }
-              //   }),
-              // );
-
-              // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              //   MaterialPageRoute(builder: (context) {
-              //     if (widget.role == "logistics") {
-              //       return const LogistiquesBaseScreen(initialIndex: 2);
-              //     } else {
-              //       return const PageAdministratorBaseScreen(initialIndex: 3);
-              //     }
-              //   }),
-              //   (route) => false,
-              // );
-
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -341,18 +295,6 @@ class _LogistiquesState extends State<Logistiques> {
                 ),
               );
 
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(builder: (context) {
-              //     if (widget.role == "logistics") {
-              //       return const LogistiquesBaseScreen(initialIndex: 2);
-              //     } else {
-              //       return const PageAdministratorBaseScreen(initialIndex: 3);
-              //     }
-              //   }),
-              //   (route) => false,
-              // );
-              // BlocProvider.of<ArticleBloc>(context).add(GetArticlesEvent());
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   backgroundColor: Colors.transparent,
@@ -450,62 +392,61 @@ class _LogistiquesState extends State<Logistiques> {
                   shape: BoxShape.circle,
                   color: containerColor,
                   border: Border.all(
-                    color: Colors.black, // You can change the border color here
-                    width: 1, // You can adjust the border width here
+                    color: Colors.black,
+                    width: 1,
                   ),
                 ),
               ),
-              const SizedBox(width: 4), // Add some spacing
-              AutoSizeText(
-                article.colour,
-                style: const TextStyle(
-                  color:
-                      Color(0xFF9F9F9F), // Use var(--text-grey, #9F9F9F) here
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w400,
-                  height: 1.0,
+              const SizedBox(width: 4),
+              Flexible(
+                child: AutoSizeText(
+                  article.colour,
+                  style: const TextStyle(
+                    color: Color(0xFF9F9F9F),
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    height: 1.0,
+                  ),
+                  maxLines: 1,
                 ),
-                maxLines: 1, // Adjust this based on your design
               ),
-              const SizedBox(width: 4), // Add some spacing
+              const SizedBox(width: 4),
               const Text(
                 "|",
                 style: TextStyle(
                   color: Color(0xFF9F9F9F),
                   fontFamily: 'Inter',
                   fontSize: 16,
-                  fontStyle: FontStyle.normal,
                   fontWeight: FontWeight.w400,
                   height: 1.0,
                 ),
               ),
-              const SizedBox(width: 4), // Add some spacing
-              AutoSizeText(
-                "${article.taille} | ${article.family} ----- ",
-                style: const TextStyle(
-                  color: Color(0xFF9F9F9F),
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w400,
-                  height: 1.0,
+              Flexible(
+                child: AutoSizeText(
+                  "${article.taille} | ${article.family} ----- ",
+                  style: const TextStyle(
+                    color: Color(0xFF9F9F9F),
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    height: 1.0,
+                  ),
+                  maxLines: 1,
                 ),
-                maxLines: 1, // Adjust this based on your design
               ),
-              AutoSizeText(
-                "${article.quantity} articles",
-                style: TextStyle(
-                  color: articlesColor,
-                  fontFamily: 'Inter',
-                  fontSize: 16,
-                  fontStyle: FontStyle.normal,
-                  fontWeight: FontWeight.w500,
-                  height: 1.0,
+            AutoSizeText(
+                  "${article.quantity} articles",
+                  style: TextStyle(
+                    color: articlesColor,
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    height: 1.0,
+                  ),
+                  maxLines: 2,
                 ),
-                maxLines: 1, // Adjust this based on your design
-              ),
+              
             ],
           ),
         ],
@@ -542,14 +483,5 @@ class _LogistiquesState extends State<Logistiques> {
         ],
       ),
     );
-  }
-
-  Future<Uint8List> _fetchImage(String imageUrl) async {
-    final response = await http.get(Uri.parse(imageUrl));
-    if (response.statusCode == 200) {
-      return response.bodyBytes;
-    } else {
-      throw Exception('Failed to load image');
-    }
   }
 }

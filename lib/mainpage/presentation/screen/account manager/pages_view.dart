@@ -100,9 +100,9 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                   const SizedBox(
                     height: 5,
                   ),
-                  const Text(
-                    "Amir Massi",
-                    style: TextStyle(
+                   Text(
+                    page.admin ?? "-",
+                    style: const TextStyle(
                       color: Color(0xFF9F9F9F),
                       fontFamily: "Inter",
                       fontSize: 16,

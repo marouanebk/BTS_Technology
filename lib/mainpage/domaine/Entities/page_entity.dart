@@ -6,14 +6,16 @@ class FacePage extends Equatable {
   final String pageName;
   final int? numberOfCommands;
   final num? totalMoneyMade;
+  final String? admin;
 
   const FacePage({
     this.id,
     required this.pageName,
     this.numberOfCommands,
     this.totalMoneyMade,
+    this.admin,
   });
 
   @override
-  List<Object?> get props => [pageName , numberOfCommands , totalMoneyMade];
+  List<Object?> get props => [pageName , numberOfCommands , totalMoneyMade , admin];
 }

@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
-class ImageDetailPage extends StatelessWidget {
+class ImageDetailPage extends StatefulWidget {
   final String imagePath;
 
   const ImageDetailPage({super.key, required this.imagePath});
+
+  @override
+  State<ImageDetailPage> createState() => _ImageDetailPageState();
+}
+
+class _ImageDetailPageState extends State<ImageDetailPage> {
+  // Future<void> _downloadImage() async {
+  //     final taskId = await FlutterDownloader.enqueue(
+  //       url: imagePath,
+  //       fileName: 'downloaded_image.png',
+  //       showNotification: true,
+  //       openFileFromNotification: true,
+  //     );
+  //   }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +37,11 @@ class ImageDetailPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Hero(
-                tag: "image_${imagePath.hashCode}",
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  tag: "image_${widget.imagePath.hashCode}",
+                  child: Image.network(
+                    widget.imagePath,
+                    fit: BoxFit.cover,
+                  )),
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.bottomCenter,
