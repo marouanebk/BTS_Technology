@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
@@ -26,6 +27,7 @@ import 'package:bts_technologie/orders/presentation/controller/command_bloc/comm
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddOrderPage extends StatefulWidget {
   final String role;
@@ -78,11 +80,13 @@ class _AddOrderPageState extends State<AddOrderPage> {
     {"label": "Gros détail", "value": "Gros détail"},
   ];
 
+  int totalImagesFilesCount = 0;
+
   List<Article> articles = [];
   List<Map<String, String>> articlesList = [];
   List<Map<String, String>> variantsList = [];
 
-    bool isNumeric(String value) {
+  bool isNumeric(String value) {
     if (value == null) {
       return false;
     }
@@ -103,7 +107,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
     }
 
     if (!isNumeric(sommePaidController.text)) {
-      hasEmptyFields = true; 
+      hasEmptyFields = true;
       hasInvalidNumericFields = true;
     }
 
@@ -122,21 +126,21 @@ class _AddOrderPageState extends State<AddOrderPage> {
       }
     }
 
-       if (variants.isEmpty) {
+    if (variants.isEmpty) {
       hasEmptyFields = true;
     } else {
       for (var variant in variants) {
         if (!isNumeric(variant.prixController.text) ||
-          !isNumeric(variant.nbrArticlesController.text)) {
+            !isNumeric(variant.nbrArticlesController.text)) {
           hasInvalidNumericFields = true;
           hasEmptyFields = true;
-        break;
+          break;
         }
       }
     }
-    
+
     // If there are empty fields, do not proceed with the submission
-    if (hasEmptyFields || hasInvalidNumericFields ) {
+    if (hasEmptyFields || hasInvalidNumericFields) {
       setState(() {
         _formSubmitted = true;
       });
@@ -149,9 +153,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
     });
     submitForm(context);
   }
-  
-
-
 
   void submitForm(context) {
     CommandModel commandModel;
@@ -602,6 +603,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
                           right: 0,
                           child: GestureDetector(
                             onTap: () {
+                              totalImagesFilesCount--;
+
                               setState(() {
                                 article.files.remove(xFile);
                               });
@@ -681,48 +684,91 @@ class _AddOrderPageState extends State<AddOrderPage> {
   }
 
   Widget _imagePickerContainer(ArticleItem articleItem) {
-    return InkWell(
-      onTap: () => _selectImage(context, articleItem),
-      child: Container(
-        width: double.infinity,
-        height: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: const Color(0xFF0066FF).withOpacity(0.1),
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.image,
-              color: Color(0xFF0066FF),
-              size: 18,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Ajouter des photos',
-              style: TextStyle(
-                color: Color(0xFF0066FF),
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0,
+    final int remainingImagesFiles = 5 - totalImagesFilesCount;
+    final bool canAddImagesFiles = remainingImagesFiles > 0;
+
+    return canAddImagesFiles
+        ? InkWell(
+            onTap: () => _selectImage(context, articleItem),
+            child: Container(
+              width: double.infinity,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: const Color(0xFF0066FF).withOpacity(0.1),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.image,
+                    color: Color(0xFF0066FF),
+                    size: 18,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Ajouter des photos',
+                    style: TextStyle(
+                      color: Color(0xFF0066FF),
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          )
+        : const SizedBox.shrink(); // Hide the container
   }
 
   void _selectImage(BuildContext context, ArticleItem articleItem) async {
+    if (totalImagesFilesCount >= 5) {
+      // Show a message or feedback that the maximum limit is reached
+      return;
+    }
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      final compressedImage = await _compressImage(File(image.path));
+
       setState(() {
-        articleItem.files.add(image);
+        articleItem.files.add(compressedImage);
       });
+      totalImagesFilesCount++;
+
+    }
+  }
+
+  Future<XFile> _compressImage(File file) async {
+    // Define the target size in bytes (600 KB)
+    final int targetSize = 600 * 1024;
+
+    // Get the temporary directory
+    final tempDir = await getTemporaryDirectory();
+
+    // Create a new file in the temporary directory
+    final compressedFile = File('${tempDir.path}/image.jpg');
+
+    // Compress the image and save it to the new file
+    await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      compressedFile.path,
+      minWidth: 1024,
+      minHeight: 1024,
+      quality: 80,
+    );
+
+    // Check if the compressed image is smaller than the target size
+    if (await compressedFile.length() < targetSize) {
+      // Return the compressed image as an XFile
+      return XFile(compressedFile.path);
+    } else {
+      // If the compressed image is still larger than the target size,
+      // reduce the quality and try again
+      return _compressImage(compressedFile);
     }
   }
 }

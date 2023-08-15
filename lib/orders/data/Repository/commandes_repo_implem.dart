@@ -65,6 +65,7 @@ class CommandesRepository implements BaseCommandRepository {
     CommandModel articleModel;
     if (command.page != null) {
       articleModel = CommandModel(
+        id: command.id,
         adresse: command.adresse,
         nomClient: command.nomClient,
         phoneNumber: command.phoneNumber,
@@ -79,6 +80,8 @@ class CommandesRepository implements BaseCommandRepository {
     } else {
       articleModel = CommandModel(
         adresse: command.adresse,
+        id: command.id,
+
         nomClient: command.nomClient,
         phoneNumber: command.phoneNumber,
         noteClient: command.noteClient,

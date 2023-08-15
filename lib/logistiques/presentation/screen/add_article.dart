@@ -15,7 +15,9 @@ import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class NewArticle extends StatefulWidget {
   final String role;
@@ -301,7 +303,8 @@ class _NewArticleState extends State<NewArticle> {
                           ),
                         ),
                       );
-                    } else if (state.createArticleState == RequestState.initial) {
+                    } else if (state.createArticleState ==
+                        RequestState.initial) {
                       return Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
@@ -331,10 +334,9 @@ class _NewArticleState extends State<NewArticle> {
                           ),
                         ),
                       );
-                    } else{ 
+                    } else {
                       return Container();
                     }
-                
                   },
                 ),
               ],
@@ -532,9 +534,33 @@ class _NewArticleState extends State<NewArticle> {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      final compressedImage = await _compressImage(File(image.path));
+
       setState(() {
-        selectedImage = File(image.path);
+        selectedImage = compressedImage;
       });
+    }
+  }
+
+  Future<File> _compressImage(File file) async {
+    final int targetSize = 200 * 1024;
+
+    final tempDir = await getTemporaryDirectory();
+
+    final compressedFile = File('${tempDir.path}/image.jpg');
+
+    await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      compressedFile.path,
+      minWidth: 1024,
+      minHeight: 1024,
+      quality: 80,
+    );
+
+    if (await compressedFile.length() < targetSize) {
+      return compressedFile;
+    } else {
+      return _compressImage(compressedFile);
     }
   }
 }

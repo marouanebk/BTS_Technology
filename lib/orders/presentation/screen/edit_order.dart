@@ -22,9 +22,13 @@ import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_bloc.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_event.dart';
 import 'package:bts_technologie/orders/presentation/controller/command_bloc/command_state.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class EditOrderPage extends StatefulWidget {
   final String role;
@@ -53,6 +57,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
   List<ArticleItem> variants = [];
   int count = 1;
+  bool isPhotoModified = false;
+  int totalImagesFilesCount = 0;
 
   @override
   void initState() {
@@ -94,6 +100,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
     }
     return double.tryParse(value) != null;
   }
+
+  bool initList = false;
 
   void _checkFormValidation(context) {
     bool hasEmptyFields = false;
@@ -149,9 +157,11 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   void _submitForm(context) {
+    log("id : ${widget.command.id}");
     CommandModel commandModel;
     if (selectedPage != null) {
       commandModel = CommandModel(
+        id: widget.command.id,
         adresse: adresssController.text,
         nomClient: fullnameController.text,
         phoneNumber: int.parse(phonenumberController.text),
@@ -159,32 +169,69 @@ class _EditOrderPageState extends State<EditOrderPage> {
         page: selectedPage,
         sommePaid: double.parse(sommePaidController.text),
         articleList: variants.map((variant) {
-          return CommandArticle(
-            quantity: int.parse(variant.nbrArticlesController.text),
-            articleId: variant.article!,
-            unityPrice: double.parse(variant.prixController.text),
-            commandType: variant.type!,
-            variantId: variant.variant!,
-            files: variant.files.map((xFile) => File(xFile.path)).toList(),
-          );
+          if (isPhotoModified == true) {
+            List<File> allFiles =
+                variant.files.map((xFile) => File(xFile.path)).toList();
+
+            // Convert cached network image URLs to File instances and add them to allFiles
+            variant.cachedNetworkImageUrls.forEach((url) {
+              allFiles.add(File(XFile(url).path));
+            });
+
+            return CommandArticle(
+              quantity: int.parse(variant.nbrArticlesController.text),
+              articleId: variant.article!,
+              unityPrice: double.parse(variant.prixController.text),
+              commandType: variant.type!,
+              variantId: variant.variant!,
+              files: allFiles,
+              // files: variant.files.map((xFile) => File(xFile.path)).toList(),
+            );
+          } else {
+            return CommandArticle(
+              quantity: int.parse(variant.nbrArticlesController.text),
+              articleId: variant.article!,
+              unityPrice: double.parse(variant.prixController.text),
+              commandType: variant.type!,
+              variantId: variant.variant!,
+            );
+          }
         }).toList(),
       );
     } else {
       commandModel = CommandModel(
+        id: widget.command.id,
         adresse: adresssController.text,
         nomClient: fullnameController.text,
         phoneNumber: int.parse(phonenumberController.text),
         noteClient: noteClientController.text,
         sommePaid: double.parse(sommePaidController.text),
         articleList: variants.map((variant) {
-          return CommandArticle(
-            quantity: int.parse(variant.nbrArticlesController.text),
-            articleId: variant.article!,
-            unityPrice: double.parse(variant.prixController.text),
-            commandType: variant.type!,
-            variantId: variant.variant!,
-            files: variant.files.map((xFile) => File(xFile.path)).toList(),
-          );
+          if (isPhotoModified == true) {
+            List<File> allFiles =
+                variant.files.map((xFile) => File(xFile.path)).toList();
+
+            // Convert cached network image URLs to File instances and add them to allFiles
+            variant.cachedNetworkImageUrls.forEach((url) {
+              allFiles.add(File(XFile(url).path));
+            });
+            return CommandArticle(
+              quantity: int.parse(variant.nbrArticlesController.text),
+              articleId: variant.article!,
+              unityPrice: double.parse(variant.prixController.text),
+              commandType: variant.type!,
+              variantId: variant.variant!,
+              files: allFiles,
+            );
+          } else {
+            return CommandArticle(
+              quantity: int.parse(variant.nbrArticlesController.text),
+              articleId: variant.article!,
+              unityPrice: double.parse(variant.prixController.text),
+              commandType: variant.type!,
+              variantId: variant.variant!,
+            );
+          }
         }).toList(),
       );
     }
@@ -217,9 +264,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
             listeners: [
               BlocListener<AccountBloc, AccountState>(
                 listener: (context, state) {
-                  log("state account listener: ");
                   if (state.getUserInfoState == RequestState.loaded) {
-                    log("state loaded");
                     if (widget.role == "pageAdmin") {
                       // Retrieve userInfo.pages and userInfo.commandTypes
                       final adminPages = state.getUserInfo!.populatedpages!;
@@ -246,8 +291,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
               ),
               BlocListener<CommandBloc, CommandesState>(
                 listener: (context, state) {
-                  log("state command listener: ");
-
                   if (state.editCommandState == RequestState.loaded) {
                     Navigator.pushReplacement(
                       context,
@@ -273,11 +316,11 @@ class _EditOrderPageState extends State<EditOrderPage> {
                       ),
                     );
                   } else if (state.editCommandState == RequestState.error) {
-                    SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.transparent,
                       content: CustomStyledSnackBar(
                           message: state.editCommandMessage, success: false),
-                    );
+                    ));
                   }
                 },
               ),
@@ -293,63 +336,93 @@ class _EditOrderPageState extends State<EditOrderPage> {
                         ),
                       );
                     } else {
-                      articles = state.getArticles;
-                      articlesList = articles.map((article) {
-                        return {
-                          'label': article.name ?? "",
-                          'value': article.id ?? "",
-                        };
-                      }).toList();
-
-                      variants =
-                          widget.command.articleList.map((commandArticle) {
-                        log("before photos");
-                        print(commandArticle!.photos);
-                        final variant = ArticleItem();
-
-                        variant.article = commandArticle!.articleId;
-                        variant.variant = commandArticle.variantId;
-                        variant.type = commandArticle.commandType;
-                        variant.prixController.text =
-                            commandArticle.unityPrice.toString();
-                        variant.nbrArticlesController.text =
-                            commandArticle.quantity.toString();
-                        if (commandArticle.photos != null) {
-                          log("init photos");
-                          variant.files =
-                              commandArticle.photos!.map((photoPath) {
-                            return XFile(photoPath);
-                          }).toList();
-                        }
-
-                        // Find the selected article in the articles list
-                        final selectedArticle = articles.firstWhere(
-                          (item) => item.id == variant.article,
-                        );
-                        log(selectedArticle.toString());
-
-                        // Update the variants list of the selected article
-                        if (selectedArticle.variants != null) {
-                          variant.variants =
-                              selectedArticle.variants.map((variant) {
+                      try {
+                        if (initList == false) {
+                          articles = state.getArticles;
+                          articlesList = articles.map((article) {
                             return {
-                              'label': variant?.family ?? "",
-                              'value': variant?.id ?? "",
+                              'label': article.name ?? "",
+                              'value': article.id ?? "",
                             };
                           }).toList();
-                        } else {
-                          variant.variants.clear();
+
+                          variants =
+                              widget.command.articleList.map((commandArticle) {
+                            log("before photos");
+                            print(commandArticle!.photos);
+                            final variant = ArticleItem();
+
+                            variant.article = commandArticle!.articleId;
+                            variant.variant = commandArticle.variantId;
+                            variant.type = commandArticle.commandType;
+                            variant.prixController.text =
+                                commandArticle.unityPrice.toString();
+                            variant.nbrArticlesController.text =
+                                commandArticle.quantity.toString();
+                            if (commandArticle.photos != null) {
+                              totalImagesFilesCount++;
+                              variant.cachedNetworkImageUrls =
+                                  commandArticle.photos!.map((photoPath) {
+                                return photoPath;
+                              }).toList();
+                            }
+
+                            // Find the selected article in the articles list
+
+                            final selectedArticle = articles.firstWhere(
+                              (item) => item.id == variant.article,
+                            );
+
+                            // Update the variants list of the selected article
+                            if (selectedArticle.variants != null) {
+                              variant.variants =
+                                  selectedArticle.variants.map((variant) {
+                                return {
+                                  'label': variant?.family ?? "",
+                                  'value': variant?.id ?? "",
+                                };
+                              }).toList();
+                            } else {
+                              variant.variants.clear();
+                            }
+
+                            return variant;
+                          }).toList();
+
+                          articlesList = articles.map((article) {
+                            return {
+                              'label': article.name ?? "",
+                              'value': article.id ?? "",
+                            };
+                          }).toList();
+                          initList = true;
                         }
+                      } catch (e) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            if (widget.role == "financier") {
+                              return const FinancesBaseScreen(initialIndex: 0);
+                            } else if (widget.role == "pageAdmin") {
+                              return const AdminPageBaseScreen(initialIndex: 0);
+                            } else if (widget.role == "logistics") {
+                              return const LogistiquesBaseScreen(
+                                  initialIndex: 0);
+                            } else {
+                              return const PageAdministratorBaseScreen(
+                                  initialIndex: 1);
+                            }
+                          }),
+                        );
 
-                        return variant;
-                      }).toList();
-
-                      articlesList = articles.map((article) {
-                        return {
-                          'label': article.name ?? "",
-                          'value': article.id ?? "",
-                        };
-                      }).toList();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.transparent,
+                            content: CustomStyledSnackBar(
+                                message: "Article Deleted", success: false),
+                          ),
+                        );
+                      }
 
                       return Scaffold(
                         backgroundColor: Colors.white,
@@ -448,16 +521,19 @@ class _EditOrderPageState extends State<EditOrderPage> {
                               ),
                             ),
                             BlocBuilder<CommandBloc, CommandesState>(
+                                buildWhen: (previous, current) =>
+                                    previous.createCommandState !=
+                                    current.createCommandState,
                                 builder: (context, state) {
-                              if (state.createCommandState ==
-                                  RequestState.error) {
-                                return Text(
-                                  state.createCommandMessage,
-                                  style: const TextStyle(color: Colors.red),
-                                );
-                              }
-                              return Container();
-                            }),
+                                  if (state.createCommandState ==
+                                      RequestState.error) {
+                                    return Text(
+                                      state.createCommandMessage,
+                                      style: const TextStyle(color: Colors.red),
+                                    );
+                                  }
+                                  return Container();
+                                }),
                             BlocBuilder<CommandBloc, CommandesState>(
                               builder: (context, state) {
                                 if (state.editCommandState ==
@@ -535,7 +611,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   Widget _variantContainerList() {
-    log("variants : " + variants.toString());
     return ListView.separated(
       separatorBuilder: (context, index) => const SizedBox(
         height: 12,
@@ -660,6 +735,51 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 spacing: 8.0, // Adjust spacing between images
                 runSpacing: 8.0, // Adjust spacing between lines
                 children: [
+                  ...article.cachedNetworkImageUrls.map(
+                    (imageUrl) => Stack(
+                      children: [
+                        Container(
+                          height: 72,
+                          width: 72,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: const Color(0xFFECECEC),
+                              width: 1,
+                            ),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              log("deleting");
+                              article.cachedNetworkImageUrls.remove(imageUrl);
+                              setState(() {
+                                article.files;
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   ...article.files.map(
                     (xFile) => Stack(
                       children: [
@@ -683,9 +803,11 @@ class _EditOrderPageState extends State<EditOrderPage> {
                           right: 0,
                           child: GestureDetector(
                             onTap: () {
+                              article.files.remove(xFile);
                               setState(() {
-                                article.files.remove(xFile);
+                                article.files;
                               });
+                              totalImagesFilesCount--;
                             },
                             child: Container(
                               decoration: const BoxDecoration(
@@ -718,6 +840,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
             ),
             child: IconButton(
               onPressed: () {
+                totalImagesFilesCount--;
                 setState(() {
                   variants.remove(article);
                 });
@@ -762,48 +885,86 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   Widget _imagePickerContainer(ArticleItem articleItem) {
-    return InkWell(
-      onTap: () => _selectImage(context, articleItem),
-      child: Container(
-        width: double.infinity,
-        height: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: const Color(0xFF0066FF).withOpacity(0.1),
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.image,
-              color: Color(0xFF0066FF),
-              size: 18,
-            ),
-            SizedBox(width: 8),
-            Text(
-              'Ajouter des photos',
-              style: TextStyle(
-                color: Color(0xFF0066FF),
-                fontFamily: 'Inter',
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0,
+    final int remainingImagesFiles = 5 - totalImagesFilesCount;
+    final bool canAddImagesFiles = remainingImagesFiles > 0;
+
+    return canAddImagesFiles
+        ? InkWell(
+            onTap: () => _selectImage(context, articleItem),
+            child: Container(
+              width: double.infinity,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: const Color(0xFF0066FF).withOpacity(0.1),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.image,
+                    color: Color(0xFF0066FF),
+                    size: 18,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Ajouter des photos',
+                    style: TextStyle(
+                      color: Color(0xFF0066FF),
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          )
+        : const SizedBox.shrink(); // Hide the container
   }
 
   void _selectImage(BuildContext context, ArticleItem articleItem) async {
+    if (totalImagesFilesCount >= 5) {
+      // Show a message or feedback that the maximum limit is reached
+      return;
+    }
+
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      if (isPhotoModified == false) {
+        isPhotoModified = true;
+      }
+        final compressedImage = await _compressImage(File(image.path));
+
       setState(() {
-        articleItem.files.add(image);
+        articleItem.files.add(compressedImage);
+        totalImagesFilesCount++;
       });
+    }
+  }
+
+  Future<XFile> _compressImage(File file) async {
+    final int targetSize = 600 * 1024;
+
+    final tempDir = await getTemporaryDirectory();
+
+    final compressedFile = File('${tempDir.path}/image.jpg');
+
+    await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      compressedFile.path,
+      minWidth: 1024,
+      minHeight: 1024,
+      quality: 80,
+    );
+
+    if (await compressedFile.length() < targetSize) {
+      return XFile(compressedFile.path);
+    } else {
+      return _compressImage(compressedFile);
     }
   }
 }

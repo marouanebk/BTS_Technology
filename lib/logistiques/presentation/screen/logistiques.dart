@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
+import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -295,7 +297,41 @@ class _LogistiquesState extends State<Logistiques> {
                   },
                 ));
             if (response.statusCode == 200) {
-              Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              //   MaterialPageRoute(
+              //     builder: (BuildContext context) {
+              //       return Logistiques(
+              //         role: widget.role,
+              //       );
+              //     },
+              //   ),
+              //   (_) => false,
+              // );
+
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (context) {
+              //     if (widget.role == "logistics") {
+              //       return const LogistiquesBaseScreen(initialIndex: 2);
+              //     } else {
+              //       return const PageAdministratorBaseScreen(initialIndex: 3);
+              //     }
+              //   }),
+              // );
+
+              // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+              //   MaterialPageRoute(builder: (context) {
+              //     if (widget.role == "logistics") {
+              //       return const LogistiquesBaseScreen(initialIndex: 2);
+              //     } else {
+              //       return const PageAdministratorBaseScreen(initialIndex: 3);
+              //     }
+              //   }),
+              //   (route) => false,
+              // );
+
+              Navigator.pushReplacement(
+                context,
                 MaterialPageRoute(
                   builder: (BuildContext context) {
                     return Logistiques(
@@ -303,8 +339,19 @@ class _LogistiquesState extends State<Logistiques> {
                     );
                   },
                 ),
-                (_) => false,
               );
+
+              // Navigator.pushAndRemoveUntil(
+              //   context,
+              //   MaterialPageRoute(builder: (context) {
+              //     if (widget.role == "logistics") {
+              //       return const LogistiquesBaseScreen(initialIndex: 2);
+              //     } else {
+              //       return const PageAdministratorBaseScreen(initialIndex: 3);
+              //     }
+              //   }),
+              //   (route) => false,
+              // );
               // BlocProvider.of<ArticleBloc>(context).add(GetArticlesEvent());
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
