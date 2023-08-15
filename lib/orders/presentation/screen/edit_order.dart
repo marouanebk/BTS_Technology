@@ -170,31 +170,24 @@ class _EditOrderPageState extends State<EditOrderPage> {
         sommePaid: double.parse(sommePaidController.text),
         articleList: variants.map((variant) {
           if (isPhotoModified == true) {
-            List<File> allFiles =
-                variant.files.map((xFile) => File(xFile.path)).toList();
-
-            // Convert cached network image URLs to File instances and add them to allFiles
-            variant.cachedNetworkImageUrls.forEach((url) {
-              allFiles.add(File(XFile(url).path));
-            });
-
             return CommandArticle(
-              quantity: int.parse(variant.nbrArticlesController.text),
-              articleId: variant.article!,
-              unityPrice: double.parse(variant.prixController.text),
-              commandType: variant.type!,
-              variantId: variant.variant!,
-              files: allFiles,
-              // files: variant.files.map((xFile) => File(xFile.path)).toList(),
-            );
+                quantity: int.parse(variant.nbrArticlesController.text),
+                articleId: variant.article!,
+                unityPrice: double.parse(variant.prixController.text),
+                commandType: variant.type!,
+                variantId: variant.variant!,
+                files: variant.files.map((xFile) => File(xFile.path)).toList(),
+                photos: variant.cachedNetworkImageUrls,
+                deletedPhotos: variant.deletedImages);
           } else {
             return CommandArticle(
-              quantity: int.parse(variant.nbrArticlesController.text),
-              articleId: variant.article!,
-              unityPrice: double.parse(variant.prixController.text),
-              commandType: variant.type!,
-              variantId: variant.variant!,
-            );
+                quantity: int.parse(variant.nbrArticlesController.text),
+                articleId: variant.article!,
+                unityPrice: double.parse(variant.prixController.text),
+                commandType: variant.type!,
+                variantId: variant.variant!,
+                photos: variant.cachedNetworkImageUrls,
+                deletedPhotos: variant.deletedImages);
           }
         }).toList(),
       );
@@ -208,21 +201,15 @@ class _EditOrderPageState extends State<EditOrderPage> {
         sommePaid: double.parse(sommePaidController.text),
         articleList: variants.map((variant) {
           if (isPhotoModified == true) {
-            List<File> allFiles =
-                variant.files.map((xFile) => File(xFile.path)).toList();
-
-            // Convert cached network image URLs to File instances and add them to allFiles
-            variant.cachedNetworkImageUrls.forEach((url) {
-              allFiles.add(File(XFile(url).path));
-            });
             return CommandArticle(
-              quantity: int.parse(variant.nbrArticlesController.text),
-              articleId: variant.article!,
-              unityPrice: double.parse(variant.prixController.text),
-              commandType: variant.type!,
-              variantId: variant.variant!,
-              files: allFiles,
-            );
+                quantity: int.parse(variant.nbrArticlesController.text),
+                articleId: variant.article!,
+                unityPrice: double.parse(variant.prixController.text),
+                commandType: variant.type!,
+                variantId: variant.variant!,
+                files: variant.files.map((xFile) => File(xFile.path)).toList(),
+                photos: variant.cachedNetworkImageUrls,
+                deletedPhotos: variant.deletedImages);
           } else {
             return CommandArticle(
               quantity: int.parse(variant.nbrArticlesController.text),
@@ -230,6 +217,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
               unityPrice: double.parse(variant.prixController.text),
               commandType: variant.type!,
               variantId: variant.variant!,
+              photos: variant.cachedNetworkImageUrls,
+              deletedPhotos: variant.deletedImages,
             );
           }
         }).toList(),
@@ -365,6 +354,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                   commandArticle.photos!.map((photoPath) {
                                 return photoPath;
                               }).toList();
+                              variant.deletedImages = [];
                             }
 
                             // Find the selected article in the articles list
@@ -763,6 +753,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                               setState(() {
                                 article.files;
                               });
+                              article.deletedImages.add(imageUrl);
                             },
                             child: Container(
                               decoration: const BoxDecoration(
@@ -937,7 +928,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
       if (isPhotoModified == false) {
         isPhotoModified = true;
       }
-        final compressedImage = await _compressImage(File(image.path));
+      final compressedImage = await _compressImage(File(image.path));
 
       setState(() {
         articleItem.files.add(compressedImage);
@@ -977,5 +968,6 @@ class ArticleItem {
   String? variant;
   List<Map<String, String>> variants = [];
   List<XFile> files = [];
-  List<String> cachedNetworkImageUrls = []; // Store cached network image URLs
+  List<String> cachedNetworkImageUrls = [];
+  List<String> deletedImages = [];
 }

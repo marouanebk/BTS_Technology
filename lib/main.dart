@@ -15,6 +15,7 @@ import 'package:bts_technologie/mainpage/presentation/screen/excel.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,6 +28,8 @@ void main() async {
 
   Logger.root.onRecord.listen((record) {});
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize();
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -83,7 +86,6 @@ class MyApp extends StatelessWidget {
         '/adminParams': (context) => const AdminParams(),
         '/excelFiles': (context) => const ExcelFiles(),
         '/companyInformations': (context) => const CompanyInformations(),
-        
         '/createPage': (context) => const NewPageAccount(),
         '/createLivreur': (context) => const NewLivreurAccount(),
         '/createUser': (context) {

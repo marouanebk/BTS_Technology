@@ -163,7 +163,28 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
           formData.files.add(MapEntry('photos', photo));
         }
       }
+      if (article.photos != null && article.photos!.isNotEmpty) {
+        for (int j = 0; j < article.photos!.length; j++) {
+          final photo = article.photos![j];
+          formData.fields.add(MapEntry('articles[$i][photos][$j]', photo));
+        }
+      } else {
+        formData.fields.add(MapEntry('articles[$i][photos]', '[]'));
+      }
+
+      // Add the deletedPhotos list of strings to the FormData object
+      if (article.deletedPhotos != null && article.deletedPhotos!.isNotEmpty) {
+        for (int j = 0; j < article.deletedPhotos!.length; j++) {
+          final deletedPhoto = article.deletedPhotos![j];
+          formData.fields
+              .add(MapEntry('articles[$i][deletedPhotos][$j]', deletedPhoto));
+        }
+      } else {
+        formData.fields.add(MapEntry('articles[$i][deletedPhotos]', '[]'));
+      }
     }
+
+    log(formData.toString());
     final response = await Dio().patch(
       ApiConstance.updateCommand(command.id!),
       data: formData,

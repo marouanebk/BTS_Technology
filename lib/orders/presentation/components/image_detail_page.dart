@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ImageDetailPage extends StatefulWidget {
   final String imagePath;
@@ -11,14 +14,19 @@ class ImageDetailPage extends StatefulWidget {
 }
 
 class _ImageDetailPageState extends State<ImageDetailPage> {
-  // Future<void> _downloadImage() async {
-  //     final taskId = await FlutterDownloader.enqueue(
-  //       url: imagePath,
-  //       fileName: 'downloaded_image.png',
-  //       showNotification: true,
-  //       openFileFromNotification: true,
-  //     );
-  //   }
+  Future<void> _downloadImage() async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+
+    log("downloading ");
+
+    final taskId = await FlutterDownloader.enqueue(
+      url: widget.imagePath,
+      fileName: 'downloaded_image.png',
+      savedDir: appDocDir.path,
+      showNotification: true,
+      openFileFromNotification: true,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +44,16 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Hero(
+              Expanded(
+                // Wrap the Image.network widget inside an Expanded widget
+                child: Hero(
                   tag: "image_${widget.imagePath.hashCode}",
                   child: Image.network(
                     widget.imagePath,
                     fit: BoxFit.cover,
-                  )),
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -53,7 +65,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(5)),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _downloadImage,
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Colors.white),

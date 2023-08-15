@@ -158,6 +158,7 @@ class CommandModel extends Command {
         'commandType': variant.commandType,
         'quantity': variant.quantity,
         'unityPrice': variant.unityPrice,
+        'photos' : variant.photos,
       };
     }).toList();
 

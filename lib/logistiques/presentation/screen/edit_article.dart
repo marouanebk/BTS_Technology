@@ -210,7 +210,7 @@ class _EditArticleState extends State<EditArticle> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
-    var formData = FormData.fromMap(articleModel.toJson());
+    var formData = FormData.fromMap({"updatedArticle": articleModel.toJson()});
     if (articleModel.photo != null) {
       formData.files.add(MapEntry(
         'photo',
