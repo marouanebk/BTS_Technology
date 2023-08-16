@@ -31,9 +31,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   FutureOr<void> _getArticlesEvent(
       GetArticlesEvent event, Emitter<ArticleState> emit) async {
     final result = await getArticlesUseCase();
-    // log("article event ");
-    // emit(state.copyWith(
-    //         getArticlesState: RequestState.loading));
+
     result.fold(
         (l) => emit(state.copyWith(
             getArticlesState: RequestState.error,

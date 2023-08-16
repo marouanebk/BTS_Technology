@@ -6,12 +6,23 @@
 
     <!-- The WRITE_EXTERNAL_STORAGE permission is required for writing files to storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name="${applicationName}"
         android:label="VOY Pro"
         android:icon="@mipmap/ic_launcher">
+
+            <provider
+                android:name="com.ko2ic.imagedownloader.FileProvider"
+                android:authorities="${applicationId}.image_downloader.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/provider_paths"/>
+        </provider>
 
         <!-- <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.fileProvider" android:exported="false" android:grantUriPermissions="true" tools:replace="android:authorities">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/filepaths" tools:replace="android:resource" />

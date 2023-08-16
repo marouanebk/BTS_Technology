@@ -4,6 +4,7 @@ import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
@@ -137,26 +138,33 @@ class _NewFactorPageState extends State<NewFactorPage> {
                 BlocBuilder<AccountBloc, AccountState>(
                   builder: (context, state) {
                     if (state.getEntrepriseInfoState == RequestState.error) {
+                      Navigator.pop(context);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.transparent,
+                          content: CustomStyledSnackBar(
+                              message: "Insérer les infos de l'entreprise", success: false),
+                        ),
+                      );
+
                       return Text(
                         state.getEntrepriseInfomessage,
                         style: const TextStyle(
                           color: Colors.red,
                         ),
                       );
-                    } 
-                    else if (state.getEntrepriseInfoState ==
+                    } else if (state.getEntrepriseInfoState ==
                         RequestState.loading) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: Colors.black,
                         ),
                       );
-                    }
-                    
-                     else if (state.getEntrepriseInfoState ==
+                    } else if (state.getEntrepriseInfoState ==
                         RequestState.loaded) {
-                          log("requestSate loaded");
-                     return  Align(
+                      log("requestSate loaded");
+                      return Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),

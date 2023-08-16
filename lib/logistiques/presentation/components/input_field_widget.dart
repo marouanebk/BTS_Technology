@@ -8,6 +8,9 @@ Widget buildInputField({
   bool isNumeric = false,
   bool formSubmitted = false,
   bool isMoney = false,
+  bool readOnly = false,
+  bool showNote = false,
+  bool noteAbove = false,
 }) {
   final bool isEmpty = controller?.text.isEmpty ?? false;
   final bool showErrorText = formSubmitted && isEmpty;
@@ -27,6 +30,7 @@ Widget buildInputField({
         children: [
           TextField(
             controller: controller,
+            readOnly: readOnly,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
             decoration: InputDecoration(
               hintText: hintText,
@@ -57,6 +61,23 @@ Widget buildInputField({
           textAlign: TextAlign.right,
         ),
       ),
+      if (showErrorText)
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            errorText!,
+            style: const TextStyle(color: Colors.red),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      if (showNote && !noteAbove)
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            "Note",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
     ],
   );
 }

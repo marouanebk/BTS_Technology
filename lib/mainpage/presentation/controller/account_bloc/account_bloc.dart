@@ -49,7 +49,6 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     ));
 
     result.fold((l) {
-      log("Error message: "); // Log the error message
       emit(state.copyWith(
           getUserInfoState: RequestState.error, getUserInfomessage: l.message));
     },

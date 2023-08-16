@@ -25,7 +25,6 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
     final token = prefs.getString("token");
     var formData = FormData.fromMap(article.toJson());
     if (article.photo != null) {
-      log("there is a picture in the");
       formData.files.add(MapEntry(
         'photo',
         await MultipartFile.fromFile(article.photo!.path),
@@ -35,18 +34,6 @@ class ArticleRemoteDataSource extends BaseArticleRemoteDateSource {
       (entry) => entry.key == 'photo',
       orElse: () => MapEntry('', MultipartFile.fromString('')),
     );
-    if (photoEntry.key == 'photo') {
-      log('Photo: ${photoEntry.value}');
-    } else {
-      log('No photo found in formData');
-    }
-
-    final imageFile = File(article.photo!.path);
-    if (imageFile.existsSync()) {
-      log("correct");
-    } else {
-      log("false");
-    }
 
     final response = await Dio().post(
       ApiConstance.createArticle,

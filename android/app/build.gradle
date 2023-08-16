@@ -31,6 +31,8 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
+          // Suppress deprecation warnings
+            "-Xlint:deprecation"
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }

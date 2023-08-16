@@ -359,9 +359,12 @@ class _NewArticleState extends State<NewArticle> {
   }
 
   Widget _variantContainerList() {
-    return ListView.builder(
+    return ListView.separated(
       shrinkWrap: true,
       itemCount: variants.length,
+      separatorBuilder: (context, index) => const SizedBox(
+        height: 12,
+      ),
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return _variantContainer(variants[index]);
@@ -458,24 +461,26 @@ class _NewArticleState extends State<NewArticle> {
                 label: "Nom de la couleur",
                 hintText: "Entrez le nom de la couleur",
                 errorText: "Vous devez entrer le nom de la couleur",
-                controller: variant
-                    .nomCouleurController, // Use variant controller                      formSubmitted: _formSubmitted
+                controller:
+                    variant.nomCouleurController, // Use variant controller
+                formSubmitted: _formSubmitted,
               ),
               const SizedBox(height: 18),
               buildInputField(
                 label: "Code de la couleur",
                 hintText: "Entrez le code HEX de la couleur",
                 errorText: "Vous devez entrer un code HEX valide",
-                controller: variant
-                    .codeCouleurController, // Use variant controller                      formSubmitted: _formSubmitted
+                controller:
+                    variant.codeCouleurController, // Use variant controller
+                formSubmitted: _formSubmitted,
               ),
               const SizedBox(height: 18),
               buildInputField(
                 label: "Taille",
                 hintText: "Entrez la taille",
                 errorText: "Vous devez entrer une taille",
-                controller: variant
-                    .tailleController, // Use variant controller                      formSubmitted: _formSubmitted
+                controller: variant.tailleController, // Use variant controller
+                formSubmitted: _formSubmitted,
               ),
               const SizedBox(height: 18),
               buildInputField(
@@ -507,25 +512,36 @@ class _NewArticleState extends State<NewArticle> {
         ),
         Align(
           alignment: Alignment.topRight,
-          child: Container(
-            width: 30,
-            height: 30,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.red,
-            ),
-            child: Center(
-              child: IconButton(
-                icon: const Icon(Icons.clear, color: Colors.white),
-                onPressed: () {
-                  setState(() {
-                    variants.remove(variant);
-                  });
-                },
-              ),
-            ),
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                variants.remove(variant);
+              });
+            },
+            icon: const Icon(Icons.close),
+            color: Colors.black,
           ),
-        ),
+        )
+
+        // Positioned(
+        //   top:-12, // set top to negative half the height of the red button
+        //   right:-12, // set right to negative half the width of the red button
+        //   child: Container(
+        //     decoration:
+        //     const BoxDecoration(color:
+        //     Colors.red,shape:
+        //     BoxShape.circle,),
+        //     child:
+        // IconButton(onPressed:
+        // (){
+        //   setState((){
+        //     variants.remove(variant);
+        //   });
+        // },icon:
+        // const Icon(Icons.close),color:
+        // Colors.white,),
+        //   ),
+        // ),
       ],
     );
   }

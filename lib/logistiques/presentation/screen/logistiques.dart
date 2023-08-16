@@ -247,7 +247,8 @@ class _LogistiquesState extends State<Logistiques> {
             ),
           ),
           for (int i = 0; i < article.variants.length; i++)
-            logExpandedVariant(article.variants[i], article.alertQuantity),
+            logExpandedVariant(
+                article.variants[i], article.alertQuantity, article.unity),
           const SizedBox(
             height: 15,
           ),
@@ -369,11 +370,13 @@ class _LogistiquesState extends State<Logistiques> {
     );
   }
 
-  Widget logExpandedVariant(article, alertQuantity) {
+  Widget logExpandedVariant(article, alertQuantity, unity) {
     Color articlesColor = alertQuantity < 5 ? Colors.red : Colors.black;
     Color containerColor;
     try {
-      containerColor = Color(int.parse(article.codeColour, radix: 16));
+      log(article.colourCode.toString());
+      String colorCode = article.colourCode.replaceAll('#', '');
+      containerColor = Color(0xFF000000 + int.parse(colorCode, radix: 16));
     } catch (e) {
       containerColor = Colors.transparent;
     }
@@ -435,18 +438,17 @@ class _LogistiquesState extends State<Logistiques> {
                   maxLines: 1,
                 ),
               ),
-            AutoSizeText(
-                  "${article.quantity} articles",
-                  style: TextStyle(
-                    color: articlesColor,
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    height: 1.0,
-                  ),
-                  maxLines: 2,
+              AutoSizeText(
+                "${article.quantity} $unity",
+                style: TextStyle(
+                  color: articlesColor,
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  height: 1.0,
                 ),
-              
+                maxLines: 2,
+              ),
             ],
           ),
         ],

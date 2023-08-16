@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:image_downloader/image_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ImageDetailPage extends StatefulWidget {
@@ -15,17 +16,22 @@ class ImageDetailPage extends StatefulWidget {
 
 class _ImageDetailPageState extends State<ImageDetailPage> {
   Future<void> _downloadImage() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
+    var imageId = await ImageDownloader.downloadImage(
+        "https://raw.githubusercontent.com/wiki/ko2ic/image_downloader/images/flutter.png");
+    if (imageId == null) {
+      return;
+    }
+    // final appDocDir = await getApplicationDocumentsDirectory();
 
-    log("downloading ");
+    // log("downloading ");
 
-    final taskId = await FlutterDownloader.enqueue(
-      url: widget.imagePath,
-      fileName: 'downloaded_image.png',
-      savedDir: appDocDir.path,
-      showNotification: true,
-      openFileFromNotification: true,
-    );
+    // final taskId = await FlutterDownloader.enqueue(
+    //   url: widget.imagePath,
+    //   fileName: 'downloaded_image.png',
+    //   savedDir: appDocDir.path,
+    //   showNotification: true,
+    //   openFileFromNotification: true,
+    // );
   }
 
   @override

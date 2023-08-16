@@ -69,7 +69,6 @@ class PdfInvoiceApi {
     final result = await file.writeAsBytes(await pdf.save());
     // ignore: unnecessary_null_comparison
     if (file.path != null) {
-      log("printing opening PDF file");
       await OpenFile.open(result.path);
     } else {
       log("null PDF file");

@@ -1,4 +1,3 @@
-
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
@@ -79,6 +78,71 @@ class _NotificationsState extends State<Notifications> {
   }
 
   Widget notificationItem(item) {
+    Color statusColor;
+    Color bgColor;
+    String keyword = '';
+    String beforeKeyword = item.notification;
+    String afterKeyword = '';
+
+    if (item.notification.contains('Numero erroné')) {
+      statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
+      keyword = 'Numero erroné';
+    } else if (item.notification.contains('Ne répond pas')) {
+      statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
+      keyword = 'Ne répond pas';
+    } else if (item.notification.contains('Annulé')) {
+      statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
+      keyword = 'Annulé';
+    } else if (item.notification.contains('En attente de confirmation')) {
+      statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
+      keyword = 'En attente de confirmation';
+    } else if (item.notification.contains('Pas confirmé')) {
+      statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
+      keyword = 'Pas confirmé';
+    } else if (item.notification.contains('Retourné')) {
+      statusColor = Colors.red;
+      bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
+      keyword = 'Retourné';
+    } else if (item.notification.contains('Confirmé')) {
+      statusColor = const Color(0xFFFF9F00);
+      bgColor = const Color.fromRGBO(255, 159, 0, 0.1);
+      keyword = 'Confirmé';
+    } else if (item.notification.contains('Préparé')) {
+      statusColor = const Color(0xFFFF9F00);
+      bgColor = const Color.fromRGBO(255, 159, 0, 0.1);
+      keyword = 'Préparé';
+    } else if (item.notification.contains('Encaisse')) {
+      statusColor = Colors.blue;
+      bgColor = const Color.fromRGBO(0, 102, 255, 0.1);
+      keyword = 'Encaisse';
+    } else if (item.notification.contains('Expidié')) {
+      statusColor = Colors.green;
+      bgColor = const Color.fromRGBO(7, 176, 24, 0.1);
+      keyword = 'Expidié';
+    } else {
+      statusColor = Colors.white;
+      bgColor = Colors.black;
+      keyword = '';
+    }
+
+    if (keyword.isNotEmpty) {
+      int indexKeywordStart = item.notification
+          .indexOf(keyword); // find the start index of the keyword
+      int indexKeywordEnd = indexKeywordStart +
+          keyword.length; // find the end index of the keyword
+      beforeKeyword = item.notification
+          .substring(0, indexKeywordStart); // get the text before the keyword
+      afterKeyword = item.notification
+          .substring(indexKeywordEnd); // get the text after the keyword
+    }
+    beforeKeyword = beforeKeyword.replaceAll('(', '').replaceAll(')', '');
+    afterKeyword = afterKeyword.replaceAll('(', '').replaceAll(')', '');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -96,19 +160,104 @@ class _NotificationsState extends State<Notifications> {
         const SizedBox(
           height: 7,
         ),
-        Text(
-          item.notification,
-          maxLines: 10,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.black,
-            fontFamily: 'Inter',
-            fontSize: 16,
-            fontStyle: FontStyle.normal,
-            fontWeight: FontWeight.w400,
-            height: 1.0,
+
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: beforeKeyword,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+              ),
+              WidgetSpan(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: bgColor,
+                  ),
+                  child: Text(
+                    keyword,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: statusColor,
+                    ),
+                  ),
+                ),
+              ),
+              TextSpan(
+                text: afterKeyword,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+              ),
+              // TextSpan(
+              //   text: command.adresse,
+              //   style: const TextStyle(
+              //       fontSize: 16,
+              //       color: Color(0xFF9F9F9F),
+              //       fontWeight: FontWeight.w400),
+              // ),
+            ],
           ),
         ),
+        // Wrap(
+        //   children: [
+        //     Text(
+        //       beforeKeyword,
+        //       maxLines: 10,
+        //       overflow: TextOverflow.ellipsis,
+        //       style: const TextStyle(
+        //   color: Colors.black,
+        //   fontFamily: 'Inter',
+        //   fontSize: 16,
+        //   fontStyle: FontStyle.normal,
+        //   fontWeight: FontWeight.w400,
+        //   height: 1.0,
+        // ),
+        //     ),
+        // Container(
+        //   padding: const EdgeInsets.all(5),
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(25),
+        //     color: bgColor,
+        //   ),
+        //   child: Text(
+        //     keyword,
+        //     style: TextStyle(
+        //       fontSize: 12,
+        //       fontWeight: FontWeight.w400,
+        //       color: statusColor,
+        //     ),
+        //   ),
+        // ),
+        //     Text(
+        //       afterKeyword,
+        //       maxLines: 10,
+        //       overflow: TextOverflow.ellipsis,
+        //       style: const TextStyle(
+        //         color: Colors.black,
+        //         fontFamily: 'Inter',
+        //         fontSize: 16,
+        //         fontStyle: FontStyle.normal,
+        //         fontWeight: FontWeight.w400,
+        //         height: 1.0,
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(
           height: 10,
         ),

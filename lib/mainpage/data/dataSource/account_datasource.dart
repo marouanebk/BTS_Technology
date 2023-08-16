@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/data/Models/command_stats_model.dart';
@@ -120,10 +122,11 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
       ),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.data != null) {
+
       return EntrepriseModel.fromJson(response.data);
     } else {
-      String errorMessage = response.data['err'] ?? "Unknown error";
+      String errorMessage =  "Unknown error";
       throw ServerException(
         errorMessageModel: ErrorMessageModel(
           statusCode: response.statusCode,

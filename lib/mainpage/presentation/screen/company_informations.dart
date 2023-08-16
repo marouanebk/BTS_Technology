@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -43,6 +45,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
   }
 
   void _checkFormValidation(context) {
+    log("in form validation check");
     bool hasEmptyFields = false;
 
     // Check if any of the input fields are empty
@@ -80,7 +83,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
           "numberIF": int.parse(numberIFController.text),
           "numberART": int.parse(numberARTController.text),
           "numberRIB": int.parse(numberRIBController.text),
-          "adresse": adresseController.text,
+          "addresse": adresseController.text,
           "phoneNumber": int.parse(phoneNumberController.text),
         },
         options: Options(
@@ -90,7 +93,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
         ));
     if (response.statusCode == 200) {
       Navigator.popUntil(
-          context, (route) => route.settings.name == '/accountManager');
+          context, (route) => route.settings.name == '/adminParams');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -122,6 +125,8 @@ class _CompanyInformationsState extends State<CompanyInformations> {
             builder: (context, state) {
               if (state.getEntrepriseInfoState == RequestState.loaded) {
                 nameController.text = state.getEntrepriseInfo?.name ?? '';
+                adresseController.text = state.getEntrepriseInfo?.adresse ?? "";
+
                 if (state.getEntrepriseInfo!.numberRC != null) {
                   numberRCController.text =
                       state.getEntrepriseInfo!.numberRC.toString();
@@ -142,94 +147,90 @@ class _CompanyInformationsState extends State<CompanyInformations> {
                   phoneNumberController.text =
                       state.getEntrepriseInfo!.phoneNumber.toString();
                 }
-
-                adresseController.text = state.getEntrepriseInfo?.adresse ?? "";
-
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        buildInputField(
-                          label: "Nom de l'entreprise",
-                          hintText: "Entrez le nom de l'entreprise",
-                          errorText: "Vous devez entrer le nom de l'entreprise",
-                          controller: nameController,
-                          formSubmitted: _formSubmitted,
-                        ),
-                        buildInputField(
-                          label: "N° RC",
-                          hintText: "Numéro de registre de commerce",
-                          errorText:
-                              "Vous devez entrer le Numéro de registre de commerce",
-                          controller: numberRCController,
-                          formSubmitted: _formSubmitted,
-                          isNumeric: true,
-                        ),
-                        buildInputField(
-                            label: "N° IF",
-                            hintText: "Numéro d'identifiant fiscale",
-                            errorText:
-                                "Vous devez entrer le Numéro d'identifiant fiscale",
-                            controller: numberIFController,
-                            formSubmitted: _formSubmitted,
-                            isNumeric: true),
-                        buildInputField(
-                          label: "N° ART",
-                          hintText: "Entrez le numéro d'ART",
-                          errorText: "Vous devez entrer le numéro d'ART",
-                          controller: numberARTController,
-                          formSubmitted: _formSubmitted,
-                          isNumeric: true,
-                        ),
-                        buildInputField(
-                          label: "N° RIB",
-                          hintText: "Entrez le numéro de RIB",
-                          errorText: "Vous devez entrer le numéro de RIB",
-                          controller: numberRIBController,
-                          formSubmitted: _formSubmitted,
-                          isNumeric: true,
-                        ),
-                        buildInputField(
-                          label: "Adresse",
-                          hintText: "Adresse de l'entreprise",
-                          errorText:
-                              "Vous devez entrer l'adresse de l'entreprise",
-                          controller: nameController,
-                          formSubmitted: _formSubmitted,
-                        ),
-                        buildInputField(
-                          label: "N° Tel",
-                          hintText: "Numéro de telephone de l'entreprise",
-                          errorText:
-                              "Vous devez entrer l'adresse de l'entreprise",
-                          controller: phoneNumberController,
-                          formSubmitted: _formSubmitted,
-                          isNumeric: true,
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        registerButton(context),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
               } else if (state.getEntrepriseInfoState == RequestState.loading) {
                 return const Center(
                   child: CircularProgressIndicator(
                     color: Colors.black,
                   ),
                 );
-              } else {
-                return Container();
               }
+
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      buildInputField(
+                        label: "Nom de l'entreprise",
+                        hintText: "Entrez le nom de l'entreprise",
+                        errorText: "Vous devez entrer le nom de l'entreprise",
+                        controller: nameController,
+                        formSubmitted: _formSubmitted,
+                      ),
+                      buildInputField(
+                        label: "N° RC",
+                        hintText: "Numéro de registre de commerce",
+                        errorText:
+                            "Vous devez entrer le Numéro de registre de commerce",
+                        controller: numberRCController,
+                        formSubmitted: _formSubmitted,
+                        isNumeric: true,
+                      ),
+                      buildInputField(
+                          label: "N° IF",
+                          hintText: "Numéro d'identifiant fiscale",
+                          errorText:
+                              "Vous devez entrer le Numéro d'identifiant fiscale",
+                          controller: numberIFController,
+                          formSubmitted: _formSubmitted,
+                          isNumeric: true),
+                      buildInputField(
+                        label: "N° ART",
+                        hintText: "Entrez le numéro d'ART",
+                        errorText: "Vous devez entrer le numéro d'ART",
+                        controller: numberARTController,
+                        formSubmitted: _formSubmitted,
+                        isNumeric: true,
+                      ),
+                      buildInputField(
+                        label: "N° RIB",
+                        hintText: "Entrez le numéro de RIB",
+                        errorText: "Vous devez entrer le numéro de RIB",
+                        controller: numberRIBController,
+                        formSubmitted: _formSubmitted,
+                        isNumeric: true,
+                      ),
+                      buildInputField(
+                        label: "Adresse",
+                        hintText: "Adresse de l'entreprise",
+                        errorText:
+                            "Vous devez entrer l'adresse de l'entreprise",
+                        controller: adresseController,
+                        formSubmitted: _formSubmitted,
+                      ),
+                      buildInputField(
+                        label: "N° Tel",
+                        hintText: "Numéro de telephone de l'entreprise",
+                        errorText:
+                            "Vous devez entrer l'adresse de l'entreprise",
+                        controller: phoneNumberController,
+                        formSubmitted: _formSubmitted,
+                        isNumeric: true,
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      registerButton(context),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
         );

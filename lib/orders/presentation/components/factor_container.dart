@@ -1,6 +1,7 @@
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 import 'package:bts_technologie/orders/presentation/components/image_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 Widget factorContainer(context, Command command) {
   return Container(
@@ -72,9 +73,15 @@ Widget factorContainer(context, Command command) {
                   .expand((article) => article!.photos!)
                   .map((photoUrl) => InkWell(
                         onTap: () {
-                          Navigator.push(
+                          PersistentNavBarNavigator.pushNewScreen(
                             context,
-                            _createRoute(photoUrl),
+                            screen: ImageDetailPage(
+                              imagePath: photoUrl,
+                            ),
+                            withNavBar:
+                                false, // OPTIONAL VALUE. True by default.
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.cupertino,
                           );
                         },
                         child: Container(

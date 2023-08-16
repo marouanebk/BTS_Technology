@@ -383,7 +383,10 @@ class _EditArticleState extends State<EditArticle> {
   }
 
   Widget _variantContainerList() {
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (context, index) => const SizedBox(
+        height: 12,
+      ),
       shrinkWrap: true,
       itemCount: variants.length,
       physics: const NeverScrollableScrollPhysics(),
@@ -552,25 +555,16 @@ class _EditArticleState extends State<EditArticle> {
             ],
           ),
         ),
-        Align(
+            Align(
           alignment: Alignment.topRight,
-          child: Container(
-            width: 30,
-            height: 30,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.red,
-            ),
-            child: Center(
-              child: IconButton(
-                icon: const Icon(Icons.clear, color: Colors.white),
-                onPressed: () {
-                  setState(() {
-                    variants.remove(variant);
-                  });
-                },
-              ),
-            ),
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                variants.remove(variant);
+              });
+            },
+            icon: const Icon(Icons.close),
+            color: Colors.black,
           ),
         ),
       ],

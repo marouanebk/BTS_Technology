@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,7 +101,7 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                   const SizedBox(
                     height: 5,
                   ),
-                   Text(
+                  Text(
                     page.admin ?? "-",
                     style: const TextStyle(
                       color: Color(0xFF9F9F9F),
@@ -149,7 +150,14 @@ class _PagesInfoPageViewState extends State<PagesInfoPageView> {
                 if (response.statusCode == 200) {
                   Navigator.of(context).pushReplacementNamed('/accountManager');
                 } else {
-                  log("failed");
+                  String errorMessage = response.data['err'] ?? "Unknown error";
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.transparent,
+                      content: CustomStyledSnackBar(
+                          message: errorMessage, success: false),
+                    ),
+                  );
                 }
               },
               style: ButtonStyle(

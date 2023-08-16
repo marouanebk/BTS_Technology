@@ -331,8 +331,11 @@ class _OrdersPageState extends State<OrdersPage> {
                       ),
                     ),
                     Container(
-                      color: bgColor,
                       padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: bgColor,
+                      ),
                       child: Text(
                         command.status!,
                         style: TextStyle(

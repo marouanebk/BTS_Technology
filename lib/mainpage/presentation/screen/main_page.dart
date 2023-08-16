@@ -136,7 +136,6 @@ class _MainPageState extends State<MainPage> {
                                           (_) => false,
                                         );
                                       }
-                                      
                                     },
                                     child: const SizedBox(),
                                   ),
@@ -319,31 +318,32 @@ class _MainPageState extends State<MainPage> {
         const SizedBox(
           height: 10,
         ),
-        Center(
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (_) => AdminPagesStatsPage(pages: pages),
+        if (pages.length > 0)
+          Center(
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (_) => AdminPagesStatsPage(pages: pages),
+                  ),
+                );
+              },
+              child: const Text(
+                "voir tous",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Color(
+                      0xFF9F9F9F), // Replace with your custom color if needed
+                  fontFamily: "Inter", // Replace with the desired font family
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0, // Default line height is normal (1.0)
                 ),
-              );
-            },
-            child: const Text(
-              "voir tous",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Color(
-                    0xFF9F9F9F), // Replace with your custom color if needed
-                fontFamily: "Inter", // Replace with the desired font family
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0, // Default line height is normal (1.0)
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
-        ),
       ],
     );
   }
@@ -438,31 +438,32 @@ class _MainPageState extends State<MainPage> {
         const SizedBox(
           height: 10,
         ),
-        Center(
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(
-                  builder: (_) => AdminUsersStatsPage(users: users),
+        if (users.length > 0)
+          Center(
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (_) => AdminUsersStatsPage(users: users),
+                  ),
+                );
+              },
+              child: const Text(
+                "voir tous",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Color(
+                      0xFF9F9F9F), // Replace with your custom color if needed
+                  fontFamily: "Inter", // Replace with the desired font family
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0, // Default line height is normal (1.0)
                 ),
-              );
-            },
-            child: const Text(
-              "voir tous",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Color(
-                    0xFF9F9F9F), // Replace with your custom color if needed
-                fontFamily: "Inter", // Replace with the desired font family
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w400,
-                height: 1.0, // Default line height is normal (1.0)
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
-        ),
       ],
     );
   }
@@ -639,6 +640,7 @@ class _MainPageState extends State<MainPage> {
             lineHeight: 8.0,
             percent: progress / 100,
             progressColor: Colors.black,
+            barRadius: const Radius.circular(25),
           ),
           const SizedBox(width: 12),
           SizedBox(

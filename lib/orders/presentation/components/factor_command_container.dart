@@ -11,6 +11,7 @@ import 'package:bts_technologie/orders/presentation/screen/prix_soutraitance.dar
 import 'package:bts_technologie/orders/presentation/screen/select_livreur.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FactorCommandContainer extends StatefulWidget {
@@ -196,6 +197,9 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 color: Color(0xFFECECEC),
               ),
             ),
+            const SizedBox(
+              height: 8,
+            ),
             clientInfo(widget.command, isModificationAllowed),
             const SizedBox(
               height: 16,
@@ -209,10 +213,19 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                     .expand((article) => article!.photos!)
                     .map((photoUrl) => InkWell(
                           onTap: () {
-                            Navigator.push(
+                            PersistentNavBarNavigator.pushNewScreen(
                               context,
-                              _createRoute(photoUrl),
+                              screen: ImageDetailPage(imagePath: photoUrl,),
+                              withNavBar:
+                                  false, // OPTIONAL VALUE. True by default.
+                              pageTransitionAnimation:
+                                  PageTransitionAnimation.cupertino,
                             );
+
+                            // Navigator.push(
+                            //   context,
+                            //   _createRoute(photoUrl),
+                            // );
                           },
                           child: Container(
                             height: 72,
@@ -345,7 +358,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
 
     String totalPriceMessage = command.sommePaid == 0
         ? totalPrice.toString()
-        : "$totalPrice - ${command.sommePaid.toString()} ";
+        : "$totalPrice - ${command.sommePaid.toString()}  DA";
 
     String st;
     if (command.prixSoutraitant == null) {
@@ -423,35 +436,36 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             ],
           ),
         ),
-        Row(
-          children: [
-            Flexible(
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    const WidgetSpan(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8),
-                        child: Icon(
-                          Icons.event_note,
-                          color: Colors.black,
-                          size: 16,
+        if (command.noteClient != null)
+          Row(
+            children: [
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      const WidgetSpan(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: Icon(
+                            Icons.event_note,
+                            color: Colors.black,
+                            size: 16,
+                          ),
                         ),
                       ),
-                    ),
-                    TextSpan(
-                      text: command.noteClient,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF9F9F9F),
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                      TextSpan(
+                        text: command.noteClient,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF9F9F9F),
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
+              )
+            ],
+          ),
 
         // Prix Soutraitant
         if (isModificationAllowed) ...[
@@ -530,28 +544,28 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
         ),
         child: Center(
           child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value,
-              onChanged: onChanged,
-
-              // hint: Text("hintText"),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
+            child: ButtonTheme(
+              // add this line
+              alignedDropdown: true, // add this line
+              child: DropdownButton<String>(
+                value: value,
+                onChanged: onChanged,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+                dropdownColor: Colors.black,
+                iconEnabledColor: Colors.white,
+                iconSize: 30,
+                icon: const Icon(Icons.arrow_drop_down),
+                items: statusList.map<DropdownMenuItem<String>>((item) {
+                  return DropdownMenuItem<String>(
+                    value: item['value'],
+                    child: Center(child: Text(item['label']!)),
+                  );
+                }).toList(),
               ),
-              // style: const TextStyle(
-              //     fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
-              dropdownColor: Colors.black,
-              iconEnabledColor: Colors.white,
-              iconSize: 30,
-              icon: const Icon(Icons.arrow_drop_down),
-              items: statusList.map<DropdownMenuItem<String>>((item) {
-                return DropdownMenuItem<String>(
-                  value: item['value'],
-                  child: Center(child: Text(item['label']!)),
-                );
-              }).toList(),
             ),
           ),
         ),

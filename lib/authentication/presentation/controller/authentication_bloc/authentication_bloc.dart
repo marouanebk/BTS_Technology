@@ -26,27 +26,14 @@ class UserBloc extends Bloc<UserBlocEvent, UserBlocState> {
         emit(_eitherDoneMessageOrErrorState(
             result: failuerOrDoneMessage, message: "ADD_SUCCESS_MESSAGE"));
       } else if (event is LoginuserEvent) {
+        emit(LoadingUserBlocState());
+
         final failuerOrDoneMessage = await loginUserCase(event.user);
         emit(_login(
             result: failuerOrDoneMessage, message: "UPDATE_SUCCESS_MESSAG"));
-      } 
-      
-      // else if (event is GetAllUsersEvent) {
-      //   log("getting all users from");
-      //   emit(LoadingUserBlocState());
-
-      //   _getAllUsersEvent(emit);
-      // }
+      }
     });
   }
-
-  // FutureOr<void> _getAllUsersEvent(Emitter<UserBlocState> emit) async {
-  //   final result = await getAllUsersUseCase();
-  //   result.fold(
-  //     (l) => emit(ErrorUserBlocState(message: l.message)),
-  //     (r) => emit(GetUsersState(users: r)),
-  //   );
-  // }
 
 
   UserBlocState _eitherDoneMessageOrErrorState(

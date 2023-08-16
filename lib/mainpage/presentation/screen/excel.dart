@@ -56,7 +56,6 @@ class _ExcelFilesState extends State<ExcelFiles> {
     );
 
     if (response.statusCode == 200) {
-      // log(response.data.toString());
       commands = List<CommandModel>.from((response.data as List).map(
         (e) => CommandModel.fromJson(e),
       ));
@@ -90,7 +89,6 @@ class _ExcelFilesState extends State<ExcelFiles> {
     );
 
     if (response.statusCode == 200) {
-      // log(response.data.toString());
       articles = List<ArticleModel>.from((response.data as List).map(
         (e) => ArticleModel.fromJson(e),
       ));
@@ -364,13 +362,13 @@ class _ExcelFilesState extends State<ExcelFiles> {
 
     for (var rowIndex = 0; rowIndex < articles.length; rowIndex++) {
       final article = articles[rowIndex];
-      // int totalQuantity =
-      //     article.variants.fold(0, (sum, variant) => sum + variant!.quantity);
+      int totalQuantity =
+          article.variants.fold(0, (sum, variant) => sum + variant!.quantity);
 
       sheet.getRangeByName('A${rowIndex + 2}').setText(article.name!);
       sheet
           .getRangeByName('B${rowIndex + 2}')
-          .setText("totalQuantity.toString() \n hello");
+          .setText(totalQuantity.toString());
       sheet
           .getRangeByName('C${rowIndex + 2}')
           .setText(article.buyingPrice.toString());

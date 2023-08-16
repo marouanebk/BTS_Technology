@@ -169,7 +169,7 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
           formData.fields.add(MapEntry('articles[$i][photos][$j]', photo));
         }
       } else {
-        formData.fields.add(MapEntry('articles[$i][photos]', '[]'));
+        formData.fields.add(MapEntry('articles[$i][photoshotos_0]', '[]'));
       }
 
       // Add the deletedPhotos list of strings to the FormData object
@@ -180,8 +180,10 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
               .add(MapEntry('articles[$i][deletedPhotos][$j]', deletedPhoto));
         }
       } else {
-        formData.fields.add(MapEntry('articles[$i][deletedPhotos]', '[]'));
+        formData.fields.add(MapEntry('articles[$i][deletedPhotos_0]', ''));
       }
+      final deletedPhotos = article.deletedPhotos;
+
     }
 
     log(formData.toString());

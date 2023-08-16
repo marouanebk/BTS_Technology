@@ -115,7 +115,6 @@ class _FinancesPageState extends State<FinancesPage> {
                           );
                         }
                         if (state.getLivreursState == RequestState.error) {
-                          log("error: ");
                           return Text(
                             state.getLivreursmessage,
                             style: const TextStyle(color: Colors.red),
@@ -487,7 +486,6 @@ class _FinancesPageState extends State<FinancesPage> {
                 setState(() {
                   _selectedPeriod = newValue!;
                 });
-                log(_selectedPeriod);
               },
             )
           ],

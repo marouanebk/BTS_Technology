@@ -74,10 +74,10 @@ class _AddOrderPageState extends State<AddOrderPage> {
   List<Map<String, String>> selectedPagesEnum = [];
 
   List<Map<String, String>> commandTypesEnum = [
-    {"label": "Vierge détail", "value": "Vierge détail"},
-    {"label": "Personnalisé détail", "value": "Personnalisé détail"},
+    {"label": "Détail vierge", "value": "Détail vierge"},
+    {"label": "Détail personnalisé", "value": "Détail personnalisé"},
+    {"label": "Gros vierge", "value": "Gros vierge"},
     {"label": "Gros personnalisé", "value": "Gros personnalisé"},
-    {"label": "Gros détail", "value": "Gros détail"},
   ];
 
   int totalImagesFilesCount = 0;
@@ -218,7 +218,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
           BlocListener<AccountBloc, AccountState>(
             listener: (context, state) {
               if (state.getUserInfoState == RequestState.loaded) {
-                log("state loaded");
                 if (widget.role == "pageAdmin") {
                   // Retrieve userInfo.pages and userInfo.commandTypes
                   final adminPages = state.getUserInfo!.populatedpages!;
@@ -482,7 +481,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 spreadRadius: 0,
               ),
             ],
-            border: Border.all(color: const Color(0xFF9F9F9F)),
+            // border: Border.all(color: const Color(0xFF9F9F9F)),
             borderRadius: BorderRadius.circular(9),
           ),
           padding: const EdgeInsets.all(16),
@@ -505,6 +504,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                       (item) => item.id == value,
                       // orElse: () => null,
                     );
+
+                    article.grosPrice = selectedArticle.grosPrice;
+                    article.quantityAlert = selectedArticle.alertQuantity;
                     log(selectedArticle.toString());
                     // Update the variants list based on the selected article
                     if (selectedArticle.variants != null) {
@@ -547,6 +549,20 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 value: article.type,
                 onChanged: (value) {
                   setState(() {
+                    if (article.type == "Gros vierge" &&
+                        value != "Gros vierge") {
+                      // If switching from "Gros vierge" to another type, reset values
+                      article.prixController.text = "0"; // Set the price to 0
+                      article.isPriceReadOnly =
+                          true; // Make the field read-only
+                    } else if (value == "Gros vierge") {
+                      // If switching to "Gros vierge" type, update values
+                      article.prixController.text = article.grosPrice
+                          .toString(); // Set the price to grosPrice
+                      article.isPriceReadOnly =
+                          true; // Make the field read-only
+                    }
+
                     article.type = value;
                   });
                 },
@@ -562,6 +578,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
                 isMoney: true,
+                readOnly: article.isPriceReadOnly,
               ),
               const SizedBox(height: 15),
               buildInputField(
@@ -571,6 +588,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 controller: article.nbrArticlesController,
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
+                // showNote: (int.tryParse(article.nbrArticlesController.text) ??
+                //     0 > article.quantityAlert),
+                noteAbove: true, // Set this to true to position the note above
               ),
               _imagePickerContainer(article),
               const SizedBox(
@@ -630,25 +650,18 @@ class _AddOrderPageState extends State<AddOrderPage> {
             ],
           ),
         ),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: () {
-                setState(() {
-                  variants.remove(article);
-                });
-              },
-              icon: const Icon(Icons.close),
-              color: Colors.white,
-            ),
+           Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                variants.remove(article);
+              });
+            },
+            icon: const Icon(Icons.close),
+            color: Colors.black,
           ),
-        ),
+        )
       ],
     );
   }
@@ -738,7 +751,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
         articleItem.files.add(compressedImage);
       });
       totalImagesFilesCount++;
-
     }
   }
 
@@ -763,11 +775,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
 
     // Check if the compressed image is smaller than the target size
     if (await compressedFile.length() < targetSize) {
-      // Return the compressed image as an XFile
       return XFile(compressedFile.path);
     } else {
-      // If the compressed image is still larger than the target size,
-      // reduce the quality and try again
       return _compressImage(compressedFile);
     }
   }
@@ -779,6 +788,10 @@ class ArticleItem {
   String? article;
   String? type;
   String? variant;
+  int? quantityAlert;
+  num? grosPrice;
+  bool isPriceReadOnly = false;
+
   List<Map<String, String>> variants = []; // Add this line
   List<XFile> files = [];
 }

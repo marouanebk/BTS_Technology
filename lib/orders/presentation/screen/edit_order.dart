@@ -88,12 +88,11 @@ class _EditOrderPageState extends State<EditOrderPage> {
   List<Map<String, String>> selectedPagesEnum = [];
 
   List<Map<String, String>> commandTypesEnum = [
-    {"label": "Vierge détail", "value": "Vierge détail"},
-    {"label": "Personnalisé détail", "value": "Personnalisé détail"},
+    {"label": "Détail vierge", "value": "Détail vierge"},
+    {"label": "Détail personnalisé", "value": "Détail personnalisé"},
+    {"label": "Gros vierge", "value": "Gros vierge"},
     {"label": "Gros personnalisé", "value": "Gros personnalisé"},
-    {"label": "Gros détail", "value": "Gros détail"},
   ];
-
   bool isNumeric(String value) {
     if (value == null) {
       return false;
@@ -485,10 +484,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                                         });
                                       },
                                       formSubmitted: _formSubmitted,
-                                      items: [
-                                        {"label": "1", "value": "1"},
-                                        {"label": "1", "value": "2"},
-                                      ],
+                                      items: selectedPagesEnum,
                                     ),
                                   ],
                                   const SizedBox(height: 15),
@@ -628,7 +624,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 spreadRadius: 0,
               ),
             ],
-            border: Border.all(color: const Color(0xFF9F9F9F)),
             borderRadius: BorderRadius.circular(9),
           ),
           padding: const EdgeInsets.all(16),
@@ -821,26 +816,18 @@ class _EditOrderPageState extends State<EditOrderPage> {
             ],
           ),
         ),
-        Positioned(
-          top: 0,
-          right: 0,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.red,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: () {
-                totalImagesFilesCount--;
-                setState(() {
-                  variants.remove(article);
-                });
-              },
-              icon: const Icon(Icons.close),
-              color: Colors.white,
-            ),
+        Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                variants.remove(article);
+              });
+            },
+            icon: const Icon(Icons.close),
+            color: Colors.black,
           ),
-        ),
+        )
       ],
     );
   }

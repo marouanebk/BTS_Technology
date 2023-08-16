@@ -198,11 +198,14 @@ class _LoginPageState extends State<LoginPage> {
                                           Radius.circular(5)),
                                     ),
                                     child: Center(
-                                      child: isLoading
-                                          ? const CircularProgressIndicator(
-                                              color: Colors.white,
-                                            )
-                                          : const Text(
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          if (isLoading)
+                                            const CircularProgressIndicator(
+                                                color: Colors.white),
+                                          if (!isLoading)
+                                            const Text(
                                               "Se connecter",
                                               style: TextStyle(
                                                 fontSize: 18,
@@ -210,11 +213,68 @@ class _LoginPageState extends State<LoginPage> {
                                                 color: Colors.white,
                                               ),
                                             ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
                               },
                             ),
+                            // child: BlocBuilder<UserBloc, UserBlocState>(
+                            //   builder: (context, state) {
+                            //     if (state is LoadingUserBlocState) {
+                            //       return Container(
+                            //         height: 50,
+                            //         decoration: const BoxDecoration(
+                            //           color: Colors.grey,
+                            //           borderRadius:
+                            //               BorderRadius.all(Radius.circular(5)),
+                            //         ),
+                            //         child: const Center(
+                            //             child: CircularProgressIndicator(
+                            //           color: Colors.white,
+                            //         )),
+                            //       );
+                            //     } else {
+                            //       return GestureDetector(
+                            //         onTap: () {
+                            //           String username =
+                            //               _usernameController.text;
+                            //           String password =
+                            //               _passwordController.text;
+                            //           final userCred = User(
+                            //             username: username,
+                            //             password: password,
+                            //           );
+
+                            //           BlocProvider.of<UserBloc>(context).add(
+                            //             LoginuserEvent(
+                            //               user: userCred,
+                            //             ),
+                            //           );
+                            //         },
+                            //         child: Container(
+                            //           height: 50,
+                            //           decoration: const BoxDecoration(
+                            //             color: Colors.black,
+                            //             borderRadius: BorderRadius.all(
+                            //                 Radius.circular(5)),
+                            //           ),
+                            //           child: const Center(
+                            //             child: Text(
+                            //               "Se connecter",
+                            //               style: TextStyle(
+                            //                 fontSize: 18,
+                            //                 fontWeight: FontWeight.w500,
+                            //                 color: Colors.white,
+                            //               ),
+                            //             ),
+                            //           ),
+                            //         ),
+                            //       );
+                            //     }
+                            //   },
+                            // ),
                           ),
                         ],
                       ),
