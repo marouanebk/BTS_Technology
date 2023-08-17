@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "20640433798",
+    "project_id": "voy-pro-acc09",
+    "storage_bucket": "voy-pro-acc09.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20640433798:android:ad9a2ac8252544cb397307",
+        "android_client_info": {
+          "package_name": "com.example.bts_technologie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20640433798-1aftnoe0jb11qk0ette9dtekdep8pckf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASFUftlj3aM4dpCV2-qtyic_VjfVU8-Cc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20640433798-1aftnoe0jb11qk0ette9dtekdep8pckf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

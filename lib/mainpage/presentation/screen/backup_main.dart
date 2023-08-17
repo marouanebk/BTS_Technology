@@ -78,26 +78,32 @@ class _MainPageState extends State<MainPage> {
                         ..add(GetCommandsStatsEvent())
                         ..add(GetUserInfoEvent());
                     },
-                    child: NestedScrollView(
+                    child: 
+                    
+                    NestedScrollView(
                       headerSliverBuilder: (context, innerBoxIsScrolled) {
                         return [
-                          SliverAppBar(
-                            expandedHeight: 200,
-                            backgroundColor: Colors.white,
-                            flexibleSpace: FlexibleSpaceBar(
-                              // height: 200,
-                              background: _topContainer(context),
+                          SliverOverlapAbsorber(
+                            handle:
+                                NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                    context),
+                            sliver: SliverPersistentHeader(
+                              delegate: _TopContainerDelegate(),
+                              pinned: false,
+                              floating: false,
                             ),
-                            // pinned: true,
-                            snap: true,
-                            floating: true,
-                          )
+                          ),
+                         
                         ];
                       },
                       body: Builder(builder: (context) {
                         return CustomScrollView(
                           // controller: _scrollController,
                           slivers: [
+                            SliverOverlapInjector(
+                              handle: NestedScrollView
+                                  .sliverOverlapAbsorberHandleFor(context),
+                            ),
                             SliverToBoxAdapter(
                               child: Column(
                                 children: [

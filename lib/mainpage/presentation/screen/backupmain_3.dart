@@ -79,203 +79,223 @@ class _MainPageState extends State<MainPage> {
                         ..add(GetUserInfoEvent());
                     },
                     child: NestedScrollView(
-                      headerSliverBuilder: (context, innerBoxIsScrolled) {
+                      headerSliverBuilder:
+                          (BuildContext context, innerBoxIsScrolled) {
                         return [
                           SliverAppBar(
                             expandedHeight: 200,
-                            backgroundColor: Colors.white,
                             flexibleSpace: FlexibleSpaceBar(
+
                               // height: 200,
                               background: _topContainer(context),
                             ),
-                            // pinned: true,
-                            snap: true,
-                            floating: true,
+                            pinned: true,
                           )
                         ];
                       },
-                      body: Builder(builder: (context) {
-                        return CustomScrollView(
-                          // controller: _scrollController,
-                          slivers: [
-                            SliverToBoxAdapter(
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Container(
-                                      height: 3,
-                                      width: 43,
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.grey,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(22),
+                      body: Builder(
+                        builder: (context) {
+                          return CustomScrollView(
+                            slivers: [
+                              // SliverAppBar(
+                              //   expandedHeight: 200,
+                              //   flexibleSpace: Container(
+                              //     height: 200,
+                              //     child: _topContainer(context),
+                              //   ),
+                              //   pinned: true,
+                              // ),
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                    (BuildContext context, int index) {
+                                  return Column(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          height: 3,
+                                          width: 43,
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 8),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.grey,
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(22),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  BlocListener<AccountBloc, AccountState>(
-                                    listener: (context, state) async {
-                                      if (state.getUserInfoState ==
-                                          RequestState.error) {
-                                        final prefs = await SharedPreferences
-                                            .getInstance();
+                                      BlocListener<AccountBloc, AccountState>(
+                                        listener: (context, state) async {
+                                          if (state.getUserInfoState ==
+                                              RequestState.error) {
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
 
-                                        await prefs.setInt('is logged in', 0);
-                                        await prefs.remove("id");
-                                        await prefs.remove('type');
-                                        await prefs.remove("token");
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (BuildContext context) {
-                                              return const LoginPage();
-                                            },
-                                          ),
-                                          (_) => false,
-                                        );
-                                      }
-                                    },
-                                    child: const SizedBox(),
-                                  ),
-                                  if (state.getCommandsStatsState ==
-                                      RequestState.loading)
-                                    const Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  if (state.getCommandsStatsState ==
-                                      RequestState.error)
-                                    Text(
-                                      state.getAdminUserStatsmessage,
-                                      style: const TextStyle(color: Colors.red),
-                                    ),
-                                  if (state.getCommandsStatsState ==
-                                      RequestState.loaded) ...[
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Row(
-                                          children: [
-                                            for (var i = 0;
-                                                i <
-                                                    state.getCommandsStats
-                                                        .length;
-                                                i++) ...[
-                                              dateFilter(
-                                                  i,
-                                                  frenchMonthAbbreviations[state
-                                                      .getCommandsStats[i]
-                                                      .month]),
-                                              const SizedBox(
-                                                width: 10,
+                                            await prefs.setInt(
+                                                'is logged in', 0);
+                                            await prefs.remove("id");
+                                            await prefs.remove('type');
+                                            await prefs.remove("token");
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return const LoginPage();
+                                                },
                                               ),
-                                            ],
+                                              (_) => false,
+                                            );
+                                          }
+                                        },
+                                        child: const SizedBox(),
+                                      ),
+                                      if (state.getCommandsStatsState ==
+                                          RequestState.loading)
+                                        const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      if (state.getCommandsStatsState ==
+                                          RequestState.error)
+                                        Text(
+                                          state.getAdminUserStatsmessage,
+                                          style: const TextStyle(
+                                              color: Colors.red),
+                                        ),
+                                      if (state.getCommandsStatsState ==
+                                          RequestState.loaded) ...[
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 10.0),
+                                            child: Row(
+                                              children: [
+                                                for (var i = 0;
+                                                    i <
+                                                        state.getCommandsStats
+                                                            .length;
+                                                    i++) ...[
+                                                  dateFilter(
+                                                      i,
+                                                      frenchMonthAbbreviations[
+                                                          state
+                                                              .getCommandsStats[
+                                                                  i]
+                                                              .month]),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                ],
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 30,
+                                            ),
+                                            SizedBox(
+                                              height: 350,
+                                              child: PageView(
+                                                controller: controller,
+                                                onPageChanged: (index) {
+                                                  log("page ${index + 1} ");
+                                                  pageindex = index;
+                                                  setState(() {
+                                                    index;
+                                                  });
+                                                },
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                children: [
+                                                  for (var i = 0;
+                                                      i <
+                                                          state.getCommandsStats
+                                                              .length;
+                                                      i++) ...[
+                                                    _commandsStats(state
+                                                        .getCommandsStats[i]),
+                                                    // const SizedBox(height: 24),
+                                                  ],
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 30,
+                                            ),
+                                            if (state.getAdminUserStatsState ==
+                                                RequestState.loading)
+                                              const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            if (state.getAdminUserStatsState ==
+                                                RequestState.error)
+                                              Text(
+                                                state.getAdminUserStatsmessage,
+                                                style: const TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                            if (state.getAdminUserStatsState ==
+                                                RequestState.loaded)
+                                              usersList(
+                                                  state.getAdminUserStats),
+                                            //
+                                            const SizedBox(
+                                              height: 30,
+                                            ),
+
+                                            if (state.getPagesState ==
+                                                RequestState.loading)
+                                              const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            if (state.getPagesState ==
+                                                RequestState.error)
+                                              Text(
+                                                state.getAdminUserStatsmessage,
+                                                style: const TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                            if (state.getPagesState ==
+                                                RequestState.loaded)
+                                              pagesList(state.getPages),
+
+                                            const SizedBox(
+                                              height: 30,
+                                            ),
+                                            // pagesList(),
+                                            const SizedBox(
+                                              height: 50,
+                                            ),
                                           ],
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        SizedBox(
-                                          height: 350,
-                                          child: PageView(
-                                            controller: controller,
-                                            onPageChanged: (index) {
-                                              log("page ${index + 1} ");
-                                              pageindex = index;
-                                              setState(() {
-                                                index;
-                                              });
-                                            },
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            children: [
-                                              for (var i = 0;
-                                                  i <
-                                                      state.getCommandsStats
-                                                          .length;
-                                                  i++) ...[
-                                                _commandsStats(
-                                                    state.getCommandsStats[i]),
-                                                // const SizedBox(height: 24),
-                                              ],
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        if (state.getAdminUserStatsState ==
-                                            RequestState.loading)
-                                          const Center(
-                                            child: CircularProgressIndicator(
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        if (state.getAdminUserStatsState ==
-                                            RequestState.error)
-                                          Text(
-                                            state.getAdminUserStatsmessage,
-                                            style: const TextStyle(
-                                                color: Colors.red),
-                                          ),
-                                        if (state.getAdminUserStatsState ==
-                                            RequestState.loaded)
-                                          usersList(state.getAdminUserStats),
-                                        //
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-
-                                        if (state.getPagesState ==
-                                            RequestState.loading)
-                                          const Center(
-                                            child: CircularProgressIndicator(
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        if (state.getPagesState ==
-                                            RequestState.error)
-                                          Text(
-                                            state.getAdminUserStatsmessage,
-                                            style: const TextStyle(
-                                                color: Colors.red),
-                                          ),
-                                        if (state.getPagesState ==
-                                            RequestState.loaded)
-                                          pagesList(state.getPages),
-
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        // pagesList(),
-                                        const SizedBox(
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                    ],
+                                  );
+                                }),
                               ),
-                            ),
-                          ],
-                        );
-                      }),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 );

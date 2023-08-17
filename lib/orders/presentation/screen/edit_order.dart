@@ -8,6 +8,7 @@ import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
+import 'package:bts_technologie/logistiques/presentation/components/input_field_state.dart';
 import 'package:bts_technologie/logistiques/presentation/components/input_field_widget.dart';
 import 'package:bts_technologie/logistiques/presentation/components/select_field_input.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_bloc.dart';
@@ -646,13 +647,17 @@ class _EditOrderPageState extends State<EditOrderPage> {
                       (item) => item.id == value,
                       // orElse: () => null,
                     );
+
+                    article.grosPrice = selectedArticle.grosPrice;
+                    article.quantityAlert = selectedArticle.alertQuantity;
                     log(selectedArticle.toString());
                     // Update the variants list based on the selected article
                     if (selectedArticle.variants != null) {
                       article.variants =
                           selectedArticle.variants.map((variant) {
                         return {
-                          'label': variant?.family ?? "",
+                          'label':
+                              "${variant?.family} | ${variant?.taille} | ${variant?.colour} ",
                           'value': variant?.id ?? "",
                         };
                       }).toList();
@@ -687,6 +692,20 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 value: article.type,
                 onChanged: (value) {
                   setState(() {
+                    if (article.type == "Gros vierge" &&
+                        value != "Gros vierge") {
+                      // If switching from "Gros vierge" to another type, reset values
+                      article.prixController.text = "0"; // Set the price to 0
+                      article.isPriceReadOnly =
+                          true; // Make the field read-only
+                    } else if (value == "Gros vierge") {
+                      // If switching to "Gros vierge" type, update values
+                      article.prixController.text = article.grosPrice
+                          .toString(); // Set the price to grosPrice
+                      article.isPriceReadOnly =
+                          true; // Make the field read-only
+                    }
+
                     article.type = value;
                   });
                 },
@@ -704,13 +723,16 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 isMoney: true,
               ),
               const SizedBox(height: 15),
-              buildInputField(
+              InputField(
                 label: "Nbr d'articles",
                 hintText: "Le nombre d'articles",
                 errorText: "Vous devez entrer le nombre d'articles",
                 controller: article.nbrArticlesController,
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
+                noteAbove: true,
+                showNote: true,
+                quantityAlert: article.quantityAlert,
               ),
               _imagePickerContainer(article),
               const SizedBox(
@@ -953,6 +975,11 @@ class ArticleItem {
   String? article;
   String? type;
   String? variant;
+
+  int? quantityAlert;
+  num? grosPrice;
+  bool isPriceReadOnly = false;
+
   List<Map<String, String>> variants = [];
   List<XFile> files = [];
   List<String> cachedNetworkImageUrls = [];

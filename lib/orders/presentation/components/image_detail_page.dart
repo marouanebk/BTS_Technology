@@ -1,9 +1,6 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:image_downloader/image_downloader.dart';
-import 'package:path_provider/path_provider.dart';
+
 
 class ImageDetailPage extends StatefulWidget {
   final String imagePath;
@@ -16,11 +13,7 @@ class ImageDetailPage extends StatefulWidget {
 
 class _ImageDetailPageState extends State<ImageDetailPage> {
   Future<void> _downloadImage() async {
-    var imageId = await ImageDownloader.downloadImage(
-        "https://raw.githubusercontent.com/wiki/ko2ic/image_downloader/images/flutter.png");
-    if (imageId == null) {
-      return;
-    }
+
     // final appDocDir = await getApplicationDocumentsDirectory();
 
     // log("downloading ");

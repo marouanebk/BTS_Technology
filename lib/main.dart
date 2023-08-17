@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/authentication/domaine/entities/user_entitiy.dart';
 import 'package:bts_technologie/authentication/presentation/screen/login_page.dart';
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
@@ -13,9 +15,10 @@ import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/n
 import 'package:bts_technologie/mainpage/presentation/screen/company_informations.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/excel.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,7 +31,9 @@ void main() async {
 
   Logger.root.onRecord.listen((record) {});
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize();
+  // await Firebase.initializeApp();
+  await Firebase.initializeApp();
+  FirebaseMessaging.instance.getToken().then((value) => log("token $value"));
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

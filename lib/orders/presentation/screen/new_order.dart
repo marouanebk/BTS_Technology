@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:bts_technologie/logistiques/presentation/components/input_field_state.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:bts_technologie/base_screens/admin_base_screen.dart';
@@ -581,16 +582,16 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 readOnly: article.isPriceReadOnly,
               ),
               const SizedBox(height: 15),
-              buildInputField(
+              InputField(
                 label: "Nbr d'articles",
                 hintText: "Le nombre d'articles",
                 errorText: "Vous devez entrer le nombre d'articles",
                 controller: article.nbrArticlesController,
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
-                // showNote: (int.tryParse(article.nbrArticlesController.text) ??
-                //     0 > article.quantityAlert),
-                noteAbove: true, // Set this to true to position the note above
+                noteAbove: true, 
+                showNote: true,
+                quantityAlert: article.quantityAlert,
               ),
               _imagePickerContainer(article),
               const SizedBox(
