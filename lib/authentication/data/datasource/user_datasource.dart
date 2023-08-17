@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/network/error_message_model.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class BaseUserRemoteDateSource {
@@ -32,13 +33,6 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     );
 
     if (response.statusCode == 200) {
-      // final prefs = await SharedPreferences.getInstance();
-      // await prefs.setString('fullname', userModel.fullname!);
-      // await prefs.setString('email', userModel.email);
-      // await prefs.setString('userid', userModel.userid!);
-      // await prefs.setInt('is logged in', 1);
-
-      // return UserModel.fromJson(response.data['userid']);
       return UserModel.fromJson(response.data['user']);
     } else {
       String errorMessage = response.data['err'] ?? "Unknown error";
@@ -56,10 +50,18 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
+     String? fcmToekn = await  FirebaseMessaging.instance.getToken();
+
+
 
     final response = await Dio().post(
       ApiConstance.login,
-      data: userModel.toJson(),
+      data: {
+        'username' : userModel.username,
+        'password' : userModel.password,
+        'fcm_token' : fcmToekn,
+
+      },
       options: Options(
         followRedirects: false,
         validateStatus: (status) {

@@ -15,6 +15,7 @@ import 'package:bts_technologie/mainpage/presentation/screen/account%20manager/n
 import 'package:bts_technologie/mainpage/presentation/screen/company_informations.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/excel.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/params_admin.dart';
+import 'package:bts_technologie/push_notificaitons.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mainpage/presentation/screen/account manager/account_manager.dart';
+
+final GlobalKey<NavigatorState> navigatorkey = GlobalKey<NavigatorState>();
 
 int? isLoggedIn;
 String? type;
@@ -34,6 +37,31 @@ void main() async {
   // await Firebase.initializeApp();
   await Firebase.initializeApp();
   FirebaseMessaging.instance.getToken().then((value) => log("token $value"));
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    log("on Message Opened $message");
+    Navigator.pushNamed(navigatorkey.currentState!.context, '/push-page',
+        arguments: ["message", "(message.data)"]);
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen(
+    (RemoteMessage message) async {
+      log("on Message Opened $message");
+      Navigator.pushNamed(navigatorkey.currentState!.context, '/push-page',
+          arguments: ["message", "(message.data)"]);
+    },
+  );
+
+  FirebaseMessaging.instance.getInitialMessage().then(
+    (RemoteMessage? message) {
+      if (message != null) {
+        log("on Message Opened $message");
+        Navigator.pushNamed(navigatorkey.currentState!.context, '/push-page',
+            arguments: ["message", "(message.data)"]);
+      }
+    },
+  );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -48,18 +76,22 @@ void main() async {
   runApp(const MyApp());
 }
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  log("background message handler $message");
+}
+
 class MyApp extends StatelessWidget {
   static const String title = 'Invoice';
 
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorkey,
       title: title,
-      // theme: ThemeData(primarySwatch: Colors.deepOrange),
       theme: ThemeData(
         snackBarTheme: const SnackBarThemeData(
           backgroundColor: Colors.transparent,
@@ -83,6 +115,7 @@ class MyApp extends StatelessWidget {
           : '/',
       routes: {
         '/': (context) => const LoginPage(),
+        '/push-page': (context) => const PushNotifications(),
         '/pageAdministrator': (context) => const PageAdministratorBaseScreen(),
         '/adminPage': (context) => const AdminPageBaseScreen(),
         '/logistiques': (context) => const LogistiquesBaseScreen(),

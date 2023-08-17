@@ -56,7 +56,6 @@ class CommandModel extends Command {
         List<CommandArticle> variants = [];
         if (articleList != null) {
           variants = articleList.map((variantJson) {
-            log("photos : " + variantJson['photos'].toString());
             return CommandArticle(
               // articleId: variantJson['_id'],
               articleId: variantJson['articleId'],
