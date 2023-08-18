@@ -61,15 +61,7 @@ Widget buildInputField({
           textAlign: TextAlign.right,
         ),
       ),
-      if (showErrorText)
-        Align(
-          alignment: Alignment.centerRight,
-          child: Text(
-            errorText!,
-            style: const TextStyle(color: Colors.red),
-            textAlign: TextAlign.right,
-          ),
-        ),
+
       if (showNote && !noteAbove)
         Align(
           alignment: Alignment.centerRight,

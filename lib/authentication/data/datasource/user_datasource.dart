@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
@@ -35,7 +37,7 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
     if (response.statusCode == 200) {
       return UserModel.fromJson(response.data['user']);
     } else {
-      String errorMessage = response.data['err'] ?? "Unknown error";
+      String errorMessage = response.data['error'] ?? "Unknown error";
       throw ServerException(
         errorMessageModel: ErrorMessageModel(
           statusCode: response.statusCode,
@@ -80,7 +82,8 @@ class UserRemoteDataSource extends BaseUserRemoteDateSource {
 
       return UserModel.fromJson(response.data['user']);
     } else {
-      String errorMessage = response.data['err'] ?? "Unknown error";
+      log(response.data.toString());
+      String errorMessage = response.data['error'] ?? "Unknown error";
       throw ServerException(
         errorMessageModel: ErrorMessageModel(
           statusCode: response.statusCode,

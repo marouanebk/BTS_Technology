@@ -277,7 +277,8 @@ class _OrdersPageState extends State<OrdersPage> {
         command.status == 'Annulé' ||
         command.status == 'En attente de confirmation' ||
         command.status == 'Pas confirmé' ||
-        command.status == 'Retourné') {
+        command.status == 'Retourné' 
+        || command.status == 'Téléphone éteint') {
       statusColor = Colors.red;
       bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
     } else if (command.status == 'Confirmé' || command.status == 'Préparé') {

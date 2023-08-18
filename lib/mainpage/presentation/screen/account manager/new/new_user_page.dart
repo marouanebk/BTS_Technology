@@ -50,8 +50,8 @@ class _NewUserPageState extends State<NewUserPage> {
   List<Map<String, String>> rolesList = [
     {"label": "Admin de lapplication", "value": "admin"},
     {"label": "Admin d'une page", "value": "pageAdmin"},
-    {"label": "Responsable logistiques", "value": "financier"},
-    {"label": "Financier", "value": "logistics"},
+    {"label": "Responsable logistiques", "value": "logistics"},
+    {"label": "Financier", "value": "financier"},
   ];
 
   void _checkFormValidation(context) {

@@ -1,6 +1,6 @@
 class ApiConstance {
-  static const String baseUrl = "http://10.0.2.2:5000";
-  // static const String baseUrl = "https://voy-pro.onrender.com";
+  // static const String baseUrl = "http://10.0.2.2:5000";
+  static const String baseUrl = "https://voy-pro.onrender.com";
 
   static const String apiKey = "c3435cfe40aeb079689227d82bf921d3";
 

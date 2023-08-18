@@ -33,6 +33,14 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
 
   @override
   Widget build(BuildContext context) {
+    int financierCount =
+        widget.users.where((user) => user.role == "financier").length;
+    int logisticsCount =
+        widget.users.where((user) => user.role == "logistics").length;
+    int pageAdminCount =
+        widget.users.where((user) => user.role == "pageAdmin").length;
+    int adminCount = widget.users.where((user) => user.role == "admin").length;
+
     return BlocProvider(
       create: (context) => sl<AccountBloc>()..add(GetAllAccountsEvent()),
       child: Builder(builder: (context) {
@@ -45,152 +53,164 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                 const SizedBox(
                   height: 30,
                 ),
-                const Text(
-                  "Admins de l'application ",
-                  style: TextStyle(
-                    color: Color(0xFF9F9F9F),
-                    fontFamily: "Inter",
-                    fontSize: 16,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.w400,
-                    height: 1.0,
+                if (adminCount > 0) ...[
+                  const Text(
+                    "Admins de l'application ",
+                    style: TextStyle(
+                      color: Color(0xFF9F9F9F),
+                      fontFamily: "Inter",
+                      fontSize: 16,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                    ),
+                    textAlign: TextAlign.right,
                   ),
-                  textAlign: TextAlign.right,
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  separatorBuilder: (context, index) => const SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount:
-                      widget.users.where((user) => user.role == "admin").length,
-                  itemBuilder: (context, index) {
-                    var usersWithRole = widget.users
+                  ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    separatorBuilder: (context, index) => const SizedBox(
+                      height: 12,
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget.users
                         .where((user) => user.role == "admin")
-                        .toList();
+                        .length,
+                    itemBuilder: (context, index) {
+                      var usersWithRole = widget.users
+                          .where((user) => user.role == "admin")
+                          .toList();
 
-                    return userContainerView(usersWithRole[index], index);
-                  },
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                const Text(
-                  "Admins des pages ",
-                  style: TextStyle(
-                    color: Color(
-                        0xFF9F9F9F), // Replace with your custom color if needed
-                    fontFamily: "Inter", // Replace with the desired font family
-                    fontSize: 16,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.w400,
-                    height: 1.0, // Default line height is normal (1.0)
+                      return userContainerView(usersWithRole[index], index);
+                    },
                   ),
-                  textAlign: TextAlign.right,
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  separatorBuilder: (context, index) => const SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: widget.users
-                      .where((user) => user.role == "pageAdmin")
-                      .length,
-                  itemBuilder: (context, index) {
-                    var usersWithRole = widget.users
+                ],
+                if (pageAdminCount > 0) ...[
+                  const Text(
+                    "Admins des pages ",
+                    style: TextStyle(
+                      color: Color(
+                          0xFF9F9F9F), // Replace with your custom color if needed
+                      fontFamily:
+                          "Inter", // Replace with the desired font family
+                      fontSize: 16,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0, // Default line height is normal (1.0)
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    separatorBuilder: (context, index) => const SizedBox(
+                      height: 12,
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget.users
                         .where((user) => user.role == "pageAdmin")
-                        .toList();
+                        .length,
+                    itemBuilder: (context, index) {
+                      var usersWithRole = widget.users
+                          .where((user) => user.role == "pageAdmin")
+                          .toList();
 
-                    return userContainerView(usersWithRole[index], index);
-                  },
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                const Text(
-                  "Responsable Logistics ",
-                  style: TextStyle(
-                    color: Color(
-                        0xFF9F9F9F), // Replace with your custom color if needed
-                    fontFamily: "Inter", // Replace with the desired font family
-                    fontSize: 16,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.w400,
-                    height: 1.0, // Default line height is normal (1.0)
+                      return userContainerView(usersWithRole[index], index);
+                    },
                   ),
-                  textAlign: TextAlign.right,
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  separatorBuilder: (context, index) => const SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: widget.users
-                      .where((user) => user.role == "logistics")
-                      .length,
-                  itemBuilder: (context, index) {
-                    var usersWithRole = widget.users
+                ],
+                if (logisticsCount > 0) ...[
+                  const Text(
+                    "Responsable Logistics ",
+                    style: TextStyle(
+                      color: Color(
+                          0xFF9F9F9F), // Replace with your custom color if needed
+                      fontFamily:
+                          "Inter", // Replace with the desired font family
+                      fontSize: 16,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0, // Default line height is normal (1.0)
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    separatorBuilder: (context, index) => const SizedBox(
+                      height: 12,
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget.users
                         .where((user) => user.role == "logistics")
-                        .toList();
+                        .length,
+                    itemBuilder: (context, index) {
+                      var usersWithRole = widget.users
+                          .where((user) => user.role == "logistics")
+                          .toList();
 
-                    return userContainerView(usersWithRole[index], index);
-                  },
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                const Text(
-                  "Responsable Finances ",
-                  style: TextStyle(
-                    color: Color(
-                        0xFF9F9F9F), // Replace with your custom color if needed
-                    fontFamily: "Inter", // Replace with the desired font family
-                    fontSize: 16,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.w400,
-                    height: 1.0, // Default line height is normal (1.0)
+                      return userContainerView(usersWithRole[index], index);
+                    },
                   ),
-                  textAlign: TextAlign.right,
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  separatorBuilder: (context, index) => const SizedBox(
+                  const SizedBox(
                     height: 12,
                   ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: widget.users
-                      .where((user) => user.role == "financier")
-                      .length,
-                  itemBuilder: (context, index) {
-                    var usersWithRole = widget.users
+                ],
+                if (financierCount > 0) ...[
+                  const Text(
+                    "Responsable Finances ",
+                    style: TextStyle(
+                      color: Color(
+                          0xFF9F9F9F), // Replace with your custom color if needed
+                      fontFamily:
+                          "Inter", // Replace with the desired font family
+                      fontSize: 16,
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0, // Default line height is normal (1.0)
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    separatorBuilder: (context, index) => const SizedBox(
+                      height: 12,
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: widget.users
                         .where((user) => user.role == "financier")
-                        .toList();
+                        .length,
+                    itemBuilder: (context, index) {
+                      var usersWithRole = widget.users
+                          .where((user) => user.role == "financier")
+                          .toList();
 
-                    return userContainerView(usersWithRole[index], index);
-                  },
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
+                      return userContainerView(usersWithRole[index], index);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                ],
               ],
             ),
           ),
@@ -283,8 +303,9 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10,),
-           
+                  const SizedBox(
+                    height: 10,
+                  ),
                 ],
               ),
             ),

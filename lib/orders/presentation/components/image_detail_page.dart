@@ -1,6 +1,9 @@
 
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class ImageDetailPage extends StatefulWidget {
   final String imagePath;
@@ -13,18 +16,13 @@ class ImageDetailPage extends StatefulWidget {
 
 class _ImageDetailPageState extends State<ImageDetailPage> {
   Future<void> _downloadImage() async {
-
-    // final appDocDir = await getApplicationDocumentsDirectory();
-
-    // log("downloading ");
-
-    // final taskId = await FlutterDownloader.enqueue(
-    //   url: widget.imagePath,
-    //   fileName: 'downloaded_image.png',
-    //   savedDir: appDocDir.path,
-    //   showNotification: true,
-    //   openFileFromNotification: true,
-    // );
+    var response = await Dio().get(
+        widget.imagePath,
+        options: Options(responseType: ResponseType.bytes));
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(response.data),
+        quality: 60,
+        name: "voy_pro_image");
   }
 
   @override

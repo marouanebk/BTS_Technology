@@ -3,6 +3,7 @@ import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:bts_technologie/finances/presentation/screen/finances.dart';
 import 'package:bts_technologie/mainpage/presentation/screen/main_page.dart';
 import 'package:bts_technologie/notifications/presentation/screen/notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,6 +30,10 @@ class _PageAdministratorBaseScreenState
   void initState() {
     super.initState();
     _controller = PersistentTabController(initialIndex: widget.initialIndex);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("onMessage: $message");
+      // You can show a notification here or handle the message data as per your requirements
+    });
   }
 
   List<Widget> _buildScreens(context) {

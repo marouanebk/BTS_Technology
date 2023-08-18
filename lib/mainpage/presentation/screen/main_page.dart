@@ -806,7 +806,7 @@ Widget _topContainer(context) {
                           height: 6,
                         ),
                         Container(
-                          height: 20,
+                          // height: 20,
                           decoration: const BoxDecoration(
                             borderRadius: BorderRadius.all(
                               Radius.circular(25),
