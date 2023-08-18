@@ -179,7 +179,6 @@ class _NotificationsState extends State<Notifications> {
                 child: Container(
                   padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
                     color: bgColor,
                   ),
                   child: Text(

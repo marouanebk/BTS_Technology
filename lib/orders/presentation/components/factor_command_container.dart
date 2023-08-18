@@ -173,7 +173,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
 
     return Builder(builder: (context) {
       return Padding(
-        padding: const EdgeInsets.only(left: 16.0, bottom: 20),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -188,7 +188,10 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 5,
             ),
-            for (var item in widget.command.articleList) productDetail(item!),
+            for (var item in widget.command.articleList) Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: productDetail(item!),
+            ),
             const SizedBox(
               width: double.infinity,
               child: Divider(
@@ -200,120 +203,140 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 8,
             ),
-            clientInfo(widget.command, isModificationAllowed),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: clientInfo(widget.command, isModificationAllowed),
+            ),
             const SizedBox(
               height: 16,
             ),
-            Wrap(
-              spacing: 8.0, // Adjust spacing between images
-              runSpacing: 8.0, // Adjust spacing between lines
-              children: [
-                ...widget.command.articleList
-                    .where((article) => article?.photos != null)
-                    .expand((article) => article!.photos!)
-                    .map((photoUrl) => InkWell(
-                          onTap: () {
-                            PersistentNavBarNavigator.pushNewScreen(
-                              context,
-                              screen: ImageDetailPage(imagePath: photoUrl,),
-                              withNavBar:
-                                  false, // OPTIONAL VALUE. True by default.
-                              pageTransitionAnimation:
-                                  PageTransitionAnimation.cupertino,
-                            );
-
-                            // Navigator.push(
-                            //   context,
-                            //   _createRoute(photoUrl),
-                            // );
-                          },
-                          child: Container(
-                            height: 72,
-                            width: 72,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(
-                                color: const Color(0xFFECECEC),
-                                width: 1,
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Wrap(
+                spacing: 8.0, // Adjust spacing between images
+                runSpacing: 8.0, // Adjust spacing between lines
+                children: [
+                  ...widget.command.articleList
+                      .where((article) => article?.photos != null)
+                      .expand((article) => article!.photos!)
+                      .map((photoUrl) => InkWell(
+                            onTap: () {
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen: ImageDetailPage(
+                                  imagePath: photoUrl,
+                                ),
+                                withNavBar:
+                                    false, // OPTIONAL VALUE. True by default.
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.cupertino,
+                              );
+            
+                              // Navigator.push(
+                              //   context,
+                              //   _createRoute(photoUrl),
+                              // );
+                            },
+                            child: Container(
+                              height: 72,
+                              width: 72,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                  color: const Color(0xFFECECEC),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Image.network(
+                                photoUrl,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (BuildContext context,
+                                    Object exception, StackTrace? stackTrace) {
+                                  return Icon(Icons
+                                      .error); // You can display an error icon here if loading fails
+                                },
                               ),
                             ),
-                            child: Image.network(
-                              photoUrl,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                }
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                );
-                              },
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                return Icon(Icons
-                                    .error); // You can display an error icon here if loading fails
-                              },
-                            ),
-                          ),
-                        ))
-                    .toList(),
-              ],
+                          ))
+                      .toList(),
+                ],
+              ),
             ),
 
             const SizedBox(
               height: 10,
             ),
             if (isModificationAllowed) ...[
-              containerButton(
-                  "Ajouter un prix de sous traitance",
-                  PrixSoutraitancePage(
-                    id: widget.command.id!,
-                    role: widget.role,
-                    // command: widget.command,
-                  )),
+              Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+                child: containerButton(
+                    "Ajouter un prix de sous traitance",
+                    PrixSoutraitancePage(
+                      id: widget.command.id!,
+                      role: widget.role,
+                      // command: widget.command,
+                    )),
+              ),
               const SizedBox(
                 height: 10,
               ),
             ],
 
             if (showModifyButton)
-              containerButton(
-                  "Modifier la commande",
-                  EditOrderPage(
-                    role: widget.role,
-                    command: widget.command,
-                  )),
+              Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+                child: containerButton(
+                    "Modifier la commande",
+                    EditOrderPage(
+                      role: widget.role,
+                      command: widget.command,
+                    )),
+              ),
             const SizedBox(
               height: 10,
             ),
             //add the generate factor
             if (widget.role == 'admin' || widget.role == 'logistics')
-              containerButton(
-                  "Générer une facture",
-                  NewFactorPage(
-                    command: widget.command,
-                  )),
+              Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+                child: containerButton(
+                    "Générer une facture",
+                    NewFactorPage(
+                      command: widget.command,
+                    )),
+              ),
             const SizedBox(
               height: 10,
             ),
-            confirmationContainer(
-              value: type,
-              onChanged: (value) {
-                setState(() {
-                  _updateStatus(value, context);
-
-                  type = value;
-                });
-              },
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: confirmationContainer(
+                value: type,
+                onChanged: (value) {
+                  setState(() {
+                    _updateStatus(value, context);
+            
+                    type = value;
+                  });
+                },
+              ),
             ),
             const SizedBox(
               height: 10,
@@ -468,7 +491,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
           ),
 
         // Prix Soutraitant
-        if (isModificationAllowed) ...[
+        if (isModificationAllowed && command.prixSoutraitant != null) ...[
           RichText(
             text: TextSpan(
               children: [

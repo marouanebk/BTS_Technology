@@ -93,6 +93,7 @@ class _EditArticleState extends State<EditArticle> {
   }
 
   bool _formSubmitted = false;
+  int incrementCompressed =0;
 
   bool isNumeric(String value) {
     if (value == null) {
@@ -588,8 +589,8 @@ class _EditArticleState extends State<EditArticle> {
 
     final tempDir = await getTemporaryDirectory();
 
-    final compressedFile = File('${tempDir.path}/image.jpg');
-
+    final compressedFile = File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed +=1;
     await FlutterImageCompress.compressAndGetFile(
       file.absolute.path,
       compressedFile.path,

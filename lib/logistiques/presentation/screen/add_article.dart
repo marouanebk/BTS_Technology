@@ -38,6 +38,7 @@ class _NewArticleState extends State<NewArticle> {
   List<VariantItem> variants = [];
   int count = 1;
   File? selectedImage;
+  int incrementCompressed = 0;
 
   @override
   void dispose() {
@@ -563,8 +564,9 @@ class _NewArticleState extends State<NewArticle> {
 
     final tempDir = await getTemporaryDirectory();
 
-    final compressedFile = File('${tempDir.path}/image.jpg');
-
+    final compressedFile =
+        File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed += 1;
     await FlutterImageCompress.compressAndGetFile(
       file.absolute.path,
       compressedFile.path,

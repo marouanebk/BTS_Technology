@@ -52,6 +52,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
 
   List<ArticleItem> variants = [];
   int count = 1;
+  int incrementCompressed = 1;
 
   @override
   void initState() {
@@ -589,7 +590,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 controller: article.nbrArticlesController,
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
-                noteAbove: true, 
+                noteAbove: true,
                 showNote: true,
                 quantityAlert: article.quantityAlert,
               ),
@@ -597,6 +598,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
               const SizedBox(
                 height: 10,
               ),
+    
               Wrap(
                 spacing: 8.0, // Adjust spacing between images
                 runSpacing: 8.0, // Adjust spacing between lines
@@ -651,7 +653,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
             ],
           ),
         ),
-           Align(
+        Align(
           alignment: Alignment.topRight,
           child: IconButton(
             onPressed: () {
@@ -746,11 +748,13 @@ class _AddOrderPageState extends State<AddOrderPage> {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      log(image.toString());
       final compressedImage = await _compressImage(File(image.path));
 
       setState(() {
         articleItem.files.add(compressedImage);
       });
+
       totalImagesFilesCount++;
     }
   }
@@ -763,7 +767,8 @@ class _AddOrderPageState extends State<AddOrderPage> {
     final tempDir = await getTemporaryDirectory();
 
     // Create a new file in the temporary directory
-    final compressedFile = File('${tempDir.path}/image.jpg');
+    final compressedFile = File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed = incrementCompressed +1;
 
     // Compress the image and save it to the new file
     await FlutterImageCompress.compressAndGetFile(
@@ -793,6 +798,6 @@ class ArticleItem {
   num? grosPrice;
   bool isPriceReadOnly = false;
 
-  List<Map<String, String>> variants = []; // Add this line
+  List<Map<String, String>> variants = [];
   List<XFile> files = [];
 }

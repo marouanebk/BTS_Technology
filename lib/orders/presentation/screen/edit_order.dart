@@ -60,6 +60,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
   int count = 1;
   bool isPhotoModified = false;
   int totalImagesFilesCount = 0;
+    int incrementCompressed = 1;
+
 
   @override
   void initState() {
@@ -951,7 +953,8 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
     final tempDir = await getTemporaryDirectory();
 
-    final compressedFile = File('${tempDir.path}/image.jpg');
+    final compressedFile = File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed +=1;
 
     await FlutterImageCompress.compressAndGetFile(
       file.absolute.path,
