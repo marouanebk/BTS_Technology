@@ -31,6 +31,21 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
   List<bool> isFinancierDropDownVisibleList =
       List.generate(45, (index) => false);
 
+  String id = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      id = prefs.getString("id") ?? "";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     int financierCount =
@@ -361,45 +376,48 @@ class _UsersInfoPageVIewState extends State<UsersInfoPageVIew> {
         const SizedBox(
           height: 10,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Container(
-            height: 50, // Set the height to 50
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: ElevatedButton(
-              onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                final token = prefs.getString("token");
-                final response =
-                    await Dio().delete(ApiConstance.deleteUser(user.id!),
-                        options: Options(
-                          headers: {
-                            "Authorization": "Bearer $token",
-                          },
-                        ));
-                if (response.statusCode == 200) {
-                  Navigator.of(context).pushReplacementNamed('/accountManager');
-                } else {
-                  log("failed");
-                }
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.red),
+        if (id != user.id)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Container(
+              height: 50, // Set the height to 50
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
               ),
-              child: const Text(
-                "Supprimer le compte",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white,
+              child: ElevatedButton(
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  final token = prefs.getString("token");
+                  final response =
+                      await Dio().delete(ApiConstance.deleteUser(user.id!),
+                          options: Options(
+                            headers: {
+                              "Authorization": "Bearer $token",
+                            },
+                          ));
+                  if (response.statusCode == 200) {
+                    Navigator.of(context)
+                        .pushReplacementNamed('/accountManager');
+                  } else {
+                    log("failed");
+                  }
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red),
+                ),
+                child: const Text(
+                  "Supprimer le compte",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
         const SizedBox(
           height: 10,
         ),

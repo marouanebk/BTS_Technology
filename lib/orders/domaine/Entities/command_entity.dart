@@ -18,7 +18,7 @@ class Command extends Equatable {
   final String? page;
   final String nomClient;
   final String adresse;
-  final num phoneNumber;
+  final String phoneNumber;
   final num sommePaid;
   final List<CommandArticle?> articleList;
   final List<Map<String, dynamic>>? statusUpdates;

@@ -33,17 +33,13 @@ class _LogistiquesState extends State<Logistiques> {
   void initState() {
     super.initState();
     isDropDownVisibleList = List.generate(
-      15, // You can replace this with any initial length you want
+      15,
       (index) => false,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-    //   statusBarColor: Colors.white,
-    // ));
-
     return BlocProvider(
       create: (context) => sl<ArticleBloc>()..add(GetArticlesEvent()),
       child: Builder(

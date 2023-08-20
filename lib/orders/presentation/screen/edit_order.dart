@@ -102,6 +102,13 @@ class _EditOrderPageState extends State<EditOrderPage> {
     return double.tryParse(value) != null;
   }
 
+  bool isNumericInt(String value) {
+    if (value == null) {
+      return false;
+    }
+    return int.tryParse(value) != null;
+  }
+
   bool initList = false;
 
   void _checkFormValidation(context) {
@@ -115,7 +122,29 @@ class _EditOrderPageState extends State<EditOrderPage> {
       hasEmptyFields = true;
     }
 
-    if (!isNumeric(sommePaidController.text)) {
+    int? phoenNumberParsedValue = int.tryParse(phonenumberController.text);
+    double? sommePaidParsedValue = double.tryParse(sommePaidController.text);
+    if (phoenNumberParsedValue != null) {
+      if (phoenNumberParsedValue < 0) {
+        hasEmptyFields = true;
+      }
+    } else {
+      hasEmptyFields = true;
+    }
+
+    if (sommePaidParsedValue != null) {
+      if (sommePaidParsedValue < 0) {
+        hasEmptyFields = true;
+      }
+    } else {
+      hasEmptyFields = true;
+    }
+
+    if (widget.role == "pageAdmin" && selectedPage == null) {
+      hasEmptyFields = true;
+    }
+
+    if (!isNumeric(sommePaidController.text) ||!isNumericInt(phonenumberController.text)) {
       hasEmptyFields = true;
       hasInvalidNumericFields = true;
     }
@@ -123,12 +152,27 @@ class _EditOrderPageState extends State<EditOrderPage> {
       hasEmptyFields = true;
     } else {
       for (var variant in variants) {
+        int? nbrArticlesParsedValue =
+            int.tryParse(variant.nbrArticlesController.text);
+        double? prixParsedValue =
+            double.tryParse(variant.nbrArticlesController.text);
         if (variant.prixController.text.isEmpty ||
             variant.nbrArticlesController.text.isEmpty ||
             variant.article == null ||
             variant.type == null) {
           hasEmptyFields = true;
           break;
+        } else if (nbrArticlesParsedValue != null) {
+          if (nbrArticlesParsedValue < 0) {
+            hasEmptyFields = true;
+            break;
+          }
+        } else if (prixParsedValue != null) {
+          if (prixParsedValue < 0) {
+            hasEmptyFields = true;
+            setState(() {});
+            break;
+          }
         }
       }
     }
@@ -138,7 +182,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
     } else {
       for (var variant in variants) {
         if (!isNumeric(variant.prixController.text) ||
-            !isNumeric(variant.nbrArticlesController.text)) {
+            !isNumericInt(variant.nbrArticlesController.text)) {
           hasInvalidNumericFields = true;
           hasEmptyFields = true;
           break;
@@ -164,7 +208,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
         id: widget.command.id,
         adresse: adresssController.text,
         nomClient: fullnameController.text,
-        phoneNumber: int.parse(phonenumberController.text),
+        phoneNumber: phonenumberController.text,
         noteClient: noteClientController.text,
         page: selectedPage,
         sommePaid: double.parse(sommePaidController.text),
@@ -196,7 +240,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
         id: widget.command.id,
         adresse: adresssController.text,
         nomClient: fullnameController.text,
-        phoneNumber: int.parse(phonenumberController.text),
+        phoneNumber: phonenumberController.text,
         noteClient: noteClientController.text,
         sommePaid: double.parse(sommePaidController.text),
         articleList: variants.map((variant) {
@@ -275,11 +319,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
                       }).toList();
 
                       try {
-
-
-                      selectedPage = widget.command.page;
-                      setState(() {});
-                      }catch (e){
+                        selectedPage = widget.command.page;
+                        setState(() {});
+                      } catch (e) {
                         // TOD
                       }
                     }
@@ -645,17 +687,19 @@ class _EditOrderPageState extends State<EditOrderPage> {
                   setState(() {
                     variantsList.clear();
                     article.variant = null;
+                    article.grosPrice = null;
+                    article.quantityAlert = null;
+                    article.unity = null;
 
                     article.article = value;
 
-                    // Find the selected article in the articles list
                     final selectedArticle = articles.firstWhere(
                       (item) => item.id == value,
-                      // orElse: () => null,
                     );
 
                     article.grosPrice = selectedArticle.grosPrice;
                     article.quantityAlert = selectedArticle.alertQuantity;
+                    article.unity = selectedArticle.unity;
                     // Update the variants list based on the selected article
                     if (selectedArticle.variants != null) {
                       article.variants =
@@ -705,16 +749,12 @@ class _EditOrderPageState extends State<EditOrderPage> {
                   setState(() {
                     if (article.type == "Gros vierge" &&
                         value != "Gros vierge") {
-                      // If switching from "Gros vierge" to another type, reset values
-                      article.prixController.text = "0"; // Set the price to 0
-                      article.isPriceReadOnly =
-                          true; // Make the field read-only
+                      article.prixController.text = "0";
+                      article.isPriceReadOnly = true;
                     } else if (value == "Gros vierge") {
-                      // If switching to "Gros vierge" type, update values
-                      article.prixController.text = article.grosPrice
-                          .toString(); // Set the price to grosPrice
-                      article.isPriceReadOnly =
-                          true; // Make the field read-only
+                      article.prixController.text =
+                          article.grosPrice.toString();
+                      article.isPriceReadOnly = true;
                     }
 
                     article.type = value;
@@ -737,7 +777,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
               InputField(
                 label: "Nbr d'articles",
                 hintText: "Le nombre d'articles",
-                errorText: "Vous devez entrer le nombre d'articles",
                 controller: article.nbrArticlesController,
                 formSubmitted: _formSubmitted,
                 isNumeric: true,
@@ -745,6 +784,10 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 showNote: true,
                 quantityAlert: article.quantityAlert,
                 variantQuantity: article.variantQuantity,
+                unity: article.unity,
+              ),
+              const SizedBox(
+                height: 10,
               ),
               _imagePickerContainer(article),
               const SizedBox(
@@ -988,6 +1031,8 @@ class ArticleItem {
   String? article;
   String? type;
   String? variant;
+
+  String? unity;
 
   int? quantityAlert;
   int? variantQuantity;

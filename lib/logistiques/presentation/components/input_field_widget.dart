@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 Widget buildInputField({
@@ -13,8 +15,33 @@ Widget buildInputField({
   bool noteAbove = false,
 }) {
   final bool isEmpty = controller?.text.isEmpty ?? false;
-  final bool showErrorText = formSubmitted && isEmpty;
-
+  bool showErrorText = false;
+  if (isNumeric && isMoney) {
+    double? parsedValue = double.tryParse(controller!.text);
+    if (parsedValue != null) {
+      if (parsedValue < 0) {
+        showErrorText = formSubmitted;
+      }
+      //  else if (parsedValue == 0) {
+      //   showErrorText = formSubmitted;
+      // }
+    } else {
+      showErrorText = formSubmitted;
+    }
+  } else if (isNumeric && !isMoney) {
+    int? parsedValue = int.tryParse(controller!.text);
+    if (parsedValue != null) {
+      if (parsedValue < 0) {
+        showErrorText = formSubmitted;
+      } else if (parsedValue == 0) {
+        showErrorText = formSubmitted;
+      }
+    } else {
+      showErrorText = formSubmitted;
+    }
+  } else {
+    showErrorText = formSubmitted && isEmpty || (formSubmitted && isNumeric);
+  }
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -32,9 +59,8 @@ Widget buildInputField({
             controller: controller,
             readOnly: readOnly,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
-            enableSuggestions: false, 
-            enableInteractiveSelection: false, 
-
+            enableSuggestions: false,
+            enableInteractiveSelection: false,
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: const TextStyle(

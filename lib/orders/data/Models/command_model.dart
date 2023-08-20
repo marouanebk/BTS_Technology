@@ -20,7 +20,7 @@ class CommandModel extends Command {
     String? createdAt,
     required String nomClient,
     required String adresse,
-    required num phoneNumber,
+    required String phoneNumber,
     required num sommePaid,
 
     //
@@ -76,6 +76,8 @@ class CommandModel extends Command {
 
         String? page;
         String? livreur;
+        String? user;
+        if (data["user"] != null && data["user"]["username"] != null )  user: data["user"]["username"];
         if (data["page"] != null) page = data["page"]["_id"];
         if (data["livreur"] != null) livreur = data["livreur"]["name"];
         final commandModel = CommandModel(
@@ -85,10 +87,11 @@ class CommandModel extends Command {
           noteClient: data["noteClient"],
           sommePaid: data["sommePaid"],
           prixSoutraitant: data["sousTraitance"],
-          user: data["user"]["username"],
+          user: user,
           nomClient: data["nomClient"],
           adresse: data["adresse"],
           page: page,
+          // phoneNumber: "",
           phoneNumber: data["phoneNumber"],
           status: data["status"],
           articleList: variants,

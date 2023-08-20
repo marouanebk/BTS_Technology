@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
@@ -60,11 +61,17 @@ class _NewArticleState extends State<NewArticle> {
     return double.tryParse(value) != null;
   }
 
+  bool isNumericInt(String value) {
+    if (value == null) {
+      return false;
+    }
+    return int.tryParse(value) != null;
+  }
+
   void _checkFormValidation(context) {
     bool hasEmptyFields = false;
     bool hasInvalidNumericFields = false; // Add this line
 
-    // Check if any of the input fields are empty
     if (nomArticleController.text.isEmpty ||
         uniteController.text.isEmpty ||
         prixAchatController.text.isEmpty ||
@@ -73,9 +80,39 @@ class _NewArticleState extends State<NewArticle> {
       hasEmptyFields = true;
     }
 
+    // ///
+    // double? prixAchatParsedValue = double.tryParse(prixAchatController.text);
+    // double? prixGrosParsedValue = double.tryParse(prixGrosController.text);
+    // int? quantityAlertParsedValue = int.tryParse(quanAlertController.text);
+    // log(quantityAlertParsedValue.toString());
+
+    // if (prixAchatParsedValue != null) {
+    //   if (prixAchatParsedValue < 0) {
+    //     hasEmptyFields = true;
+    //   }
+    // } else {
+    //   hasEmptyFields = true;
+    // }
+
+    // if (prixGrosParsedValue != null) {
+    //   if (prixGrosParsedValue < 0) {
+    //     hasEmptyFields = true;
+    //   }
+    // } else {
+    //   hasEmptyFields = true;
+    // }
+    // if (quantityAlertParsedValue != null) {
+    //   if (quantityAlertParsedValue < 0) {
+    //     hasEmptyFields = true;
+    //   }
+    // } else {
+    //   hasEmptyFields = true;
+    // }
+    /////
+
     if (!isNumeric(prixAchatController.text) ||
         !isNumeric(prixGrosController.text) ||
-        !isNumeric(quanAlertController.text)) {
+        !isNumericInt(quanAlertController.text)) {
       hasEmptyFields = true;
       hasInvalidNumericFields = true;
     }
@@ -100,11 +137,17 @@ class _NewArticleState extends State<NewArticle> {
       hasEmptyFields = true;
     } else {
       for (var variant in variants) {
-        if (!isNumeric(variant.quantiteController.text)) {
+        int? quantityParsedValue =
+            int.tryParse(variant.quantiteController.text);
+        if (!isNumericInt(variant.quantiteController.text)) {
           hasEmptyFields = true;
           hasInvalidNumericFields = true;
 
           break;
+        } else if (quantityParsedValue != null) {
+          if (quantityParsedValue < 0) {
+            hasEmptyFields = true;
+          }
         }
       }
     }
@@ -234,7 +277,7 @@ class _NewArticleState extends State<NewArticle> {
                       buildInputField(
                           label: "Prix d'achat",
                           hintText: "Entrez le prix d'achat",
-                          errorText: "Vous devez entrer le prix d'achat",
+                          errorText: "Vous devez entrer une valid prix",
                           controller: prixAchatController,
                           isNumeric: true,
                           isMoney: true,
@@ -243,8 +286,7 @@ class _NewArticleState extends State<NewArticle> {
                       buildInputField(
                           label: "Prix de ventre en gros",
                           hintText: "Entrez le prix de vente en gros",
-                          errorText:
-                              "Vous devez entrer le prix de vente en gros",
+                          errorText: "Vous devez entrer une valid prix",
                           controller: prixGrosController,
                           isNumeric: true,
                           isMoney: true,
@@ -253,7 +295,7 @@ class _NewArticleState extends State<NewArticle> {
                       buildInputField(
                           label: "Quantité d'alerte",
                           hintText: "Entrez la quantité d'alerte",
-                          errorText: "Vous devez entrer la quantité d'alerte",
+                          errorText: "Vous devez entrer une valid quantité",
                           controller: quanAlertController,
                           isNumeric: true,
                           formSubmitted: _formSubmitted),
@@ -329,6 +371,35 @@ class _NewArticleState extends State<NewArticle> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else if (state.createArticleState ==
+                        RequestState.loading) {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            height: 50, // Set the height to 50
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5)),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // _checkFormValidation(context);
+                              },
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.black),
+                              ),
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               ),
                             ),
@@ -487,7 +558,7 @@ class _NewArticleState extends State<NewArticle> {
               buildInputField(
                   label: "Quantité",
                   hintText: "Entrez la Quantité",
-                  errorText: "Vous devez entrer la Quantité",
+                  errorText: "Vous devez entrer une valid quantité",
                   controller: variant.quantiteController,
                   isNumeric: true,
                   formSubmitted: _formSubmitted),

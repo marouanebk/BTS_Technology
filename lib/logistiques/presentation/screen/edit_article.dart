@@ -92,13 +92,20 @@ class _EditArticleState extends State<EditArticle> {
   }
 
   bool _formSubmitted = false;
-  int incrementCompressed =0;
+  int incrementCompressed = 0;
 
   bool isNumeric(String value) {
     if (value == null) {
       return false;
     }
     return double.tryParse(value) != null;
+  }
+
+  bool isNumericInt(String value) {
+    if (value == null) {
+      return false;
+    }
+    return int.tryParse(value) != null;
   }
 
   void _checkFormValidation(context) {
@@ -116,7 +123,7 @@ class _EditArticleState extends State<EditArticle> {
 
     if (!isNumeric(prixAchatController.text) ||
         !isNumeric(prixGrosController.text) ||
-        !isNumeric(quanAlertController.text)) {
+        !isNumericInt(quanAlertController.text)) {
       hasEmptyFields = true;
       hasInvalidNumericFields = true;
     }
@@ -141,11 +148,17 @@ class _EditArticleState extends State<EditArticle> {
       hasEmptyFields = true;
     } else {
       for (var variant in variants) {
-        if (!isNumeric(variant.quantiteController.text)) {
+        int? quantityParsedValue =
+            int.tryParse(variant.quantiteController.text);
+        if (!isNumericInt(variant.quantiteController.text)) {
           hasEmptyFields = true;
           hasInvalidNumericFields = true;
 
           break;
+        } else if (quantityParsedValue != null) {
+          if (quantityParsedValue < 0) {
+            hasEmptyFields = true;
+          }
         }
       }
     }
@@ -298,23 +311,25 @@ class _EditArticleState extends State<EditArticle> {
                     buildInputField(
                         label: "Prix d'achat",
                         hintText: "Entrez le prix d'achat",
-                        errorText: "Vous devez entrer le prix d'achat",
+                        errorText: "Vous devez entrer une valid prix",
                         controller: prixAchatController,
                         isNumeric: true,
+                        isMoney: true,
                         formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
                     buildInputField(
                         label: "Prix de ventre en gros",
                         hintText: "Entrez le prix de vente en gros",
-                        errorText: "Vous devez entrer le prix de vente en gros",
+                        errorText: "Vous devez entrer une valid prix",
                         controller: prixGrosController,
                         isNumeric: true,
+                        isMoney: true,
                         formSubmitted: _formSubmitted),
                     const SizedBox(height: 20),
                     buildInputField(
                         label: "Quantité d'alerte",
                         hintText: "Entrez la quantité d'alerte",
-                        errorText: "Vous devez entrer la quantité d'alerte",
+                        errorText: "Vous devez entrer une valid quantité",
                         controller: quanAlertController,
                         isNumeric: true,
                         formSubmitted: _formSubmitted),
@@ -530,7 +545,7 @@ class _EditArticleState extends State<EditArticle> {
               buildInputField(
                 label: "Quantité",
                 hintText: "Entrez la Quantité",
-                errorText: "Vous devez entrer la Quantité",
+                errorText: "Vous devez entrer une valid quantité",
                 controller: variant.quantiteController,
                 isNumeric: true,
                 formSubmitted: _formSubmitted,
@@ -555,7 +570,7 @@ class _EditArticleState extends State<EditArticle> {
             ],
           ),
         ),
-            Align(
+        Align(
           alignment: Alignment.topRight,
           child: IconButton(
             onPressed: () {
@@ -588,8 +603,9 @@ class _EditArticleState extends State<EditArticle> {
 
     final tempDir = await getTemporaryDirectory();
 
-    final compressedFile = File('${tempDir.path}/image$incrementCompressed.jpg');
-    incrementCompressed +=1;
+    final compressedFile =
+        File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed += 1;
     await FlutterImageCompress.compressAndGetFile(
       file.absolute.path,
       compressedFile.path,

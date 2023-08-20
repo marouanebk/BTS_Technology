@@ -338,6 +338,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 10,
             ),
+            if (widget.command.user != null)
             Center(
               child: Text(
                 "Saisie par @${widget.command.user}",
@@ -456,7 +457,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             ],
           ),
         ),
-        if (command.noteClient != null)
+        if (command.noteClient != null && command.noteClient != "")
           Row(
             children: [
               Flexible(

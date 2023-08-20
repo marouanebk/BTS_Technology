@@ -41,11 +41,13 @@ class _NewUserPageState extends State<NewUserPage> {
   }
 
   List<String> commandeTypes = [
-    'Vierge détail',
-    'Personnalisé détail',
+    'Détail vierge',
+    'Détail personnalisé',
+    'Gros vierge',
     'Gros personnalisé',
-    'Gros détail',
   ];
+
+
 
   List<Map<String, String>> rolesList = [
     {"label": "Admin de lapplication", "value": "admin"},

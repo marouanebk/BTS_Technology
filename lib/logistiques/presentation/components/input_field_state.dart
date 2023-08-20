@@ -1,34 +1,34 @@
-
 import 'package:flutter/material.dart';
 
 class InputField extends StatefulWidget {
   final String? label;
   final String? hintText;
-  final String? errorText;
+  final String errorText;
   final TextEditingController? controller;
   final bool isNumeric;
   final bool formSubmitted;
-  final bool isMoney;
+
   final bool readOnly;
   final bool showNote;
   final bool noteAbove;
   final int? quantityAlert;
+  final String? unity;
   final int? variantQuantity;
 
   const InputField({
     Key? key,
     this.label,
     this.hintText,
-    this.errorText,
+    this.errorText = "Vous devez entrer une valid nombre",
     this.controller,
     this.isNumeric = false,
     this.formSubmitted = false,
-    this.isMoney = false,
     this.readOnly = false,
     this.showNote = false,
     this.noteAbove = false,
     this.quantityAlert,
     this.variantQuantity,
+    this.unity,
   }) : super(key: key);
 
   @override
@@ -47,8 +47,10 @@ class _InputFieldState extends State<InputField> {
       // Call setState to rebuild the widget and update the showQuantityAlert value
       setState(() {
         int currentValue = int.tryParse(widget.controller?.text ?? '') ?? 0;
-        showQuantityAlert = widget.quantityAlert != null && widget.quantityAlert != null && 
-            ((currentValue > (widget.variantQuantity! - widget.quantityAlert!)) ||
+        showQuantityAlert = widget.quantityAlert != null &&
+            widget.quantityAlert != null &&
+            ((currentValue >
+                    (widget.variantQuantity! - widget.quantityAlert!)) ||
                 (widget.variantQuantity! < widget.quantityAlert!));
       });
     });
@@ -57,7 +59,12 @@ class _InputFieldState extends State<InputField> {
   @override
   Widget build(BuildContext context) {
     final bool isEmpty = widget.controller?.text.isEmpty ?? false;
-    final bool showErrorText = widget.formSubmitted && isEmpty;
+
+    int? currentValue = int.tryParse(widget.controller?.text ?? '');
+    bool isNotInt = currentValue == null;
+    bool isNegative = currentValue != null && currentValue < 0;
+    final bool showErrorText = widget.formSubmitted && isEmpty ||
+        widget.formSubmitted && (isNegative || isNotInt);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,22 +117,24 @@ class _InputFieldState extends State<InputField> {
                 border: const UnderlineInputBorder(),
               ),
             ),
-            // Show "DA" at the end for numeric fields (isNumeric = true)
-            if (widget.isNumeric && widget.isMoney)
-              const Positioned(
+            if (widget.isNumeric && widget.unity != null)
+              Positioned(
                 right: 0,
                 child: Text(
-                  "DA",
-                  style: TextStyle(color: Colors.black),
+                  widget.unity!,
+                  style: const TextStyle(color: Colors.black),
                 ),
               ),
-            // Add a new condition to display a red text on the right of the label text if the value entered by the user is greater than the quantityAlert value
           ],
         ),
         Align(
           alignment: Alignment.centerRight,
           child: Text(
-            showErrorText ? widget.errorText! : "",
+            showErrorText
+                ? (isNegative
+                    ? "Vous devez entrer une valeur positive"
+                    : widget.errorText)
+                : "",
             style: const TextStyle(color: Colors.red),
             textAlign: TextAlign.right,
           ),
