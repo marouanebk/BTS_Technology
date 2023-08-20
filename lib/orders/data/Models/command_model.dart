@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
@@ -17,6 +16,7 @@ class CommandModel extends Command {
     num? prixSoutraitant,
     String? page,
     String? livreur,
+    List<Map<String, dynamic>>? statusUpdates,
     String? createdAt,
     required String nomClient,
     required String adresse,
@@ -41,7 +41,8 @@ class CommandModel extends Command {
             date: date,
             articleList: articleList,
             livreur: livreur,
-            createdAt: createdAt);
+            createdAt: createdAt,
+            statusUpdates: statusUpdates);
 
   static List<CommandModel> fromJsonList(Map<String, dynamic> json) {
     final dateKeys = json.keys.toList();
@@ -71,12 +72,11 @@ class CommandModel extends Command {
               photos: List<String>.from(variantJson["photos"] ?? []),
             );
           }).toList();
-
         }
 
         String? page;
         String? livreur;
-        if (data["page"] != null) page = data["page"]["name"];
+        if (data["page"] != null) page = data["page"]["_id"];
         if (data["livreur"] != null) livreur = data["livreur"]["name"];
         final commandModel = CommandModel(
           date: dateKey,
@@ -108,6 +108,7 @@ class CommandModel extends Command {
     var articleList = json['articles'] as List<dynamic>?;
 
     List<CommandArticle> variants = [];
+
     if (articleList != null) {
       variants = articleList.map((variantJson) {
         return CommandArticle(
@@ -130,6 +131,18 @@ class CommandModel extends Command {
     if (json["page"] != null) page = json["page"]["name"];
     if (json["livreur"] != null) livreur = json["livreur"]["name"];
 
+    List<Map<String, dynamic>> statusUpdates = [];
+    if (json['statusUpdates'] != null) {
+      statusUpdates = (json['statusUpdates'] as List<dynamic>)
+          .map((updateJson) => {
+                'user': updateJson['user'],
+                'status': updateJson['status'],
+                '_id': updateJson['_id'],
+                'timestamp': updateJson['timestamp'],
+              })
+          .toList();
+    }
+
     return CommandModel(
       id: json["_id"],
       comNumber: json["comNumber"],
@@ -145,6 +158,7 @@ class CommandModel extends Command {
       articleList: variants,
       livreur: livreur,
       createdAt: json["createdAt"],
+      statusUpdates: statusUpdates,
     );
   }
 
@@ -157,7 +171,7 @@ class CommandModel extends Command {
         'commandType': variant.commandType,
         'quantity': variant.quantity,
         'unityPrice': variant.unityPrice,
-        'photos' : variant.photos,
+        'photos': variant.photos,
       };
     }).toList();
 

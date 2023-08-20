@@ -501,15 +501,12 @@ class _AddOrderPageState extends State<AddOrderPage> {
 
                     article.article = value;
 
-                    // Find the selected article in the articles list
                     final selectedArticle = articles.firstWhere(
                       (item) => item.id == value,
-                      // orElse: () => null,
                     );
 
                     article.grosPrice = selectedArticle.grosPrice;
                     article.quantityAlert = selectedArticle.alertQuantity;
-                    log(selectedArticle.toString());
                     // Update the variants list based on the selected article
                     if (selectedArticle.variants != null) {
                       article.variants =
@@ -538,10 +535,16 @@ class _AddOrderPageState extends State<AddOrderPage> {
                   setState(() {
                     article.variant = value;
                   });
+                  final selectedArticle = articles.firstWhere(
+                    (item) => item.id == article.article,
+                  );
+                  final selectedVariant = selectedArticle.variants.firstWhere(
+                    (variant) => variant!.id == article.variant,
+                  );
+                  article.variantQuantity = selectedVariant!.quantity;
                 },
                 formSubmitted: _formSubmitted,
-                items: article
-                    .variants, // Use the variants list of the selected article
+                items: article.variants,
               ),
               const SizedBox(height: 15),
               buildSelectField(
@@ -593,12 +596,12 @@ class _AddOrderPageState extends State<AddOrderPage> {
                 noteAbove: true,
                 showNote: true,
                 quantityAlert: article.quantityAlert,
+                variantQuantity: article.variantQuantity,
               ),
               _imagePickerContainer(article),
               const SizedBox(
                 height: 10,
               ),
-    
               Wrap(
                 spacing: 8.0, // Adjust spacing between images
                 runSpacing: 8.0, // Adjust spacing between lines
@@ -748,7 +751,6 @@ class _AddOrderPageState extends State<AddOrderPage> {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      log(image.toString());
       final compressedImage = await _compressImage(File(image.path));
 
       setState(() {
@@ -767,8 +769,9 @@ class _AddOrderPageState extends State<AddOrderPage> {
     final tempDir = await getTemporaryDirectory();
 
     // Create a new file in the temporary directory
-    final compressedFile = File('${tempDir.path}/image$incrementCompressed.jpg');
-    incrementCompressed = incrementCompressed +1;
+    final compressedFile =
+        File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed = incrementCompressed + 1;
 
     // Compress the image and save it to the new file
     await FlutterImageCompress.compressAndGetFile(
@@ -795,6 +798,7 @@ class ArticleItem {
   String? type;
   String? variant;
   int? quantityAlert;
+  int? variantQuantity;
   num? grosPrice;
   bool isPriceReadOnly = false;
 

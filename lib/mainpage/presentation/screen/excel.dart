@@ -274,6 +274,17 @@ class _ExcelFilesState extends State<ExcelFiles> {
     // Populate the Excel sheet with command data
     for (var rowIndex = 0; rowIndex < commands.length; rowIndex++) {
       final command = commands[rowIndex];
+      String historicalUpdates = "";
+      if (command.statusUpdates != null) {
+        for (var update in command.statusUpdates!) {
+          historicalUpdates += "${update['status']} - ${update['user']} / ";
+        }
+      }
+      historicalUpdates = historicalUpdates.isNotEmpty
+          ? historicalUpdates.substring(
+              0, historicalUpdates.length - 3) // Remove the trailing " / "
+          : "/"; // Set to "/" if there are no updates
+
       int totalPrice = command.articleList.fold(0, (sum, article) {
         return sum + (article!.quantity * article.unityPrice.toInt());
       });
@@ -299,7 +310,7 @@ class _ExcelFilesState extends State<ExcelFiles> {
       sheet.getRangeByName('I${rowIndex + 2}').setText(command.noteClient);
       sheet.getRangeByName('J${rowIndex + 2}').setText(command.user);
       sheet.getRangeByName('K${rowIndex + 2}').setText(command.livreur ?? '');
-      sheet.getRangeByName('L${rowIndex + 2}').setText(" / ");
+      sheet.getRangeByName('L${rowIndex + 2}').setText(historicalUpdates);
       String articleName = "";
       String color = "";
       String taille = "";
@@ -424,7 +435,7 @@ class _ExcelFilesState extends State<ExcelFiles> {
     for (var rowIndex = 0; rowIndex < finances.length; rowIndex++) {
       final finance = finances[rowIndex];
 
-      sheet.getRangeByName('A${rowIndex + 2}').setText(finance.date! );
+      sheet.getRangeByName('A${rowIndex + 2}').setText(finance.date!);
       sheet
           .getRangeByName('B${rowIndex + 2}')
           .setText(finance.money.toString());

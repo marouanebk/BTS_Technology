@@ -21,6 +21,8 @@ class Command extends Equatable {
   final num phoneNumber;
   final num sommePaid;
   final List<CommandArticle?> articleList;
+  final List<Map<String, dynamic>>? statusUpdates;
+  
 
   const Command({
     this.id,
@@ -34,6 +36,7 @@ class Command extends Equatable {
     this.page,
     this.livreur,
     this.createdAt,
+    this.statusUpdates,
     required this.nomClient,
     required this.adresse,
     required this.phoneNumber,

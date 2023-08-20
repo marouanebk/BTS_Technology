@@ -82,7 +82,7 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
         title: 'Logout',
         activeColorPrimary: Colors.black,
         inactiveColorPrimary: CupertinoColors.systemGrey,
-        onPressed: (context) => performLogout(context),
+        onPressed: (context) => performLogout(),
       ),
     ];
   }
@@ -125,20 +125,43 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
     );
   }
 
-  void performLogout(context) async {
+ void performLogout() async {
     final prefs = await SharedPreferences.getInstance();
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text("Déconnexion"),
+          content: Text("Êtes vous sûr de vouloir quitter déconnecter ? "),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext); // Close the dialog
+              },
+              child: Text("Annuler"),
+            ),
+            TextButton(
+              onPressed: () async {
+                await prefs.setInt('is logged in', 0);
+                await prefs.remove("id");
+                await prefs.remove('type');
+                await prefs.remove("token");
+                // Navigate to the login page and remove all previous routes
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return const LoginPage();
+                    },
+                  ),
+                  (_) => false,
+                );
+              },
+              child: Text("Déconnecter"),
+            ),
+          ],
+        );
+      },
+    );
 
-    await prefs.setInt('is logged in', 0);
-    await prefs.remove("id");
-    await prefs.remove('type');
-    await prefs.remove("token");
-      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (BuildContext context) {
-            return const LoginPage();
-          },
-        ),
-        (_) => false,
-      );
   }
 }

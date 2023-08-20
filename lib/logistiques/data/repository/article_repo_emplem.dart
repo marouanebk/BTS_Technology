@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/core/error/exceptions.dart';
 import 'package:bts_technologie/core/error/failure.dart';

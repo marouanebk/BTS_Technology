@@ -32,6 +32,9 @@ Widget buildInputField({
             controller: controller,
             readOnly: readOnly,
             keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+            enableSuggestions: false, 
+            enableInteractiveSelection: false, 
+
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: const TextStyle(
@@ -61,7 +64,6 @@ Widget buildInputField({
           textAlign: TextAlign.right,
         ),
       ),
-
       if (showNote && !noteAbove)
         Align(
           alignment: Alignment.centerRight,

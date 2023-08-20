@@ -23,6 +23,7 @@ class FinanceBloc extends Bloc<FinanceEvent, FinancesState> {
   }
   FutureOr<void> _getFinancesEvent(
       GetFinancesEvent event, Emitter<FinancesState> emit) async {
+    emit(state.copyWith(getFinancesState: RequestState.loading));
     final result = await getFinancesUseCase();
     result.fold(
         (l) => emit(state.copyWith(
@@ -34,6 +35,8 @@ class FinanceBloc extends Bloc<FinanceEvent, FinancesState> {
 
   FutureOr<void> _getCashFLow(
       GetCashFlowEvent event, Emitter<FinancesState> emit) async {
+            emit(state.copyWith(getCashFlowState: RequestState.loading));
+
     final result = await getCashFlowUseCase();
     result.fold(
       (l) => emit(
@@ -50,46 +53,4 @@ class FinanceBloc extends Bloc<FinanceEvent, FinancesState> {
     );
   }
 
-  // FutureOr<void> _createArticlesEvent(
-  //     CreateArticleEvent event, Emitter<ArticleState> emit) async {
-  //   final result = await createArticleUseCase(event.article);
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           createArticleState: RequestState.error,
-  //           createArticleMessage: l.message)),
-  //       (r) => emit(state.copyWith(createArticleState: RequestState.loaded)));
-  // }
-
-  // FutureOr<void> _getUnDoneTodoEvent(
-  //     GetUnDoneTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await getUnDoneTodoUseCase();
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           getUnDoneTodoState: RequestState.error,
-  //           getUnDoneTodomessage: l.message)),
-  //       (r) => emit(state.copyWith(
-  //           getUnDoneTodo: r, getUnDoneTodoState: RequestState.loaded)));
-  // }
-
-  // FutureOr<void> _editTodoEvent(
-  //     EditTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await getFinancesUseCase();
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           getFinancesState: RequestState.error,
-  //           getFinancesmessage: l.message)),
-  //       (r) => emit(state.copyWith(
-  //           getFinances: r, getFinancesState: RequestState.loaded)));
-  // }
-
-  // FutureOr<void> _deleteTodoEvent(
-  //     DeleteTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await getFinancesUseCase();
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           getFinancesState: RequestState.error,
-  //           getFinancesmessage: l.message)),
-  //       (r) => emit(state.copyWith(
-  //           getFinances: r, getFinancesState: RequestState.loaded)));
-  // }
 }

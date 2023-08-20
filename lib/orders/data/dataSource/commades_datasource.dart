@@ -182,7 +182,6 @@ class CommandRemoteDataSource extends BaseCommandRemoteDatasource {
       } else {
         formData.fields.add(MapEntry('articles[$i][deletedPhotos_0]', ''));
       }
-      final deletedPhotos = article.deletedPhotos;
 
     }
 

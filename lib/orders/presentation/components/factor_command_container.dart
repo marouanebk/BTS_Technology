@@ -31,7 +31,6 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     super.initState();
     type = widget.command.status;
     log(widget.command.toString());
-    // type = "Pas confirmé";
   }
 
   List<Map<String, String>> statusListAdminstrator = [
@@ -41,7 +40,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     {'label': 'Pas confirmé', "value": "Pas confirmé"},
     {'label': 'Préparé', "value": "Préparé"},
     {'label': 'Expidié', "value": "Expidié"},
-    {'label': 'Encaisse', "value": "Encaisse"},
+    {'label': 'Encaissé', "value": "Encaissé"},
     {'label': 'Retourné', "value": "Retourné"},
   ];
 
@@ -67,13 +66,12 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
     {'label': 'Pas confirmé', "value": "Pas confirmé"},
     {'label': 'Préparé', "value": "Préparé"},
     {'label': 'Expidié', "value": "Expidié"},
-    {'label': 'Encaisse', "value": "Encaisse"},
-    {'label': 'Retourné', "value": "Retourné"},
+
   ];
 
   List<Map<String, String>> statusListFinancier = [
     {'label': 'Expidié', "value": "Expidié"},
-    {'label': 'Encaisse', "value": "Encaisse"},
+    {'label': 'Encaissé', "value": "Encaissé"},
     {'label': 'Retourné', "value": "Retourné"},
   ];
 
@@ -123,15 +121,6 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             context,
             MaterialPageRoute(builder: (context) {
               return OrdersPage(role: widget.role);
-              // if (widget.role == "financier") {
-              //   return const FinancesBaseScreen(initialIndex: 0);
-              // } else if (widget.role == "pageAdmin") {
-              //   return const AdminPageBaseScreen(initialIndex: 0);
-              // } else if (widget.role == "logistics") {
-              //   return const LogistiquesBaseScreen(initialIndex: 0);
-              // } else {
-              //   return const PageAdministratorBaseScreen(initialIndex: 1);
-              // }
             }),
           );
 
@@ -161,7 +150,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
         widget.role == "financier" ||
         getStatusListBasedOnRole().contains(type);
     bool showModifyButton = false;
-    ;
+    
 
     if (widget.role == "admin" ||
         (widget.role == "pageAdmin" &&
@@ -188,10 +177,11 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 5,
             ),
-            for (var item in widget.command.articleList) Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: productDetail(item!),
-            ),
+            for (var item in widget.command.articleList)
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: productDetail(item!),
+              ),
             const SizedBox(
               width: double.infinity,
               child: Divider(
@@ -231,7 +221,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                                 pageTransitionAnimation:
                                     PageTransitionAnimation.cupertino,
                               );
-            
+
                               // Navigator.push(
                               //   context,
                               //   _createRoute(photoUrl),
@@ -258,12 +248,14 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                                   }
                                   return Center(
                                     child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
-                                          : null,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
                                     ),
                                   );
                                 },
@@ -285,7 +277,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             ),
             if (isModificationAllowed) ...[
               Padding(
-              padding: const EdgeInsets.only(left: 16.0),
+                padding: const EdgeInsets.only(left: 16.0),
                 child: containerButton(
                     "Ajouter un prix de sous traitance",
                     PrixSoutraitancePage(
@@ -298,10 +290,10 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                 height: 10,
               ),
             ],
-
-            if (showModifyButton)
+            // if (widget.role != 'pageAdmin')
+            if (showModifyButton) ...[
               Padding(
-              padding: const EdgeInsets.only(left: 16.0),
+                padding: const EdgeInsets.only(left: 16.0),
                 child: containerButton(
                     "Modifier la commande",
                     EditOrderPage(
@@ -309,35 +301,40 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
                       command: widget.command,
                     )),
               ),
-            const SizedBox(
-              height: 10,
-            ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
             //add the generate factor
-            if (widget.role == 'admin' || widget.role == 'logistics')
+            if (widget.role == 'admin' || widget.role == 'logistics') ...[
               Padding(
-              padding: const EdgeInsets.only(left: 16.0),
+                padding: const EdgeInsets.only(left: 16.0),
                 child: containerButton(
                     "Générer une facture",
                     NewFactorPage(
                       command: widget.command,
                     )),
               ),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: confirmationContainer(
-                value: type,
-                onChanged: (value) {
-                  setState(() {
-                    _updateStatus(value, context);
-            
-                    type = value;
-                  });
-                },
+              const SizedBox(
+                height: 10,
               ),
-            ),
+            ],
+            if (widget.role != "pageAdmin") ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: confirmationContainer(
+                  value: type,
+                  onChanged: widget.role == "pageAdmin"
+                      ? null
+                      : (value) {
+                          setState(() {
+                            _updateStatus(value, context);
+                            type = value;
+                          });
+                        },
+                ),
+              ),
+            ],
             const SizedBox(
               height: 10,
             ),
@@ -548,7 +545,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
   }
 
   Widget confirmationContainer(
-      {required String? value, required void Function(String?) onChanged}) {
+      {required String? value, required void Function(String?)? onChanged}) {
     List<Map<String, String>> statusList = getStatusListBasedOnRole();
 
     return Padding(

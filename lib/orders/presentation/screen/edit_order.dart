@@ -17,6 +17,7 @@ import 'package:bts_technologie/logistiques/presentation/controller/article_bloc
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:bts_technologie/orders/data/Models/command_model.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
@@ -28,7 +29,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 class EditOrderPage extends StatefulWidget {
@@ -60,8 +60,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
   int count = 1;
   bool isPhotoModified = false;
   int totalImagesFilesCount = 0;
-    int incrementCompressed = 1;
-
+  int incrementCompressed = 1;
 
   @override
   void initState() {
@@ -159,7 +158,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
   }
 
   void _submitForm(context) {
-    log("id : ${widget.command.id}");
     CommandModel commandModel;
     if (selectedPage != null) {
       commandModel = CommandModel(
@@ -246,7 +244,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
           create: (context) => sl<CommandBloc>(),
         ),
         BlocProvider(
-          create: (context) => sl<AccountBloc>(),
+          create: (context) => sl<AccountBloc>()..add(GetUserInfoEvent()),
         ),
       ],
       child: Builder(
@@ -257,6 +255,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 listener: (context, state) {
                   if (state.getUserInfoState == RequestState.loaded) {
                     if (widget.role == "pageAdmin") {
+                      log("on page admin");
                       // Retrieve userInfo.pages and userInfo.commandTypes
                       final adminPages = state.getUserInfo!.populatedpages!;
                       final adminCommandTypes =
@@ -275,6 +274,10 @@ class _EditOrderPageState extends State<EditOrderPage> {
                       commandTypesEnum = validCommandTypes.map((type) {
                         return {"label": type!, "value": type};
                       }).toList();
+
+                      log(widget.command.page.toString());
+
+                      selectedPage = widget.command.page;
                       setState(() {});
                     }
                   }
@@ -339,8 +342,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
                           variants =
                               widget.command.articleList.map((commandArticle) {
-                            log("before photos");
-                            print(commandArticle!.photos);
                             final variant = ArticleItem();
 
                             variant.article = commandArticle!.articleId;
@@ -411,7 +412,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                           SnackBar(
                             backgroundColor: Colors.transparent,
                             content: CustomStyledSnackBar(
-                                message: "Article Deleted", success: false),
+                                message: "Article  Supprimé", success: false),
                           ),
                         );
                       }
@@ -652,7 +653,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
                     article.grosPrice = selectedArticle.grosPrice;
                     article.quantityAlert = selectedArticle.alertQuantity;
-                    log(selectedArticle.toString());
                     // Update the variants list based on the selected article
                     if (selectedArticle.variants != null) {
                       article.variants =
@@ -681,10 +681,16 @@ class _EditOrderPageState extends State<EditOrderPage> {
                   setState(() {
                     article.variant = value;
                   });
+                  final selectedArticle = articles.firstWhere(
+                    (item) => item.id == article.article,
+                  );
+                  final selectedVariant = selectedArticle.variants.firstWhere(
+                    (variant) => variant!.id == article.variant,
+                  );
+                  article.variantQuantity = selectedVariant!.quantity;
                 },
                 formSubmitted: _formSubmitted,
-                items: article
-                    .variants, // Use the variants list of the selected article
+                items: article.variants,
               ),
               const SizedBox(height: 15),
               buildSelectField(
@@ -735,6 +741,7 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 noteAbove: true,
                 showNote: true,
                 quantityAlert: article.quantityAlert,
+                variantQuantity: article.variantQuantity,
               ),
               _imagePickerContainer(article),
               const SizedBox(
@@ -767,7 +774,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
                           right: 0,
                           child: GestureDetector(
                             onTap: () {
-                              log("deleting");
                               article.cachedNetworkImageUrls.remove(imageUrl);
                               setState(() {
                                 article.files;
@@ -953,8 +959,9 @@ class _EditOrderPageState extends State<EditOrderPage> {
 
     final tempDir = await getTemporaryDirectory();
 
-    final compressedFile = File('${tempDir.path}/image$incrementCompressed.jpg');
-    incrementCompressed +=1;
+    final compressedFile =
+        File('${tempDir.path}/image$incrementCompressed.jpg');
+    incrementCompressed += 1;
 
     await FlutterImageCompress.compressAndGetFile(
       file.absolute.path,
@@ -980,6 +987,8 @@ class ArticleItem {
   String? variant;
 
   int? quantityAlert;
+  int? variantQuantity;
+
   num? grosPrice;
   bool isPriceReadOnly = false;
 

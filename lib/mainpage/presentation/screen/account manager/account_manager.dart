@@ -221,7 +221,7 @@ class CustomPopupMenuButton extends StatelessWidget {
       decoration:
           const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
       child: PopupMenuButton<String>(
-        offset: const Offset(-50, -150), // Move the button 50 pixels up
+offset: const Offset(0, -160), // Move the button 50 pixels to the right
         color: Colors.black,
         onSelected: (value) {
           onItemSelected(value);

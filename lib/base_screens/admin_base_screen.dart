@@ -25,25 +25,7 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
     _controller = PersistentTabController(initialIndex: widget.initialIndex);
   }
 
-  List<PersistentBottomNavBarItem> _navBarsItems() {
-    void performLogout(context) async {
-      // Your logout logic goes here
-      final prefs = await SharedPreferences.getInstance();
-
-      await prefs.setInt('is logged in', 0);
-      await prefs.remove("id");
-      await prefs.remove('type');
-      await prefs.remove("token");
-      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (BuildContext context) {
-            return const LoginPage();
-          },
-        ),
-        (_) => false,
-      );
-    }
-
+  List<PersistentBottomNavBarItem> _navBarsItems(context) {
     return [
       PersistentBottomNavBarItem(
         icon: SvgPicture.asset(
@@ -84,7 +66,8 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
         title: 'Logout',
         activeColorPrimary: Colors.red,
         inactiveColorPrimary: Colors.red,
-        onPressed: (context) => performLogout(context),
+
+        onPressed: (context) => performLogout(), // Pass context here
       ),
     ];
   }
@@ -94,7 +77,7 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
     return PersistentTabView(
       context,
       controller: _controller,
-      items: _navBarsItems(),
+      items: _navBarsItems(context),
       screens: [
         const OrdersPage(
           role: "pageAdmin",
@@ -102,13 +85,10 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
         const Notifications(),
         Container(),
       ],
-      backgroundColor: Colors.white, // Default is Colors.white.
-      handleAndroidBackButtonPress: true, // Default is true.
-      resizeToAvoidBottomInset:
-          true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: true, // Default is true.
-      hideNavigationBarWhenKeyboardShows:
-          true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      stateManagement: true,
+      hideNavigationBarWhenKeyboardShows: true,
       popAllScreensOnTapOfSelectedTab: true,
       itemAnimationProperties: const ItemAnimationProperties(
         duration: Duration(milliseconds: 200),
@@ -119,8 +99,47 @@ class _AdminPageBaseScreenState extends State<AdminPageBaseScreen> {
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle:
-          NavBarStyle.style5, // Choose the nav bar style with this property.
+      navBarStyle: NavBarStyle.style5,
     );
+  }
+
+  void performLogout() async {
+    final prefs = await SharedPreferences.getInstance();
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text("Déconnexion"),
+          content: Text("Êtes vous sûr de vouloir quitter déconnecter ? "),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext); // Close the dialog
+              },
+              child: Text("Annuler"),
+            ),
+            TextButton(
+              onPressed: () async {
+                await prefs.setInt('is logged in', 0);
+                await prefs.remove("id");
+                await prefs.remove('type');
+                await prefs.remove("token");
+                // Navigate to the login page and remove all previous routes
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) {
+                      return const LoginPage();
+                    },
+                  ),
+                  (_) => false,
+                );
+              },
+              child: Text("Déconnecter"),
+            ),
+          ],
+        );
+      },
+    );
+
   }
 }

@@ -1,10 +1,6 @@
 import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
-import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -15,10 +11,8 @@ import 'package:bts_technologie/logistiques/presentation/screen/add_article.dart
 import 'package:bts_technologie/logistiques/presentation/screen/edit_article.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
-import 'package:bts_technologie/orders/presentation/screen/commandes.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,9 +51,11 @@ class _LogistiquesState extends State<Logistiques> {
           return Scaffold(
             body: RefreshIndicator(
               onRefresh: () async {
+                log("refresh indicator");
                 context.read<ArticleBloc>().add(GetArticlesEvent());
               },
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
@@ -233,15 +229,16 @@ class _LogistiquesState extends State<Logistiques> {
           const SizedBox(
             height: 15,
           ),
-          logExpandedText("Quantité d'alerte: ", "${article.alertQuantity} DA"),
+          logExpandedText("Quantité d'alerte: ",
+              "${article.alertQuantity} ${article.unity}"),
           const SizedBox(
             height: 15,
           ),
           const SizedBox(
-            width: double.infinity, // To take full width
+            width: double.infinity,
             child: Divider(
-              height: 1, // The thickness of the line (1px)
-              thickness: 1, // The thickness of the line (1px)
+              height: 1,
+              thickness: 1,
               color: Color(
                   0xFFECECEC), // The color of the line (var(--highlight-grey, #ECECEC))
             ),

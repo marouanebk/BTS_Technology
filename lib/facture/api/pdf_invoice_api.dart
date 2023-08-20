@@ -19,7 +19,6 @@ class PdfInvoiceApi {
           .buffer
           .asUint8List(),
     );
-
     pdf.addPage(
       pw.Page(
         margin: const pw.EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
@@ -39,22 +38,22 @@ class PdfInvoiceApi {
 
               buildTable(command),
               pw.Spacer(),
-              buildFooter(),
+              buildFooter(command),
               pw.Container(
                 child: pw.Column(
                   mainAxisAlignment: pw.MainAxisAlignment.start,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text(
-                      'Arreter la presente facture a la somme de:',
-                      textAlign: TextAlign.left,
-                      style: pw.TextStyle(
-                          fontSize: 12, fontWeight: pw.FontWeight.bold),
-                    ),
-                    pw.Text(
-                      'quarante six middle trois sent cisnquate Dinars',
-                      style: const pw.TextStyle(fontSize: 12),
-                    ),
+                    // pw.Text(
+                    //   'Arreter la presente facture a la somme de:',
+                    //   textAlign: TextAlign.left,
+                    //   style: pw.TextStyle(
+                    //       fontSize: 12, fontWeight: pw.FontWeight.bold),
+                    // ),
+                    // // pw.Text(
+                    // //   frenchText,
+                    // //   style: const pw.TextStyle(fontSize: 12),
+                    // // ),
                   ],
                 ),
               ),
@@ -264,7 +263,6 @@ class PdfInvoiceApi {
   }
 
   pw.Widget buildTable(Command command) {
-    int index = 0;
 
     return pw.Container(
       child: pw.Table(
@@ -325,7 +323,12 @@ class PdfInvoiceApi {
                     child: pw.Text('0.00')),
                 pw.Container(
                     padding: const pw.EdgeInsets.all(5),
-                    child: pw.Text('850.00')),
+                    child: pw.Text(
+                      (command.articleList[i]!.quantity *
+                              command.articleList[i]!.unityPrice)
+                          .toStringAsFixed(
+                              2), // Same as the previous calculation
+                    )),
               ],
             ),
         ],
@@ -333,7 +336,12 @@ class PdfInvoiceApi {
     );
   }
 
-  pw.Widget buildFooter() {
+  pw.Widget buildFooter(Command command) {
+    double totalPrice = 0;
+    for (var article in command.articleList) {
+      totalPrice += article!.unityPrice * article.quantity;
+    }
+
     return pw.Row(
       children: [
         pw.Expanded(
@@ -348,11 +356,11 @@ class PdfInvoiceApi {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              buildDataRow('Montant HT', '46350'),
+              buildDataRow('Montant HT', totalPrice.toString()),
               buildDataRow('Montant TVA', ''),
-              buildDataRow('Montant TTC', '463500'),
+              buildDataRow('Montant TTC', totalPrice.toString()),
               buildDataRow('Timbre', '0'),
-              buildDataRow('Montant Net a payer', '436500'),
+              buildDataRow('Montant Net a payer', totalPrice.toString()),
             ],
           ),
         ),
@@ -369,4 +377,9 @@ class PdfInvoiceApi {
       ],
     );
   }
+}
+
+String formatNumberToFrenchText(double number) {
+  final NumberFormat formatter = NumberFormat('#,###', 'fr_FR');
+  return formatter.format(number);
 }

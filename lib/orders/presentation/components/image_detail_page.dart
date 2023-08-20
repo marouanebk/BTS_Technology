@@ -21,7 +21,7 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
         options: Options(responseType: ResponseType.bytes));
     final result = await ImageGallerySaver.saveImage(
         Uint8List.fromList(response.data),
-        quality: 60,
+        quality: 80,
         name: "voy_pro_image");
   }
 

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/domaine/Entities/page_entity.dart';

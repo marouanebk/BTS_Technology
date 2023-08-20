@@ -31,8 +31,6 @@ class _PageAdministratorBaseScreenState
     super.initState();
     _controller = PersistentTabController(initialIndex: widget.initialIndex);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("onMessage: $message");
-      // You can show a notification here or handle the message data as per your requirements
     });
   }
 

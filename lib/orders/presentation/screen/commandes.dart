@@ -46,25 +46,61 @@ class _OrdersPageState extends State<OrdersPage> {
     'Annulé',
     'Préparé',
     'Expidié',
-    'Encaisse',
+    'Encaissé',
     'Retourné',
+  ];
+
+  List<String> statusListLogistics = [
+    'Tous',
+    'Téléphone éteint',
+    'Ne répond pas',
+    'Numero erroné',
+    'Annulé',
+    'Pas confirmé',
+    'Confirmé',
+    'Annulé',
+    'Préparé',
+    'Expidié',
   ];
 
   List<String> financierStatusList = [
     'Tous',
     'Expidié',
-    'Encaisse',
+    'Encaissé',
     'Retourné',
   ];
+
+  List<String> getStatusListBasedOnRole(String role) {
+    if (role == 'admin' || role == 'pageAdmin') {
+      return statusListAdministrator;
+    } else if (role == 'financier') {
+      return financierStatusList;
+    } else if (role == 'logistics') {
+      return statusListLogistics;
+    } else {
+      return []; // Return an empty list or handle other cases as needed
+    }
+  }
+
+// In
 
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
+  void resetDropDownVisibility() {
+  isDropDownVisibleMap.forEach((key, value) {
+    for (int i = 0; i < value.length; i++) {
+      value[i] = false;
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
+    List<String> currentStatusList = getStatusListBasedOnRole(widget.role);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -78,6 +114,7 @@ class _OrdersPageState extends State<OrdersPage> {
         return SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
+              resetDropDownVisibility();
               context.read<CommandBloc>().add(GetCommandesEvent());
             },
             child: Scaffold(
@@ -125,16 +162,17 @@ class _OrdersPageState extends State<OrdersPage> {
                     height: 15,
                   ),
                   SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 15.0),
                       child: Row(
-                        children: List.generate(statusListAdministrator.length,
-                            (index) {
+                        children:
+                            List.generate(currentStatusList.length, (index) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10.0),
-                            child: statusFilter(
-                                index, statusListAdministrator[index]),
+                            child:
+                                statusFilter(index, currentStatusList[index]),
                           );
                         }),
                       ),
@@ -189,6 +227,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
                         return Expanded(
                           child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             child: Padding(
                               padding:
@@ -235,31 +274,34 @@ class _OrdersPageState extends State<OrdersPage> {
                   ),
                 ],
               ),
-              floatingActionButton: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 20),
-                  child: Container(
-                    height: 76,
-                    width: 76,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.black),
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                              builder: (_) => AddOrderPage(role: widget.role),
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          size: 35,
+              floatingActionButton: widget.role != 'logistics'
+                  ? Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20, bottom: 20),
+                        child: Container(
+                          height: 76,
+                          width: 76,
+                          decoration: const BoxDecoration(
+                              shape: BoxShape.circle, color: Colors.black),
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.of(context, rootNavigator: true).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        AddOrderPage(role: widget.role),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.add,
+                                size: 35,
+                              ),
+                              color: Colors.white),
                         ),
-                        color: Colors.white),
-                  ),
-                ),
-              ),
+                      ),
+                    )
+                  : const SizedBox(),
             ),
           ),
         );
@@ -277,14 +319,14 @@ class _OrdersPageState extends State<OrdersPage> {
         command.status == 'Annulé' ||
         command.status == 'En attente de confirmation' ||
         command.status == 'Pas confirmé' ||
-        command.status == 'Retourné' 
-        || command.status == 'Téléphone éteint') {
+        command.status == 'Retourné' ||
+        command.status == 'Téléphone éteint') {
       statusColor = Colors.red;
       bgColor = const Color.fromRGBO(255, 68, 68, 0.1);
     } else if (command.status == 'Confirmé' || command.status == 'Préparé') {
       statusColor = const Color(0xFFFF9F00);
       bgColor = const Color.fromRGBO(255, 159, 0, 0.1);
-    } else if (command.status == 'Encaisse') {
+    } else if (command.status == 'Encaissé') {
       statusColor = Colors.blue;
       bgColor = const Color.fromRGBO(0, 102, 255, 0.1);
     } else if (command.status == 'Expidié') {

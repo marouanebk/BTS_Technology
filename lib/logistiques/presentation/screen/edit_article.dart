@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';

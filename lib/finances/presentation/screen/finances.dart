@@ -91,143 +91,152 @@ class _FinancesPageState extends State<FinancesPage> {
         return SafeArea(
           child: Scaffold(
             backgroundColor: Colors.white,
-            body: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                        child: screenHeader("Finances",
-                            'assets/images/navbar/finances_activated.svg')),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    BlocBuilder<AccountBloc, AccountState>(
-                      builder: (context, state) {
-                        if (state.getLivreursState == RequestState.loading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.black,
-                            ),
-                          );
-                        }
-                        if (state.getLivreursState == RequestState.error) {
-                          return Text(
-                            state.getLivreursmessage,
-                            style: const TextStyle(color: Colors.red),
-                          );
-                        }
-                        if (state.getLivreursState == RequestState.loaded) {
-                          return _topContainer(state.getLivreurs);
-                        }
-
-                        return Container();
-                      },
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    BlocBuilder<FinanceBloc, FinancesState>(
-                      builder: (context, state) {
-                        if (state.getCashFlowState == RequestState.loading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.red,
-                            ),
-                          );
-                        }
-                        if (state.getCashFlowState == RequestState.error) {
-                          return Text(
-                            state.getFinancesmessage,
-                            style: const TextStyle(color: Colors.red),
-                          );
-                        }
-                        if (state.getCashFlowState == RequestState.loaded) {
-                          return _cashflow(state.getCashFlow!);
-                        }
-
-                        return Container();
-                      },
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    if (data.isNotEmpty)
-                      SfCartesianChart(
-                        primaryXAxis: CategoryAxis(),
-                        primaryYAxis: NumericAxis(
-                            // minimum: -40,
-                            // maximum: 40,
-                            // interval: 10,
-                            ), // Adjust the axis range as needed
-                        tooltipBehavior: _tooltip,
-
-                        series: <ChartSeries<_ChartData, String>>[
-                          ColumnSeries<_ChartData, String>(
-                            dataSource: data,
-                            xValueMapper: (_ChartData data, _) => data.x,
-                            yValueMapper: (_ChartData data, _) => data.y,
-                            name: 'Gold',
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(25)),
-                            color: const Color(0xFFECECEC),
-                            selectionBehavior: SelectionBehavior(
-                              enable: true,
-                              unselectedOpacity: 1.0,
-                              selectedColor: Colors.black,
-                              unselectedColor: const Color(0xFFECECEC),
-                            ),
-                          )
-                        ],
-                      )
-                    else if (data
-                        .isEmpty) // Check if data is empty (not fetched yet)
-                      const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.black,
-                        ),
+            body: RefreshIndicator(
+              onRefresh: () async {
+                log("refreshy indicator");
+                context.read<FinanceBloc>()
+                  ..add(GetFinancesEvent())
+                  ..add(GetFinancesEvent());
+                context.read<AccountBloc>().add(GetLivreursEvent());
+              },
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
                       ),
-
-                    //put the bar charts here :
-
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    BlocBuilder<FinanceBloc, FinancesState>(
-                      builder: (context, state) {
-                        if (state.getFinancesState == RequestState.loading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.red,
-                            ),
-                          );
-                        }
-                        if (state.getFinancesState == RequestState.error) {
-                          return Text(
-                            state.getFinancesmessage,
-                            style: const TextStyle(color: Colors.red),
-                          );
-                        }
-                        if (state.getFinancesState == RequestState.loaded) {
-                          Map<String, List<FinanceEntity>> groupedData = {};
-                          // for (Command command in state.getCommandes) {
-
-                          for (FinanceEntity finance in state.getFinances) {
-                            if (!groupedData.containsKey(finance.date)) {
-                              groupedData[finance.date!] = [];
-                            }
-                            groupedData[finance.date]?.add(finance);
+                      Center(
+                          child: screenHeader("Finances",
+                              'assets/images/navbar/finances_activated.svg')),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      BlocBuilder<AccountBloc, AccountState>(
+                        builder: (context, state) {
+                          if (state.getLivreursState == RequestState.loading) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            );
+                          } else if (state.getLivreursState ==
+                              RequestState.error) {
+                            return Text(
+                              state.getLivreursmessage,
+                              style: const TextStyle(color: Colors.red),
+                            );
+                          } else if (state.getLivreursState ==
+                              RequestState.loaded) {
+                            return _topContainer(state.getLivreurs);
+                          } else {
+                            return Container();
                           }
-                          return revenueList(groupedData);
-                        }
+                        },
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      BlocBuilder<FinanceBloc, FinancesState>(
+                        builder: (context, state) {
+                          if (state.getCashFlowState == RequestState.loading) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.red,
+                              ),
+                            );
+                          }
+                          if (state.getCashFlowState == RequestState.error) {
+                            return Text(
+                              state.getFinancesmessage,
+                              style: const TextStyle(color: Colors.red),
+                            );
+                          }
+                          if (state.getCashFlowState == RequestState.loaded) {
+                            return _cashflow(state.getCashFlow!);
+                          }
 
-                        return Container();
-                      },
-                    ),
-                  ],
+                          return Container();
+                        },
+                      ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      if (data.isNotEmpty)
+                        SfCartesianChart(
+                          primaryXAxis: CategoryAxis(),
+                          primaryYAxis: NumericAxis(
+                              // minimum: -40,
+                              // maximum: 40,
+                              // interval: 10,
+                              ), // Adjust the axis range as needed
+                          tooltipBehavior: _tooltip,
+
+                          series: <ChartSeries<_ChartData, String>>[
+                            ColumnSeries<_ChartData, String>(
+                              dataSource: data,
+                              xValueMapper: (_ChartData data, _) => data.x,
+                              yValueMapper: (_ChartData data, _) => data.y,
+                              name: 'Gold',
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(25)),
+                              color: const Color(0xFFECECEC),
+                              selectionBehavior: SelectionBehavior(
+                                enable: true,
+                                unselectedOpacity: 1.0,
+                                selectedColor: Colors.black,
+                                unselectedColor: const Color(0xFFECECEC),
+                              ),
+                            )
+                          ],
+                        )
+                      else if (data
+                          .isEmpty) // Check if data is empty (not fetched yet)
+                        const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ),
+                        ),
+
+                      //put the bar charts here :
+
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      BlocBuilder<FinanceBloc, FinancesState>(
+                        builder: (context, state) {
+                          if (state.getFinancesState == RequestState.loading) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.red,
+                              ),
+                            );
+                          }
+                          if (state.getFinancesState == RequestState.error) {
+                            return Text(
+                              state.getFinancesmessage,
+                              style: const TextStyle(color: Colors.red),
+                            );
+                          }
+                          if (state.getFinancesState == RequestState.loaded) {
+                            Map<String, List<FinanceEntity>> groupedData = {};
+                            // for (Command command in state.getCommandes) {
+
+                            for (FinanceEntity finance in state.getFinances) {
+                              if (!groupedData.containsKey(finance.date)) {
+                                groupedData[finance.date!] = [];
+                              }
+                              groupedData[finance.date]?.add(finance);
+                            }
+                            return revenueList(groupedData);
+                          }
+
+                          return Container();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

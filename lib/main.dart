@@ -53,16 +53,15 @@ void main() async {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     log("on Message Opened $message");
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-            'your channel id', 'your channel name', 
+        AndroidNotificationDetails('your channel id', 'your channel name',
             importance: Importance.max,
             priority: Priority.high,
             showWhen: false);
-            log(message.toString());
+    log(message.toString());
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, message.notification!.title ,
-      message.notification!.body, platformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(0, message.notification!.title,
+        message.notification!.body, platformChannelSpecifics);
   });
 
   FirebaseMessaging.instance.getInitialMessage().then(
@@ -120,7 +119,7 @@ class MyApp extends StatelessWidget {
     return OverlaySupport(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        // navigatorKey: navigatorkey,
+        navigatorKey: navigatorkey,
         title: title,
         theme: ThemeData(
           snackBarTheme: const SnackBarThemeData(
@@ -146,11 +145,18 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const LoginPage(),
           '/push-page': (context) => const PushNotifications(),
-          '/pageAdministrator': (context) =>
-              const PageAdministratorBaseScreen(),
-          '/adminPage': (context) => const AdminPageBaseScreen(),
-          '/logistiques': (context) => const LogistiquesBaseScreen(),
-          '/finances': (context) => const FinancesBaseScreen(),
+          '/pageAdministrator': (context) => Builder(builder: (context) {
+                return const PageAdministratorBaseScreen();
+              }),
+          '/adminPage': (context) => Builder(builder: (context) {
+                return const AdminPageBaseScreen();
+              }),
+          '/logistiques': (context) => Builder(builder: (context) {
+                return const LogistiquesBaseScreen();
+              }),
+          '/finances': (context) => Builder(builder: (context) {
+                return const FinancesBaseScreen();
+              }),
           '/accountManager': (context) => const AccountManager(),
           '/adminParams': (context) => const AdminParams(),
           '/excelFiles': (context) => const ExcelFiles(),

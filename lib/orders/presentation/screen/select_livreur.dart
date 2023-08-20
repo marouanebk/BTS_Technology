@@ -1,6 +1,6 @@
-
 import 'package:bts_technologie/base_screens/administrator_base_screen.dart';
 import 'package:bts_technologie/base_screens/finances_base_screen.dart';
+import 'package:bts_technologie/base_screens/logistics_base_screen.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
@@ -24,7 +24,7 @@ class SelectLivreur extends StatefulWidget {
 }
 
 class _SelectLivreurState extends State<SelectLivreur> {
-  int? _groupValue ;
+  int? _groupValue;
   final List<String> options = ['Option 1', 'Option 2', 'Option 3'];
 
   @override
@@ -116,6 +116,9 @@ class _SelectLivreurState extends State<SelectLivreur> {
                     MaterialPageRoute(builder: (context) {
                       if (widget.role == "financier") {
                         return const FinancesBaseScreen(initialIndex: 0);
+                      } else if (widget.role == "logistics") {
+                        return const LogistiquesBaseScreen(
+                            initialIndex: 0);
                       } else {
                         return const PageAdministratorBaseScreen(
                             initialIndex: 1);
@@ -131,9 +134,12 @@ class _SelectLivreurState extends State<SelectLivreur> {
                     ),
                   );
                 } else {
-                  SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
                       content: CustomStyledSnackBar(
-                          message: response.data['err'], success: false));
+                          message: response.data['err'], success: false),
+                    ),
+                  );
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(

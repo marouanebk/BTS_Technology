@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/core/services/service_locator.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
@@ -23,53 +25,62 @@ class _NotificationsState extends State<Notifications> {
         return Scaffold(
           body: RefreshIndicator(
             onRefresh: () async {
-              // Reload the page here
-              // For example, you can call a method on your bloc to fetch new data
+              log("refreshy indicator");
               context.read<NotificationBloc>().add(GetNotificationsEvent());
             },
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 40,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        screenHeader("Notifications",
+                            'assets/images/navbar/notifications_activated.svg'),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        BlocBuilder<NotificationBloc, NotificationState>(
+                            builder: (context, state) {
+                          if (state.getNotificationsState ==
+                              RequestState.loading) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            );
+                          } else if (state.getNotificationsState ==
+                              RequestState.loaded) {
+                            return ListView.separated(
+                              scrollDirection: Axis.vertical,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(
+                                height: 7,
+                              ),
+                              physics: const ScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: state.getNotifications.length,
+                              // itemCount: state.getArticles.length,
+                              itemBuilder: (context, index) {
+                                  final reversedIndex = state.getNotifications.length - 1 - index;
+  return notificationItem(state.getNotifications[reversedIndex]);
+                                // return notificationItem(
+                                //     state.getNotifications[index]);
+                              },
+                            );
+                          }
+                          return Container();
+                        }),
+                      ],
                     ),
-                    screenHeader("Notifications",
-                        'assets/images/navbar/notifications_activated.svg'),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    BlocBuilder<NotificationBloc, NotificationState>(
-                        builder: (context, state) {
-                      if (state.getNotificationsState == RequestState.loading) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.black,
-                          ),
-                        );
-                      } else if (state.getNotificationsState ==
-                          RequestState.loaded) {
-                        return ListView.separated(
-                          scrollDirection: Axis.vertical,
-                          separatorBuilder: (context, index) => const SizedBox(
-                            height: 7,
-                          ),
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.getNotifications.length,
-                          // itemCount: state.getArticles.length,
-                          itemBuilder: (context, index) {
-                            return notificationItem(
-                                state.getNotifications[index]);
-                          },
-                        );
-                      }
-                      return Container();
-                    }),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );
@@ -116,10 +127,10 @@ class _NotificationsState extends State<Notifications> {
       statusColor = const Color(0xFFFF9F00);
       bgColor = const Color.fromRGBO(255, 159, 0, 0.1);
       keyword = 'Préparé';
-    } else if (item.notification.contains('Encaisse')) {
+    } else if (item.notification.contains('Encaissé')) {
       statusColor = Colors.blue;
       bgColor = const Color.fromRGBO(0, 102, 255, 0.1);
-      keyword = 'Encaisse';
+      keyword = 'Encaissé';
     } else if (item.notification.contains('Expidié')) {
       statusColor = Colors.green;
       bgColor = const Color.fromRGBO(7, 176, 24, 0.1);
@@ -160,7 +171,6 @@ class _NotificationsState extends State<Notifications> {
         const SizedBox(
           height: 7,
         ),
-
         RichText(
           text: TextSpan(
             children: [
@@ -184,7 +194,7 @@ class _NotificationsState extends State<Notifications> {
                   child: Text(
                     keyword,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
                       color: statusColor,
                     ),
@@ -202,61 +212,9 @@ class _NotificationsState extends State<Notifications> {
                   height: 1.0,
                 ),
               ),
-              // TextSpan(
-              //   text: command.adresse,
-              //   style: const TextStyle(
-              //       fontSize: 16,
-              //       color: Color(0xFF9F9F9F),
-              //       fontWeight: FontWeight.w400),
-              // ),
             ],
           ),
         ),
-        // Wrap(
-        //   children: [
-        //     Text(
-        //       beforeKeyword,
-        //       maxLines: 10,
-        //       overflow: TextOverflow.ellipsis,
-        //       style: const TextStyle(
-        //   color: Colors.black,
-        //   fontFamily: 'Inter',
-        //   fontSize: 16,
-        //   fontStyle: FontStyle.normal,
-        //   fontWeight: FontWeight.w400,
-        //   height: 1.0,
-        // ),
-        //     ),
-        // Container(
-        //   padding: const EdgeInsets.all(5),
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(25),
-        //     color: bgColor,
-        //   ),
-        //   child: Text(
-        //     keyword,
-        //     style: TextStyle(
-        //       fontSize: 12,
-        //       fontWeight: FontWeight.w400,
-        //       color: statusColor,
-        //     ),
-        //   ),
-        // ),
-        //     Text(
-        //       afterKeyword,
-        //       maxLines: 10,
-        //       overflow: TextOverflow.ellipsis,
-        //       style: const TextStyle(
-        //         color: Colors.black,
-        //         fontFamily: 'Inter',
-        //         fontSize: 16,
-        //         fontStyle: FontStyle.normal,
-        //         fontWeight: FontWeight.w400,
-        //         height: 1.0,
-        //       ),
-        //     ),
-        //   ],
-        // ),
         const SizedBox(
           height: 10,
         ),

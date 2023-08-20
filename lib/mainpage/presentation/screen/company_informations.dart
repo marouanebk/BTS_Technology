@@ -79,7 +79,7 @@ class _CompanyInformationsState extends State<CompanyInformations> {
     final response = await Dio().post(ApiConstance.updateEntrepriseApi,
         data: {
           "name": nameController.text,
-          "numberRC": int.parse(numberRCController.text),
+          "numberRC": numberRCController.text,
           "numberIF": int.parse(numberIFController.text),
           "numberART": int.parse(numberARTController.text),
           "numberRIB": int.parse(numberRIBController.text),
@@ -177,7 +177,6 @@ class _CompanyInformationsState extends State<CompanyInformations> {
                             "Vous devez entrer le Numéro de registre de commerce",
                         controller: numberRCController,
                         formSubmitted: _formSubmitted,
-                        isNumeric: true,
                       ),
                       buildInputField(
                           label: "N° IF",

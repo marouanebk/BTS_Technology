@@ -79,6 +79,7 @@ class _MainPageState extends State<MainPage> {
                         ..add(GetUserInfoEvent());
                     },
                     child: NestedScrollView(
+                      
                       headerSliverBuilder: (context, innerBoxIsScrolled) {
                         return [
                           SliverAppBar(
@@ -655,15 +656,6 @@ class _MainPageState extends State<MainPage> {
                   fontFamily: 'Inter'),
             ),
           ),
-          // const SizedBox(width: 8),
-          // Text(
-          //   '$number - $progress%',
-          //   style: const TextStyle(
-          //       fontSize: 12,
-          //       fontWeight: FontWeight.w400,
-          //       color: Color(0xFF9F9F9F),
-          //       fontFamily: 'Inter'),
-          // ),
         ],
       ),
     );

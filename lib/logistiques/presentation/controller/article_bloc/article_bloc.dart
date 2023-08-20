@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bts_technologie/core/utils/enumts.dart';
 import 'package:bts_technologie/logistiques/domaine/usecases/add_article_usecase.dart';
@@ -10,8 +9,6 @@ import 'package:bts_technologie/logistiques/domaine/usecases/get_undone_article_
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_event.dart';
 import 'package:bts_technologie/logistiques/presentation/controller/article_bloc/article_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-
 
 class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final GetArticlesUseCase getArticlesUseCase;
@@ -30,6 +27,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   }
   FutureOr<void> _getArticlesEvent(
       GetArticlesEvent event, Emitter<ArticleState> emit) async {
+    emit(state.copyWith(getArticlesState: RequestState.loading));
     final result = await getArticlesUseCase();
 
     result.fold(
@@ -39,49 +37,16 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
         (r) => emit(state.copyWith(
             getArticles: r, getArticlesState: RequestState.loaded)));
   }
+
   FutureOr<void> _createArticlesEvent(
       CreateArticleEvent event, Emitter<ArticleState> emit) async {
     final result = await createArticleUseCase(event.article);
-     emit(state.copyWith(
-            createArticleState: RequestState.loading));
+    emit(state.copyWith(createArticleState: RequestState.loading));
 
     result.fold(
         (l) => emit(state.copyWith(
-            createArticleState: RequestState.error, createArticleMessage: l.message)),
+            createArticleState: RequestState.error,
+            createArticleMessage: l.message)),
         (r) => emit(state.copyWith(createArticleState: RequestState.loaded)));
   }
-
-  // FutureOr<void> _getUnDoneTodoEvent(
-  //     GetUnDoneTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await getUnDoneTodoUseCase();
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           getUnDoneTodoState: RequestState.error,
-  //           getUnDoneTodomessage: l.message)),
-  //       (r) => emit(state.copyWith(
-  //           getUnDoneTodo: r, getUnDoneTodoState: RequestState.loaded)));
-  // }
-
-
-  // FutureOr<void> _editTodoEvent(
-  //     EditTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await getArticlesUseCase();
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           getArticlesState: RequestState.error,
-  //           getArticlesmessage: l.message)),
-  //       (r) => emit(state.copyWith(
-  //           getArticles: r, getArticlesState: RequestState.loaded)));
-  // }
-
-  // FutureOr<void> _deleteTodoEvent(
-  //     DeleteTodoEvent event, Emitter<TodoState> emit) async {
-  //   final result = await getArticlesUseCase();
-  //   result.fold(
-  //       (l) => emit(state.copyWith(
-  //           getArticlesState: RequestState.error,
-  //           getArticlesmessage: l.message)),
-  //       (r) => emit(state.copyWith(
-  //           getArticles: r, getArticlesState: RequestState.loaded)));
-  // }
 }

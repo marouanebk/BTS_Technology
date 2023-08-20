@@ -127,6 +127,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _getLivreursEvent(
       GetLivreursEvent event, Emitter<AccountState> emit) async {
     final result = await getLivreurUseCase();
+    log("liverurs");
     emit(state.copyWith(
       getLivreursState: RequestState.loading,
     ));
