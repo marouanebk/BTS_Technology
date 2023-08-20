@@ -1,6 +1,7 @@
-
+import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:bts_technologie/mainpage/presentation/components/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -15,14 +16,37 @@ class ImageDetailPage extends StatefulWidget {
 }
 
 class _ImageDetailPageState extends State<ImageDetailPage> {
-  Future<void> _downloadImage() async {
-    var response = await Dio().get(
-        widget.imagePath,
+  Future<void> _downloadImage(context) async {
+    var response = await Dio().get(widget.imagePath,
         options: Options(responseType: ResponseType.bytes));
     final result = await ImageGallerySaver.saveImage(
         Uint8List.fromList(response.data),
         quality: 80,
         name: "voy_pro_image");
+    log(result['isSuccess'].toString());
+    if (result['isSuccess'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content:
+              CustomStyledSnackBar(message: "Photo télécharge ", success: true),
+        ),
+      );
+    } else {
+      String errorMessage = "Unkown Error";
+      if (result['errorMessage'] != null) {
+        errorMessage = result['errorMessage'];
+        setState(() {
+          
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(message: errorMessage, success: false),
+        ),
+      );
+    }
   }
 
   @override
@@ -62,7 +86,9 @@ class _ImageDetailPageState extends State<ImageDetailPage> {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(5)),
                     child: ElevatedButton(
-                      onPressed: _downloadImage,
+                      onPressed: () {
+                        _downloadImage(context);
+                      },
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Colors.white),

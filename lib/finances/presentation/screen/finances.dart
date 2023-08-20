@@ -31,6 +31,10 @@ class FinancesPage extends StatefulWidget {
 
 class _FinancesPageState extends State<FinancesPage> {
   late List<_ChartData> data;
+  late List<_ChartData> yearData;
+  late List<_ChartData> monthData;
+  late List<_ChartData> dayData;
+
   late TooltipBehavior _tooltip;
   String _selectedPeriod = 'Par mois';
 
@@ -40,6 +44,9 @@ class _FinancesPageState extends State<FinancesPage> {
     _tooltip = TooltipBehavior(enable: true);
     _fetchFinancesChartData();
     super.initState();
+    setState(() {
+      data;
+    });
   }
 
   Future<void> _fetchFinancesChartData() async {
@@ -56,20 +63,38 @@ class _FinancesPageState extends State<FinancesPage> {
       final Map<String, dynamic> chartData =
           Map<String, dynamic>.from(response.data);
 
-      data = chartData.entries.map((entry) {
-        final List<String> dateParts = entry.key.split('-');
-        final String month = dateParts[0];
-        final double value = entry.value.toDouble();
-        return _ChartData('$month-${dateParts[1]}', value);
-      }).toList();
+      for (final type in chartData.keys) {
+        final List<dynamic> entries = chartData[type];
+        final List<_ChartData> dataList = entries.map((entry) {
+          final Map<String, dynamic> entryData =
+              Map<String, dynamic>.from(entry);
+          final String date = entryData.keys.first;
+          final double value = entryData.values.first.toDouble();
+          return _ChartData(date, value);
+        }).toList();
 
-      setState(() {}); // Trigger a rebuild to update the chart data
+        switch (type) {
+          case 'year':
+            yearData = dataList;
+            break;
+          case 'month':
+            monthData = dataList;
+            break;
+          case 'day':
+            dayData = dataList;
+            break;
+        }
+      }      setState(() {
+        data = monthData;
+      });
     } catch (error) {
-      SnackBar(
-        backgroundColor: Colors.transparent,
-        content: CustomStyledSnackBar(
-            message: "Error fetching finances chart data: $error'",
-            success: false),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.transparent,
+          content: CustomStyledSnackBar(
+              message: "Error fetching finances chart data: $error'",
+              success: false),
+        ),
       );
     }
   }
@@ -93,10 +118,11 @@ class _FinancesPageState extends State<FinancesPage> {
             backgroundColor: Colors.white,
             body: RefreshIndicator(
               onRefresh: () async {
-                log("refreshy indicator");
+                _fetchFinancesChartData();
+
                 context.read<FinanceBloc>()
                   ..add(GetFinancesEvent())
-                  ..add(GetFinancesEvent());
+                  ..add(GetCashFlowEvent());
                 context.read<AccountBloc>().add(GetLivreursEvent());
               },
               child: SingleChildScrollView(
@@ -129,6 +155,7 @@ class _FinancesPageState extends State<FinancesPage> {
                             );
                           } else if (state.getLivreursState ==
                               RequestState.loaded) {
+                                log("rebuilding");
                             return _topContainer(state.getLivreurs);
                           } else {
                             return Container();
@@ -143,7 +170,7 @@ class _FinancesPageState extends State<FinancesPage> {
                           if (state.getCashFlowState == RequestState.loading) {
                             return const Center(
                               child: CircularProgressIndicator(
-                                color: Colors.red,
+                                color: Colors.black,
                               ),
                             );
                           }
@@ -161,47 +188,6 @@ class _FinancesPageState extends State<FinancesPage> {
                         },
                       ),
                       const SizedBox(
-                        height: 24,
-                      ),
-                      if (data.isNotEmpty)
-                        SfCartesianChart(
-                          primaryXAxis: CategoryAxis(),
-                          primaryYAxis: NumericAxis(
-                              // minimum: -40,
-                              // maximum: 40,
-                              // interval: 10,
-                              ), // Adjust the axis range as needed
-                          tooltipBehavior: _tooltip,
-
-                          series: <ChartSeries<_ChartData, String>>[
-                            ColumnSeries<_ChartData, String>(
-                              dataSource: data,
-                              xValueMapper: (_ChartData data, _) => data.x,
-                              yValueMapper: (_ChartData data, _) => data.y,
-                              name: 'Gold',
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(25)),
-                              color: const Color(0xFFECECEC),
-                              selectionBehavior: SelectionBehavior(
-                                enable: true,
-                                unselectedOpacity: 1.0,
-                                selectedColor: Colors.black,
-                                unselectedColor: const Color(0xFFECECEC),
-                              ),
-                            )
-                          ],
-                        )
-                      else if (data
-                          .isEmpty) // Check if data is empty (not fetched yet)
-                        const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.black,
-                          ),
-                        ),
-
-                      //put the bar charts here :
-
-                      const SizedBox(
                         height: 30,
                       ),
                       BlocBuilder<FinanceBloc, FinancesState>(
@@ -209,7 +195,7 @@ class _FinancesPageState extends State<FinancesPage> {
                           if (state.getFinancesState == RequestState.loading) {
                             return const Center(
                               child: CircularProgressIndicator(
-                                color: Colors.red,
+                                color: Colors.black,
                               ),
                             );
                           }
@@ -393,7 +379,7 @@ class _FinancesPageState extends State<FinancesPage> {
             ),
             child: Center(
               child: Icon(
-                Icons.keyboard_arrow_up,
+                isRed ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
                 size: 35,
                 // color: Colors.red,
                 color: backgroundColor,
@@ -406,6 +392,16 @@ class _FinancesPageState extends State<FinancesPage> {
   }
 
   Widget _cashflow(CashFlow cashflow) {
+    List<_ChartData> selectedData = [];
+
+    if (_selectedPeriod == 'Par mois') {
+      selectedData = monthData;
+    } else if (_selectedPeriod == 'Par jour') {
+      selectedData = dayData;
+    } else if (_selectedPeriod == 'Par année') {
+      selectedData = yearData;
+    }
+
     return Column(
       children: [
         Row(
@@ -499,6 +495,43 @@ class _FinancesPageState extends State<FinancesPage> {
             )
           ],
         ),
+        const SizedBox(
+          height: 24,
+        ),
+        if (selectedData.isNotEmpty)
+          SfCartesianChart(
+            zoomPanBehavior:
+                ZoomPanBehavior(enablePanning: true, zoomMode: ZoomMode.x),
+            primaryXAxis: CategoryAxis(
+              visibleMinimum: 0,
+              visibleMaximum: 5,
+            ),
+            primaryYAxis: NumericAxis(),
+            tooltipBehavior: _tooltip,
+            series: <ChartSeries<_ChartData, String>>[
+              ColumnSeries<_ChartData, String>(
+                dataSource: selectedData,
+                xValueMapper: (_ChartData data, _) => data.x,
+                yValueMapper: (_ChartData data, _) => data.y,
+                name: '',
+                borderRadius: const BorderRadius.all(Radius.circular(25)),
+                color: const Color(0xFFECECEC),
+                selectionBehavior: SelectionBehavior(
+                  enable: true,
+                  unselectedOpacity: 1.0,
+                  selectedColor: Colors.black,
+                  unselectedColor: const Color(0xFFECECEC),
+                ),
+              )
+            ],
+          )
+        else if (monthData.isEmpty && dayData.isEmpty && yearData.isEmpty)
+          // Show loading indicator or message when no data is available
+          const Center(
+            child: CircularProgressIndicator(
+              color: Colors.black,
+            ),
+          ),
       ],
     );
   }
@@ -619,4 +652,8 @@ class _ChartData {
 
   final String x;
   final double y;
+  @override
+  String toString() {
+    return '_ChartData{x: $x, y: $y}';
+  }
 }

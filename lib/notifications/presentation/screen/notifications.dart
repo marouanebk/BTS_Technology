@@ -67,8 +67,10 @@ class _NotificationsState extends State<Notifications> {
                               itemCount: state.getNotifications.length,
                               // itemCount: state.getArticles.length,
                               itemBuilder: (context, index) {
-                                  final reversedIndex = state.getNotifications.length - 1 - index;
-  return notificationItem(state.getNotifications[reversedIndex]);
+                                final reversedIndex =
+                                    state.getNotifications.length - 1 - index;
+                                return notificationItem(
+                                    state.getNotifications[reversedIndex]);
                                 // return notificationItem(
                                 //     state.getNotifications[index]);
                               },
@@ -142,14 +144,10 @@ class _NotificationsState extends State<Notifications> {
     }
 
     if (keyword.isNotEmpty) {
-      int indexKeywordStart = item.notification
-          .indexOf(keyword); // find the start index of the keyword
-      int indexKeywordEnd = indexKeywordStart +
-          keyword.length; // find the end index of the keyword
-      beforeKeyword = item.notification
-          .substring(0, indexKeywordStart); // get the text before the keyword
-      afterKeyword = item.notification
-          .substring(indexKeywordEnd); // get the text after the keyword
+      int indexKeywordStart = item.notification.indexOf(keyword);
+      int indexKeywordEnd = indexKeywordStart + keyword.length;
+      beforeKeyword = item.notification.substring(0, indexKeywordStart);
+      afterKeyword = item.notification.substring(indexKeywordEnd);
     }
     beforeKeyword = beforeKeyword.replaceAll('(', '').replaceAll(')', '');
     afterKeyword = afterKeyword.replaceAll('(', '').replaceAll(')', '');
@@ -185,6 +183,7 @@ class _NotificationsState extends State<Notifications> {
                   height: 1.0,
                 ),
               ),
+              if(keyword.isNotEmpty)
               WidgetSpan(
                 child: Container(
                   padding: const EdgeInsets.only(top: 5, left: 5, right: 5),

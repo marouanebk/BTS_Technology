@@ -73,7 +73,7 @@ class _LogistiquesState extends State<Logistiques> {
                         if (state.getArticlesState == RequestState.loading) {
                           return const Center(
                             child: CircularProgressIndicator(
-                              color: Colors.red,
+                              color: Colors.black,
                             ),
                           );
                         }

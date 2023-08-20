@@ -255,7 +255,6 @@ class _EditOrderPageState extends State<EditOrderPage> {
                 listener: (context, state) {
                   if (state.getUserInfoState == RequestState.loaded) {
                     if (widget.role == "pageAdmin") {
-                      log("on page admin");
                       // Retrieve userInfo.pages and userInfo.commandTypes
                       final adminPages = state.getUserInfo!.populatedpages!;
                       final adminCommandTypes =
@@ -275,10 +274,14 @@ class _EditOrderPageState extends State<EditOrderPage> {
                         return {"label": type!, "value": type};
                       }).toList();
 
-                      log(widget.command.page.toString());
+                      try {
+
 
                       selectedPage = widget.command.page;
                       setState(() {});
+                      }catch (e){
+                        // TOD
+                      }
                     }
                   }
                 },
