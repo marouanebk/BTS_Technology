@@ -1,4 +1,3 @@
-
 import 'package:bts_technologie/logistiques/domaine/entities/article_entity.dart';
 import 'package:bts_technologie/orders/domaine/Entities/command_entity.dart';
 
@@ -53,54 +52,61 @@ class CommandModel extends Command {
       final dateData = json[dateKey];
 
       dateData.forEach((data) {
-        var articleList = data['articles'] as List<dynamic>?;
-        List<CommandArticle> variants = [];
-        if (articleList != null) {
-          variants = articleList.map((variantJson) {
-            return CommandArticle(
-              // articleId: variantJson['_id'],
-              articleId: variantJson['articleId'],
+        try {
+          var articleList = data['articles'] as List<dynamic>?;
+          List<CommandArticle> variants = [];
+          if (articleList != null) {
+            variants = articleList.map((variantJson) {
+              return CommandArticle(
+                // articleId: variantJson['_id'],
+                articleId: variantJson['articleId'],
 
-              variantId: variantJson['variantID'],
-              commandType: variantJson['commandType'],
-              unityPrice: variantJson['unityPrice'],
-              colour: variantJson['colour'],
-              taille: variantJson['taille'],
-              quantity: variantJson['quantity'],
-              family: variantJson['family'],
-              articleName: variantJson['articleName'],
-              photos: List<String>.from(variantJson["photos"] ?? []),
-            );
-          }).toList();
+                variantId: variantJson['variantID'],
+                commandType: variantJson['commandType'],
+                unityPrice: variantJson['unityPrice'],
+                colour: variantJson['colour'],
+                taille: variantJson['taille'],
+                quantity: variantJson['quantity'],
+                family: variantJson['family'],
+                articleName: variantJson['articleName'],
+                photos: List<String>.from(variantJson["photos"] ?? []),
+              );
+            }).toList();
+          }
+
+          String? page;
+          String? livreur;
+          String? username;
+          if (data["user"] != null && data["user"]["username"] != null) {
+            username = data["user"]["username"];
+          }
+
+          if (data["page"] != null) page = data["page"]["_id"];
+          if (data["livreur"] != null) livreur = data["livreur"]["name"];
+          final commandModel = CommandModel(
+            date: dateKey,
+            id: data["_id"],
+            comNumber: data["comNumber"],
+            noteClient: data["noteClient"],
+            sommePaid: data["sommePaid"],
+            prixSoutraitant: data["sousTraitance"],
+            user: username,
+            nomClient: data["nomClient"],
+            adresse: data["adresse"],
+            page: page,
+            // phoneNumber: "",
+            phoneNumber: data["phoneNumber"],
+            status: data["status"],
+            articleList: variants,
+            livreur: livreur,
+            // livreur: data["livreur"]["name"],
+          );
+
+          // Add the CommandModel instance to the list
+          commandModels.add(commandModel);
+        } catch (e) {
+          // todo
         }
-
-        String? page;
-        String? livreur;
-        String? user;
-        if (data["user"] != null && data["user"]["username"] != null )  user: data["user"]["username"];
-        if (data["page"] != null) page = data["page"]["_id"];
-        if (data["livreur"] != null) livreur = data["livreur"]["name"];
-        final commandModel = CommandModel(
-          date: dateKey,
-          id: data["_id"],
-          comNumber: data["comNumber"],
-          noteClient: data["noteClient"],
-          sommePaid: data["sommePaid"],
-          prixSoutraitant: data["sousTraitance"],
-          user: user,
-          nomClient: data["nomClient"],
-          adresse: data["adresse"],
-          page: page,
-          // phoneNumber: "",
-          phoneNumber: data["phoneNumber"],
-          status: data["status"],
-          articleList: variants,
-          livreur: livreur,
-          // livreur: data["livreur"]["name"],
-        );
-
-        // Add the CommandModel instance to the list
-        commandModels.add(commandModel);
       });
     }
 
@@ -131,6 +137,10 @@ class CommandModel extends Command {
     }
     String? page;
     String? livreur;
+    String? username;
+    if (json["user"] != null && json["user"]["username"] != null) {
+      username = json["user"]["username"];
+    }
     if (json["page"] != null) page = json["page"]["name"];
     if (json["livreur"] != null) livreur = json["livreur"]["name"];
 
@@ -152,7 +162,7 @@ class CommandModel extends Command {
       noteClient: json["noteClient"],
       sommePaid: json["sommePaid"],
       prixSoutraitant: json["sousTraitance"],
-      user: json["user"]["username"],
+      user: username,
       nomClient: json["nomClient"],
       adresse: json["adresse"],
       page: page,

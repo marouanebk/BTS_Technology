@@ -79,7 +79,6 @@ class _MainPageState extends State<MainPage> {
                         ..add(GetUserInfoEvent());
                     },
                     child: NestedScrollView(
-                      
                       headerSliverBuilder: (context, innerBoxIsScrolled) {
                         return [
                           SliverAppBar(
@@ -197,7 +196,6 @@ class _MainPageState extends State<MainPage> {
                                           child: PageView(
                                             controller: controller,
                                             onPageChanged: (index) {
-                                              log("page ${index + 1} ");
                                               pageindex = index;
                                               setState(() {
                                                 index;
@@ -213,7 +211,6 @@ class _MainPageState extends State<MainPage> {
                                                   i++) ...[
                                                 _commandsStats(
                                                     state.getCommandsStats[i]),
-                                                // const SizedBox(height: 24),
                                               ],
                                             ],
                                           ),
@@ -546,75 +543,82 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _commandsStats(CommandStatsEntity command) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
-      child: Align(
-        alignment: Alignment.center,
-        child: Container(
-          // height: 323,
-          width: double.infinity,
-          padding: const EdgeInsets.all(15),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.15),
-                offset: Offset(0, 0),
-                blurRadius: 12,
-                spreadRadius: 0,
+  Widget _commandsStats(
+    CommandStatsEntity command,
+  ) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
+        child: Align(
+          alignment: Alignment.center,
+          child: Container(
+            // height: 323,
+            constraints: const BoxConstraints(maxWidth: 600),
+
+            width: double.infinity,
+            padding: const EdgeInsets.all(15),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  offset: Offset(0, 0),
+                  blurRadius: 12,
+                  spreadRadius: 0,
+                ),
+              ],
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
               ),
-            ],
-            borderRadius: BorderRadius.all(
-              Radius.circular(5),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "${command.totalCommandes} Commandes",
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.right,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                          builder: (_) => const ClientsPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "voir les clients",
-                      style: TextStyle(
-                        color: Color(0xFF9F9F9F),
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
-                        fontWeight: FontWeight.w400,
-                      ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${command.totalCommandes} Commandes",
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
                       textAlign: TextAlign.right,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              for (var i = 0; i < command.status.length; i++)
-                _progressItem(command.status[i].name, command.status[i].count,
-                    command.status[i].percentage.toInt()),
-            ],
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ClientsPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "voir les clients",
+                        style: TextStyle(
+                          color: Color(0xFF9F9F9F),
+                          fontSize: 14,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                for (var i = 0; i < command.status.length; i++)
+                  _progressItem(command.status[i].name, command.status[i].count,
+                      command.status[i].percentage.toInt()),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _progressItem(String label, int number, int progress) {

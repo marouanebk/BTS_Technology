@@ -14,5 +14,6 @@ abstract class BaseAccountRepository {
   Future<Either<Failure, Entreprise>> getEntrepriseInfo();
   Future<Either<Failure, User>> getUserInfo();
   Future<Either<Failure, List<UserStatEntity>>> getUsersStats();
+  Future<Either<Failure, List<UserStatEntity>>> getClientsStats();
 
 }

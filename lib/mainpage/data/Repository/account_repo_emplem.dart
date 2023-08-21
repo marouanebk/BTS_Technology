@@ -74,4 +74,14 @@ class AccountRepository implements BaseAccountRepository {
       return Left(ServerFailure(failure.errorMessageModel.statusMessage));
     }
   }
+
+  @override
+  Future<Either<Failure, List<UserStatEntity>>> getClientsStats() async {
+    try {
+      final result = await baseAccountRemoteDateSource.getClientsStats();
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(failure.errorMessageModel.statusMessage));
+    }
+  }
 }

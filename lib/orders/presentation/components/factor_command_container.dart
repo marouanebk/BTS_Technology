@@ -338,7 +338,7 @@ class _FactorCommandContainerState extends State<FactorCommandContainer> {
             const SizedBox(
               height: 10,
             ),
-            if (widget.command.user != null)
+            // if (widget.command.user != null)
             Center(
               child: Text(
                 "Saisie par @${widget.command.user}",

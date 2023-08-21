@@ -601,7 +601,7 @@ class _AddOrderPageState extends State<AddOrderPage> {
                     if (article.type == "Gros vierge" &&
                         value != "Gros vierge") {
                       article.prixController.text = "0";
-                      article.isPriceReadOnly = true;
+                      article.isPriceReadOnly = false;
                     } else if (value == "Gros vierge") {
                       article.prixController.text =
                           article.grosPrice.toString();

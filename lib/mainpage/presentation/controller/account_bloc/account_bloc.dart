@@ -3,12 +3,13 @@ import 'dart:developer';
 
 import 'package:bts_technologie/authentication/domaine/usecases/get_all_users_usecase.dart';
 import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/mainpage/domaine/UseCase/get_clients_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_commands_stats_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_entreprise_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_livreur_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_pages_usecase.dart';
 import 'package:bts_technologie/mainpage/domaine/UseCase/get_userinfo_usecase.dart';
-import 'package:bts_technologie/mainpage/domaine/UseCase/get_usestats_usecase.dart';
+import 'package:bts_technologie/mainpage/domaine/UseCase/get_admin_userstats_usecase.dart';
 
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
 import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
@@ -22,6 +23,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final GetAdminUserStatsUseCase getAdminUserStatsUseCase;
   final GetCommandsStatsUseCase getCommandsStatsUseCase;
   final GetUserInfoUseCase getUserInfoUseCase;
+  final GetClientsUseCase getClientsUseCase;
 
   AccountBloc(
     this.getAllUsersUseCase,
@@ -31,12 +33,14 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     this.getAdminUserStatsUseCase,
     this.getCommandsStatsUseCase,
     this.getUserInfoUseCase,
+    this.getClientsUseCase,
   ) : super(const AccountState()) {
     on<GetAllAccountsEvent>(_getAllAccountsEvent);
     on<GetPagesEvent>(_getPagesEvent);
     on<GetLivreursEvent>(_getLivreursEvent);
     on<GetEntrepriseInfoEvent>(_getEntrepriseInfoEvent);
     on<GetAdminUserStatsEvent>(_getAdminUsersStatsEvent);
+    on<GetClientsEvent>(_getClientsEvent);
     on<GetCommandsStatsEvent>(_getCommandsStatsEvent);
     on<GetUserInfoEvent>(_getUserInfoEvent);
   }
@@ -122,6 +126,19 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         (r) => emit(state.copyWith(
             getAdminUserStats: r,
             getAdminUserStatsState: RequestState.loaded)));
+  }
+
+  FutureOr<void> _getClientsEvent(
+      GetClientsEvent event, Emitter<AccountState> emit) async {
+    final result = await getClientsUseCase();
+    emit(state.copyWith(
+      getClientsState: RequestState.loading,
+    ));
+    result.fold(
+        (l) => emit(state.copyWith(
+            getClientsState: RequestState.error, getClientsmessage: l.message)),
+        (r) => emit(state.copyWith(
+            getClientsStats: r, getClientsState: RequestState.loaded)));
   }
 
   FutureOr<void> _getLivreursEvent(

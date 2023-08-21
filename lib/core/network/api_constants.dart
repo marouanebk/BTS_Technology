@@ -8,6 +8,7 @@ class ApiConstance {
   static const String accountApi = "/api/account";
   static const String commandApi = "/api/command";
   static const String financeApi = "/api/finance";
+  static const String clientsApi = "$baseUrl/api/client";
 
   static const String signup = "$baseUrl$authApi/signup";
   static const String login = "$baseUrl$authApi/login";

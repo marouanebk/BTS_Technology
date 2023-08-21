@@ -1,6 +1,16 @@
+import 'dart:developer';
+
+import 'package:bts_technologie/core/services/service_locator.dart';
+import 'package:bts_technologie/core/utils/enumts.dart';
+import 'package:bts_technologie/mainpage/domaine/Entities/user_stat_entity.dart';
 import 'package:bts_technologie/mainpage/presentation/components/custom_app_bar.dart';
+import 'package:bts_technologie/mainpage/presentation/components/screen_header.dart';
 import 'package:bts_technologie/mainpage/presentation/components/search_container.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_bloc.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_event.dart';
+import 'package:bts_technologie/mainpage/presentation/controller/account_bloc/account_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ClientsPage extends StatefulWidget {
   const ClientsPage({super.key});
@@ -14,31 +24,68 @@ class _ClientsPageState extends State<ClientsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CustomAppBar(titleText: "List des clients"),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              searchContainer("Chercher un client ", (query) {
-                setState(() {
-                  searchQuery = query;
-                });
-              }),
-              const SizedBox(
-                height: 30,
+    return BlocProvider(
+      create: (context) => sl<AccountBloc>()..add(GetClientsEvent()),
+      child: Builder(builder: (context) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: const CustomAppBar(titleText: "List des clients"),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                children: [
+                  BlocBuilder<AccountBloc, AccountState>(
+                    builder: (context, state) {
+                      if (state.getClientsState == RequestState.loading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ),
+                        );
+                      } else if (state.getClientsState == RequestState.loaded) {
+                        List<UserStatEntity> filteredUsers = state
+                            .getClientsStats
+                            .where((user) => (searchQuery.isEmpty ||
+                                user.phonenumber
+                                    .toString()
+                                    .contains(searchQuery)))
+                            .toList();
+
+
+                        return Column(
+                          children: [
+                            searchContainer("Chercher un client ", (query) {
+                              setState(() {
+                                searchQuery = query;
+                              });
+                            }),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            clientList(filteredUsers),
+                          ],
+                        );
+                      } else if (state.getClientsState == RequestState.error) {
+                        return Text(
+                          state.getClientsmessage,
+                          style: const TextStyle(color: Colors.red),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ],
               ),
-              clientList(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
-  Widget clientList() {
+  Widget clientList(users) {
     return ListView.separated(
       scrollDirection: Axis.vertical,
       separatorBuilder: (context, index) => const SizedBox(
@@ -46,56 +93,83 @@ class _ClientsPageState extends State<ClientsPage> {
       ),
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 4,
+      itemCount: users.length,
       itemBuilder: (context, index) {
-        return clientContainer();
+        return clientContainer(users[index]);
       },
     );
   }
 
-  Widget clientContainer() {
+  Widget clientContainer(UserStatEntity user) {
     return Container(
-      height: 62,
       width: double.infinity,
-      padding: const EdgeInsets.only(right: 24, left: 16),
+      height: 70,
+      padding: const EdgeInsets.only(right: 15, left: 15, top: 15, bottom: 18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white, // Replace with your custom color if needed
+        boxShadow: const [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3), // changes the shadow position
+            color: Color.fromRGBO(0, 0, 0, 0.15),
+            offset: Offset(0, 0),
+            blurRadius: 12,
+            spreadRadius: 0,
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Mohamed smth ",
-            style: TextStyle(
-              color: Color(
-                  0xFF111111), // Assuming you have defined the black color as #111
-              height: 1.0, // Equivalent to "line-height: normal;"
-              fontFamily:
-                  'Inter', // Assuming you have loaded the Inter font family
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                user.fullname ?? "",
+                style: const TextStyle(
+                  color: Color(0xFF111111),
+                  fontFamily: "Inter",
+                  fontSize: 18,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w500,
+                  height: 1.0,
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                user.phonenumber ?? "",
+                style: const TextStyle(
+                  color: Color(0xFF9F9F9F),
+                  fontFamily: "Inter",
+                  fontSize: 12,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+              ),
+            ],
           ),
-          Text(
-            "123",
-            style: TextStyle(
-              color: Color(
-                  0xFF111111), // Assuming you have defined the black color as #111
-              height: 1.0, // Equivalent to "line-height: normal;"
-              fontFamily:
-                  'Inter', // Assuming you have loaded the Inter font family
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "${user.totalMoneyMade} DA ",
+                style: const TextStyle(
+                  color: Color(0xFF111111),
+                  fontFamily: "Inter",
+                  fontSize: 20,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                ),
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              smallRichText(user.numberOfCommands.toString(),
+                  'assets/images/navbar/commandes_activated.svg'),
+            ],
           ),
         ],
       ),

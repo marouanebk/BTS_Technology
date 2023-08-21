@@ -5,6 +5,7 @@ class UserStatModel extends UserStatEntity {
     String? id,
     String? fullname,
     String? username,
+    String? phoneNumber,
     required num totalMoneyMade,
     required num numberOfCommands,
   }) : super(
@@ -13,6 +14,7 @@ class UserStatModel extends UserStatEntity {
           username: username,
           totalMoneyMade: totalMoneyMade,
           numberOfCommands: numberOfCommands,
+          phonenumber: phoneNumber,
         );
 
   factory UserStatModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class UserStatModel extends UserStatEntity {
       username: json["username"],
       numberOfCommands: json["numberOfCommands"],
       totalMoneyMade: json["totalMoneyMade"],
+      phoneNumber: json["phoneNumber"]
     );
   }
 }

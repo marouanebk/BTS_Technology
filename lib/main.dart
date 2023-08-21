@@ -44,7 +44,7 @@ void main() async {
   await Firebase.initializeApp();
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings("notification_icon");
   final InitializationSettings initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -110,7 +110,7 @@ void showDialogOrSnackbarNotification(RemoteMessage message) {
 }
 
 class MyApp extends StatelessWidget {
-  static const String title = 'Invoice';
+  static const String title = 'VOY Pro';
 
   const MyApp({super.key});
 

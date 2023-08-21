@@ -1,4 +1,3 @@
-
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/core/network/api_constants.dart';
 import 'package:bts_technologie/mainpage/data/Models/command_stats_model.dart';
@@ -18,6 +17,7 @@ abstract class BaseAccountRemoteDateSource {
   Future<List<CommandStatsModel>> getCommandStats();
   Future<EntrepriseModel> getEntrepriseInfo();
   Future<List<UserStatModel>> getUsersStats();
+  Future<List<UserStatModel>> getClientsStats();
   Future<UserModel> getUserInfo();
 }
 
@@ -121,10 +121,9 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
     );
 
     if (response.statusCode == 200 && response.data != null) {
-
       return EntrepriseModel.fromJson(response.data);
     } else {
-      String errorMessage =  "Unknown error";
+      String errorMessage = "Unknown error";
       throw ServerException(
         errorMessageModel: ErrorMessageModel(
           statusCode: response.statusCode,
@@ -162,6 +161,32 @@ class AccountRemoteDataSource extends BaseAccountRemoteDateSource {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
     final response = await Dio().get(ApiConstance.getAdminUserStats,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ));
+    if (response.statusCode == 200) {
+      return List<UserStatModel>.from((response.data as List).map(
+        (e) => UserStatModel.fromJson(e),
+      ));
+    } else {
+      String errorMessage = response.data['err'] ?? "Unknown error";
+
+      throw ServerException(
+        errorMessageModel: ErrorMessageModel(
+          statusCode: response.statusCode,
+          statusMessage: errorMessage,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<List<UserStatModel>> getClientsStats() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+    final response = await Dio().get(ApiConstance.clientsApi,
         options: Options(
           headers: {
             "Authorization": "Bearer $token",

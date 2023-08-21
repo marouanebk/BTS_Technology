@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bts_technologie/authentication/data/models/user_model.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_bloc.dart';
 import 'package:bts_technologie/authentication/presentation/controller/authentication_bloc/authentication_event.dart';
@@ -96,6 +98,7 @@ class _NewUserPageState extends State<NewUserPage> {
   }
 
   void _submitForm(context) {
+    log(fullnameController.text);
     if (type == "pageAdmin") {
       List<String> selectedPages = _selectedPages.map((index) {
         return widget.pages[index].id!;

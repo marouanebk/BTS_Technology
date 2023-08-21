@@ -32,6 +32,10 @@ class AccountState extends Equatable {
   final RequestState getAdminUserStatsState;
   final String getAdminUserStatsmessage;
 
+  final List<UserStatEntity> getClientsStats;
+  final RequestState getClientsState;
+  final String getClientsmessage;
+
   final User? getUserInfo;
   final RequestState getUserInfoState;
   final String getUserInfomessage;
@@ -68,6 +72,10 @@ class AccountState extends Equatable {
     this.getAdminUserStatsState = RequestState.loading,
     this.getAdminUserStatsmessage = "",
     //
+    this.getClientsStats = const [],
+    this.getClientsState = RequestState.loading,
+    this.getClientsmessage = "",
+    //
     this.getUserInfo = null,
     this.getUserInfoState = RequestState.loading,
     this.getUserInfomessage = "",
@@ -102,6 +110,11 @@ class AccountState extends Equatable {
     List<UserStatEntity>? getAdminUserStats,
     RequestState? getAdminUserStatsState,
     String? getAdminUserStatsmessage,
+    //
+    List<UserStatEntity>? getClientsStats,
+    RequestState? getClientsState,
+    String? getClientsmessage,
+    //
     User? getUserInfo,
     RequestState? getUserInfoState,
     String? getUserInfomessage,
@@ -134,6 +147,10 @@ class AccountState extends Equatable {
           getAdminUserStatsState ?? this.getAdminUserStatsState,
       getAdminUserStatsmessage:
           getAdminUserStatsmessage ?? this.getAdminUserStatsmessage,
+      //
+      getClientsStats: getClientsStats ?? this.getClientsStats,
+      getClientsState: getClientsState ?? this.getClientsState,
+      getClientsmessage: getClientsmessage ?? this.getClientsmessage,
       //
       getCommandsStats: getCommandsStats ?? this.getCommandsStats,
       getCommandsStatsState:
@@ -175,6 +192,11 @@ class AccountState extends Equatable {
         getCommandsStats,
         getCommandsStatsState,
         getCommandsStatsmessage,
+        //
+
+        getClientsStats,
+        getClientsState,
+        getClientsmessage,
         //
         getUserInfo,
         getUserInfoState,
