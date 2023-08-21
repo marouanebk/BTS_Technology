@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -49,10 +48,11 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
           width: 20,
           height: 30,
         ),
-        inactiveIcon: SvgPicture.asset(
-          'assets/images/navbar/notifications_desactivated.svg', // Replace with the actual path to your SVG image
-          width: 20,
-          height: 30,
+        inactiveIcon: Image.asset(
+          'assets/images/navbar/notifications_desactivated.png', // Replace with the actual path to your SVG image
+          width: 25,
+          height: 35,
+          color: Colors.black,
         ),
         title: 'Notifications',
         activeColorPrimary: Colors.black,
@@ -125,7 +125,7 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
     );
   }
 
- void performLogout() async {
+  void performLogout() async {
     final prefs = await SharedPreferences.getInstance();
     showDialog(
       context: context,
@@ -162,6 +162,5 @@ class _FinancesBaseScreenState extends State<FinancesBaseScreen> {
         );
       },
     );
-
   }
 }
